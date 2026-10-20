@@ -429,8 +429,8 @@ function kitSheet(k){
    IMPOSTAZIONI
    ===================================================================== */
 function segChips(name,curv,opts){return '<div class="seg">'+opts.map(function(o){return '<button class="chip'+(o[0]===curv?' on':'')+'" data-'+name+'="'+o[0]+'">'+o[1]+'</button>'}).join('')+'</div>'}
-function appVersion(){try{return (A&&A.version)?A.version():'web'}catch(e){return 'web'}}
-function openUrl(u){if(A&&A.open)A.open(u);else location.href=u}
+function appVersion(){try{return (A&&A.version)?A.version():WEB_VERSION}catch(e){return WEB_VERSION}}
+function openUrl(u){if(A&&A.open)A.open(u);else if(/^https?:/.test(u))window.open(u,'_blank');else location.href=u}
 function openContact(k){
   if(k==='wa'){var t=T('reportMsg')+'\n\n(v'+appVersion()+')';if(A&&A.whatsapp)A.whatsapp(t,CONTACT.num);else openUrl('https://wa.me/'+CONTACT.num+'?text='+encodeURIComponent(t))}
   else if(k==='tel') openUrl('tel:+'+CONTACT.num);
@@ -698,7 +698,7 @@ function exportBackup(){
     settings:{tecnico:settings.tecnico,ditta:settings.ditta,waNum:settings.waNum,ui:settings.ui,out:settings.out}};
   var txt=JSON.stringify(data), d=new Date(), name='backup_materiale_'+d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)+'.json';
   if(A&&A.shareFile) A.shareFile(name,txt,'application/json');
-  else{var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));a.download=name;a.click()}
+  else fileReadySheet(new File([txt],name,{type:'application/json'}));
 }
 function importBackup(){
   var inp=$('#fileJson'); inp.value='';
@@ -803,11 +803,73 @@ function fileName(){
   var d=new Date(), base=settings.out==='ar'?'طلب_مواد':'Richiesta_materiale';
   return base+(c?'_'+c:'')+'_'+d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)+'.pdf';
 }
-function doWa(){var t=buildText(true),n=settings.waNum.replace(/[^\d]/g,'');if(A&&A.whatsapp)A.whatsapp(t,n);else location.href='https://wa.me/'+n+'?text='+encodeURIComponent(t)}
-function doCopy(){var t=buildText(false);if(A&&A.copy){A.copy(t);toast(T('copied'))}else if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){toast(T('copied'))})}}
+function doWa(){var t=buildText(true),n=settings.waNum.replace(/[^\d]/g,'');if(A&&A.whatsapp)A.whatsapp(t,n);else openUrl('https://wa.me/'+n+'?text='+encodeURIComponent(t))}
+function doCopy(){
+  var t=buildText(false);
+  if(A&&A.copy){A.copy(t);toast(T('copied'));return}
+  function legacy(){var ta=document.createElement('textarea');ta.value=t;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,t.length);var ok=false;try{ok=document.execCommand('copy')}catch(e){}document.body.removeChild(ta);toast(ok?T('copied'):'✗')}
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function(){toast(T('copied'))},legacy); else legacy();
+}
 function doPdf(){
   if(A&&A.pdf){toast(T('pdfWait'));A.pdf(buildReport(),fileName())}
-  else{var w=window.open('','_blank');w.document.write(buildReport().replace(/<script>[\s\S]*?<\/script>/,''));w.document.close();setTimeout(function(){w.print()},300)}
+  else webPdf();
+}
+
+/* ---------- versione web (iPad / iPhone): PDF, condivisione file ---------- */
+var WEB_VERSION='web-1.0.3';
+function loadScript(src,cb){if(window.html2canvas){cb();return}var sc=document.createElement('script');sc.src=src;sc.onload=cb;sc.onerror=function(){toast(T('pdfErr'))};document.head.appendChild(sc)}
+function webPdf(){
+  toast(T('pdfWait'));
+  loadScript('html2canvas.min.js',function(){
+    var W=794,ifr=document.createElement('iframe');
+    ifr.setAttribute('style','position:fixed;left:-20000px;top:0;width:'+W+'px;height:1123px;border:0;background:#fff');
+    document.body.appendChild(ifr);
+    ifr.onload=function(){
+      setTimeout(function(){
+        var doc=ifr.contentDocument, H=doc.body.scrollHeight, P=W*297/210, n=Math.max(1,Math.ceil((H-2)/P)), pages=[], i=0;
+        ifr.style.height=H+'px';
+        (function next(){
+          if(i>=n){document.body.removeChild(ifr);var blob=pdfFromJpegs(pages);fileReadySheet(new File([blob],fileName(),{type:'application/pdf'}));return}
+          window.html2canvas(doc.body,{x:0,y:Math.round(i*P),width:W,height:Math.round(P),scale:2,windowWidth:W,windowHeight:Math.round(P),backgroundColor:'#ffffff',logging:false,scrollX:0,scrollY:0})
+           .then(function(cv){var d=cv.toDataURL('image/jpeg',0.9);pages.push({b:b64bytes(d.split(',')[1]),w:cv.width,h:cv.height});i++;next()})
+           .catch(function(){document.body.removeChild(ifr);toast(T('pdfErr'))});
+        })();
+      },250);
+    };
+    ifr.srcdoc=buildReport();
+  });
+}
+function b64bytes(b){var s=atob(b),u=new Uint8Array(s.length);for(var i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u}
+// PDF minimale: una immagine JPEG per pagina A4
+function pdfFromJpegs(pages){
+  var parts=[],len=0,offs=[];
+  function add(x){var u=typeof x==='string'?new TextEncoder().encode(x):x;parts.push(u);len+=u.length}
+  function obj(n,body){offs[n]=len;add(n+' 0 obj\n');(Array.isArray(body)?body:[body]).forEach(add);add('\nendobj\n')}
+  add('%PDF-1.4\n%\xE2\xE3\n');
+  var N=pages.length, kids=[];
+  for(var i=0;i<N;i++)kids.push((3+i*3)+' 0 R');
+  obj(1,'<< /Type /Catalog /Pages 2 0 R >>');
+  obj(2,'<< /Type /Pages /Kids ['+kids.join(' ')+'] /Count '+N+' >>');
+  pages.forEach(function(p,i){
+    var po=3+i*3, io=po+1, co=po+2, cs='q 595.28 0 0 841.89 0 0 cm /Im0 Do Q';
+    obj(po,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 '+io+' 0 R >> >> /Contents '+co+' 0 R >>');
+    obj(io,['<< /Type /XObject /Subtype /Image /Width '+p.w+' /Height '+p.h+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+p.b.length+' >>\nstream\n',p.b,'\nendstream']);
+    obj(co,'<< /Length '+cs.length+' >>\nstream\n'+cs+'\nendstream');
+  });
+  var total=3+N*3, xref=len, x='xref\n0 '+total+'\n0000000000 65535 f \n';
+  for(var k=1;k<total;k++)x+=('0000000000'+offs[k]).slice(-10)+' 00000 n \n';
+  add(x+'trailer\n<< /Size '+total+' /Root 1 0 R >>\nstartxref\n'+xref+'\n%%EOF');
+  return new Blob(parts,{type:'application/pdf'});
+}
+// condivisione file: serve un tocco dell'utente, quindi si mostra un foglio con i pulsanti
+function fileReadySheet(file){
+  var canShare=!!(navigator.canShare&&navigator.canShare({files:[file]}));
+  openSheet('<h2>✓ '+esc(file.name)+'</h2><div class="mini" dir="ltr">'+(file.size/1024).toFixed(0)+' KB</div>'+
+   (canShare?'<button class="btn main" id="fshare">'+(settings.ui==='ar'?'📤 مشاركة / إرسال':'📤 Condividi / Invia')+'</button>':'')+
+   '<button class="btn ghost" style="width:100%;margin-top:10px" id="fdl">'+(settings.ui==='ar'?'⬇️ تنزيل / فتح':'⬇️ Scarica / Apri')+'</button>');
+  if(canShare)$('#fshare').onclick=function(){navigator.share({files:[file],title:file.name}).then(closeSheet,function(){})};
+  $('#fdl').onclick=function(){var u=URL.createObjectURL(file),a=document.createElement('a');a.href=u;a.download=file.name;a.target='_blank';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},60000)};
+  if(!A) toast(T('pdfOk'));
 }
 window.onPdfDone=function(ok){toast(ok?T('pdfOk'):T('pdfErr'))};
 
