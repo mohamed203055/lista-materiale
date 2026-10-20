@@ -107,6 +107,44 @@ main{padding:12px 12px 0}
 .contact{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;margin-top:8px;width:100%;text-align:start}
 .contact .ci{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px;flex:none}
 .contact b{display:block;font-size:15px}.contact span{font-size:12.5px;color:var(--sub)}
+.iconbtn.lang{font-size:14px;font-weight:800;width:auto;padding:0 10px}
+.seg{display:flex;gap:6px}
+.seg .chip{flex:1;text-align:center}
+.contact{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;margin-top:8px;width:100%;text-align:start}
+.contact .ci{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px;flex:none}
+.contact b{display:block;font-size:15px}.contact span{font-size:12.5px;color:var(--sub)}
+.thumb{width:44px;height:44px;border-radius:10px;object-fit:cover;flex:none;background:#EEF0F4}
+.thumb.big{width:96px;height:96px;border-radius:14px}
+.dot{display:inline-block;width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.25);vertical-align:-2px;margin-inline-end:5px;flex:none}
+.crow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.crow .cn{flex:1;font-size:15px;display:flex;align-items:center}
+.crow .dot{width:22px;height:22px}
+.crow.on .cn{font-weight:700}
+.tools{display:flex;gap:4px;flex:none}
+.tools button{width:34px;height:34px;border-radius:9px;background:#F1F2F6;font-size:15px}
+.tools button.on{background:#FFE3E3}
+.row.hid{opacity:.45}
+.proj{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.proj:last-child{border-bottom:0}
+.proj .t{flex:1;min-width:0;text-align:start}
+.proj .t b{display:block;font-size:15px}
+.proj .t span{display:block;font-size:12.5px;color:var(--sub)}
+.proj.cur{background:#F2F6FF}
+.proj .t .tag{display:inline-block;color:#fff;font-size:11px}
+.top h1{font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.tag{font-size:11px;background:var(--brand);color:#fff;border-radius:6px;padding:1px 6px;margin-inline-start:6px;vertical-align:1px}
+.adm-head{display:flex;align-items:center;gap:8px;background:#16192B;color:#fff;border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.adm-head b{flex:1}
+.adm-head button{color:#fff;background:rgba(255,255,255,.14);border-radius:9px;padding:6px 10px;font-size:13px}
+.menu{display:grid;gap:10px}
+.menu button{background:var(--card);border-radius:14px;padding:14px;text-align:start;display:flex;gap:12px;align-items:center;box-shadow:0 1px 2px rgba(20,25,60,.06)}
+.menu button .ic{font-size:24px}
+.menu button b{display:block}.menu button span{font-size:12.5px;color:var(--sub)}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-top:10px}
+.toggle input{width:22px;height:22px}
+.pick{max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:6px}
+.pick button{display:block;width:100%;text-align:start;padding:9px 12px;border-bottom:1px solid var(--line);font-size:14px}
+.warn{background:#FFECEC;color:#9B1C1C;border-radius:10px;padding:8px 10px;font-size:13px;margin-top:10px}
 </style>
 </head>
 <body>
@@ -114,15 +152,16 @@ main{padding:12px 12px 0}
   <div class="top">
     <h1 id="ttl"></h1>
     <button class="iconbtn lang" id="btnLang"></button>
-    <button class="iconbtn" id="btnNew">🗒️</button>
+    <button class="iconbtn" id="btnProj">📁</button>
+    <button class="iconbtn" id="btnSave">💾</button>
     <button class="iconbtn" id="btnSettings">⚙️</button>
   </div>
-  <div class="search">
+  <div class="search" id="searchBox">
     <span>🔍</span>
     <input id="q" type="search" autocomplete="off">
     <button class="x" id="qx" style="display:none">✕</button>
   </div>
-  <div class="tabs">
+  <div class="tabs" id="tabs">
     <button class="tab on" data-tab="mat" id="tMat"></button>
     <button class="tab" data-tab="kit" id="tKit"></button>
     <button class="tab" data-tab="cart"><span id="tCart"></span><span class="badge" id="badge">0</span></button>
@@ -131,7 +170,7 @@ main{padding:12px 12px 0}
 
 <main id="main"></main>
 
-<div class="bar">
+<div class="bar" id="bar">
   <div class="count"><b id="cnt">0</b><span id="cntL"></span></div>
   <button class="btn wa" id="btnWa">WhatsApp</button>
   <button class="btn cp" id="btnCopy"></button>
@@ -141,445 +180,10 @@ main{padding:12px 12px 0}
 <div class="sheet-bg" id="sheetBg"></div>
 <div class="sheet" id="sheet"></div>
 <div class="toast" id="toast"></div>
+<input type="file" id="fileImg" accept="image/*" style="display:none">
+<input type="file" id="fileJson" accept="*/*" style="display:none">
 
 <script src="catalog.js"></script>
-<script>
-(function(){
-'use strict';
-var KEY='lm_state_v1', SKEY='lm_settings_v1';
-var $=function(s){return document.querySelector(s)};
-var main=$('#main');
-var A=window.Android;
-
-/* ---------- testi interfaccia / نصوص الواجهة ---------- */
-var TXT={
- ar:{title:'طلب مواد',search:'ابحث… مثلاً 503 أو كابل أو cavo',mat:'المواد',kit:'الكيتات',cart:'الطلب',items:'مادة',copy:'نسخ',
-  site:'📍 بيانات الموقع',edit:'تعديل ▾',hide:'إخفاء ▴',siteHint:'اضغط لإدخال اسم الزبون والعنوان',cliente:'الزبون',clienteP:'اسم الزبون أو الشركة',
-  indirizzo:'العنوان',luogo:'نوع المكان',note:'ملاحظات عامة',noteP:'مثلاً: السلسلة BTicino Living بيضاء',
-  custom:'مادة غير موجودة',allCats:'كل الفئات',kits:'الكيتات',materials:'المواد',notFound:'لم أجد',addNew:'أضف «%» كمادة جديدة',
-  kitInfo:'الكيت يضيف كل قطع النقطة بضغطة واحدة. الكميات تقريبية وتستطيع تعديلها قبل الإضافة.',pcs:'قطعة',
-  emptyCart:'لم تضف أي مادة بعد.<br>اختر من «المواد» أو «الكيتات».',other:'مواد أخرى',preview:'👁 معاينة الرسالة',clear:'مسح الكل',
-  qty:'الكمية',size:'المقاس',sizeOther:'مقاس آخر (اختياري)',sizeFree:'المقاس أو النوع (اختياري)',itemNote:'ملاحظة (اللون، الماركة، السلسلة…)',itemNoteP:'مثلاً BTicino Living أبيض',
-  add:'أضف إلى الطلب ✓',needQty:'اكتب الكمية',needSize:'اختر المقاس أولاً',added:'أُضيف:',customSub:'تُكتب في الطلب كما هي',name:'اسم المادة',unit:'الوحدة',
-  needName:'اكتب اسم المادة',howMany:'كم نقطة؟',parts:'القطع (تستطيع تعديل أي كمية)',kitNote:'ملاحظة للكيت (مثلاً الغرفة)',kitNoteP:'مثلاً: المطبخ',addKit:'أضف الكيت إلى الطلب ✓',kitAdded:'أُضيف الكيت:',
-  settings:'⚙️ الإعدادات',tecnico:'اسمك (الفني)',ditta:'اسم الشركة (يظهر في PDF)',waNum:'رقم واتساب المدير (اختياري)',
-  waHint:'إذا كتبت الرقم، زر واتساب يفتح محادثة المدير مباشرة.',uiLang:'لغة التطبيق',outLang:'لغة الرسالة وملف PDF',
-  langIt:'الإيطالية',langAr:'العربية',langBoth:'الاثنتان',save:'حفظ',saved:'تم الحفظ',cancel:'إلغاء',
-  clearQ:'مسح كل المواد من الطلب؟',newQ:'بدء طلب جديد؟ سيُمسح الطلب الحالي.',newBtn:'طلب جديد',alreadyEmpty:'الطلب فارغ أصلاً',
-  copied:'تم نسخ الطلب ✓',pdfWait:'جاري تجهيز PDF…',pdfOk:'PDF جاهز ✓',pdfErr:'تعذّر إنشاء PDF',previewT:'معاينة الرسالة',contact:'📞 تواصل معنا',contactHint:'وجدت خطأ أو عندك فكرة؟ راسلنا وسنصلحه.',report:'أبلغ عن خطأ عبر واتساب',call:'اتصال',reportMsg:'مرحباً، عندي ملاحظة عن تطبيق «طلب مواد»:'},
- it:{title:'Richiesta materiale',search:'Cerca… es. 503, cavo, scatola',mat:'Materiali',kit:'Kit',cart:'Richiesta',items:'voci',copy:'Copia',
-  site:'📍 Dati del cantiere',edit:'Modifica ▾',hide:'Nascondi ▴',siteHint:'Tocca per inserire cliente e indirizzo',cliente:'Cliente',clienteP:'Nome cliente o azienda',
-  indirizzo:'Indirizzo',luogo:'Tipo di luogo',note:'Note generali',noteP:'es. serie BTicino Living bianca',
-  custom:'Articolo non in elenco',allCats:'Tutte le categorie',kits:'Kit',materials:'Materiali',notFound:'Nessun risultato per',addNew:'Aggiungi «%» come nuovo articolo',
-  kitInfo:'Il kit aggiunge tutti i pezzi del punto con un tocco. Le quantità sono indicative e puoi modificarle prima di aggiungere.',pcs:'pz',
-  emptyCart:'Nessun materiale aggiunto.<br>Scegli da «Materiali» o «Kit».',other:'Altro',preview:'👁 Anteprima messaggio',clear:'Svuota',
-  qty:'Quantità',size:'Misura',sizeOther:'Altra misura (facoltativo)',sizeFree:'Misura o tipo (facoltativo)',itemNote:'Nota (colore, marca, serie…)',itemNoteP:'es. BTicino Living bianco',
-  add:'Aggiungi alla richiesta ✓',needQty:'Inserisci la quantità',needSize:'Scegli prima la misura',added:'Aggiunto:',customSub:'Viene scritto nella richiesta così com\'è',name:'Nome articolo',unit:'Unità',
-  needName:'Scrivi il nome dell\'articolo',howMany:'Quanti punti?',parts:'Pezzi (puoi modificare ogni quantità)',kitNote:'Nota per il kit (es. stanza)',kitNoteP:'es. Cucina',addKit:'Aggiungi il kit ✓',kitAdded:'Kit aggiunto:',
-  settings:'⚙️ Impostazioni',tecnico:'Il tuo nome (tecnico)',ditta:'Nome ditta (compare nel PDF)',waNum:'Numero WhatsApp del responsabile (facoltativo)',
-  waHint:'Se inserisci il numero, il tasto WhatsApp apre subito la sua chat.',uiLang:'Lingua dell\'app',outLang:'Lingua del messaggio e del PDF',
-  langIt:'Italiano',langAr:'Arabo',langBoth:'Entrambe',save:'Salva',saved:'Salvato',cancel:'Annulla',
-  clearQ:'Svuotare tutta la richiesta?',newQ:'Nuova richiesta? Quella attuale verrà cancellata.',newBtn:'Nuova',alreadyEmpty:'La richiesta è già vuota',
-  copied:'Richiesta copiata ✓',pdfWait:'Preparazione PDF…',pdfOk:'PDF pronto ✓',pdfErr:'Impossibile creare il PDF',previewT:'Anteprima messaggio',contact:'📞 Contatti',contactHint:'Hai trovato un errore o hai un\'idea? Scrivici e lo sistemiamo.',report:'Segnala un errore su WhatsApp',call:'Chiama',reportMsg:'Ciao, ho una segnalazione sull\'app «Richiesta materiale»:'}
-};
-// testi del messaggio / PDF
-var OUT={
- it:{title:'RICHIESTA MATERIALE',cliente:'Cliente',indirizzo:'Indirizzo',luogo:'Luogo',data:'Data',tecnico:'Tecnico',note:'Note',tot:'Totale voci',other:'Altro',mat:'Materiale',size:'Misura',qty:'Q.tà'},
- ar:{title:'طلب مواد',cliente:'الزبون',indirizzo:'العنوان',luogo:'المكان',data:'التاريخ',tecnico:'الفني',note:'ملاحظات',tot:'عدد المواد',other:'مواد أخرى',mat:'المادة',size:'المقاس',qty:'الكمية'}
-};
-
-/* ---------- dati ---------- */
-var ITEMS=[], BYNAME={};
-CATEGORIES.forEach(function(c){
-  c.list=[];
-  c.items.trim().split('\n').forEach(function(l){
-    var p=l.split('|'); if(p.length<3) return;
-    var it={cat:c.id,it:p[0].trim(),ar:p[1].trim(),unit:p[2].trim(),sizes:(p[3]||'').split(';').map(function(s){return s.trim()}).filter(Boolean)};
-    c.list.push(it); ITEMS.push(it); BYNAME[it.it]=it;
-  });
-});
-var CATBY={}; CATEGORIES.forEach(function(c){CATBY[c.id]=c});
-var PLACES=[{id:'appartamento',it:'Appartamento',ar:'شقة'},{id:'villa',it:'Villa / casa',ar:'فيلا / بيت'},{id:'ufficio',it:'Ufficio',ar:'مكتب'},{id:'negozio',it:'Negozio',ar:'محل'},{id:'azienda',it:'Azienda',ar:'شركة / مصنع'},{id:'condominio',it:'Condominio',ar:'عمارة'},{id:'cantiere',it:'Cantiere',ar:'ورشة بناء'}];
-
-function load(k,d){try{var v=JSON.parse(localStorage.getItem(k));return v||d}catch(e){return d}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(SKEY,JSON.stringify(settings))}catch(e){}}
-var settings=load(SKEY,{});
-['tecnico','ditta','waNum'].forEach(function(k){if(settings[k]==null)settings[k]=''});
-if(!settings.ui) settings.ui='ar';
-if(!settings.out) settings.out='it';
-function blank(){return {site:{cliente:'',indirizzo:'',luogo:'',note:'',open:true},lines:[],created:Date.now()}}
-var state=load(KEY,null)||blank();
-var view={tab:'mat',cat:null,q:''};
-
-/* ---------- util ---------- */
-function T(k){return TXT[settings.ui][k]}
-function N(o){return (settings.ui==='it'?o.it:(o.ar||o.it))||''}       // nome nella lingua dell'interfaccia
-function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-function norm(s){
-  return String(s||'').toLowerCase()
-   .normalize('NFD').replace(/[̀-ͯ]/g,'')
-   .replace(/[ً-ٰٟـ]/g,'')
-   .replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/ؤ/g,'و').replace(/ئ/g,'ي')
-   .replace(/²/g,'2').replace(/ø/g,'o').replace(/\s+/g,' ').trim();
-}
-ITEMS.forEach(function(i){i._s=norm(i.it+' '+i.ar+' '+i.sizes.join(' '))});
-function unit(u){return UNITS[u]||{it:u,ar:u,step:1}}
-function fmt(n){n=Math.round(n*100)/100;return String(n)}
-function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(function(){t.classList.remove('show')},2000)}
-function haveQty(it){var s=0;state.lines.forEach(function(l){if(l.it===it.it)s+=l.qty});return s}
-
-/* ---------- linee ---------- */
-function addLine(o){
-  var qty=+o.qty||0; if(qty<=0) return;
-  var ex=state.lines.find(function(l){return l.it===o.it&&l.size===(o.size||'')&&(l.note||'')===(o.note||'')});
-  if(ex){ex.qty=Math.round((ex.qty+qty)*100)/100}
-  else state.lines.push({it:o.it,ar:o.ar,cat:o.cat||'x',unit:o.unit||'pz',size:o.size||'',qty:qty,note:o.note||''});
-  save(); refreshCounts();
-}
-function refreshCounts(){var n=state.lines.length;$('#badge').textContent=n;$('#cnt').textContent=n;['#btnWa','#btnCopy','#btnPdf'].forEach(function(b){$(b).disabled=!n})}
-
-/* ---------- lingua ---------- */
-function applyLang(){
-  var ar=settings.ui==='ar';
-  document.documentElement.lang=settings.ui; document.documentElement.dir=ar?'rtl':'ltr';
-  document.title=T('title'); $('#ttl').textContent=T('title');
-  $('#btnLang').textContent=ar?'IT':'عربي';
-  $('#q').placeholder=T('search');
-  $('#tMat').textContent=T('mat'); $('#tKit').textContent=T('kit'); $('#tCart').textContent=T('cart');
-  $('#cntL').textContent=T('items'); $('#btnCopy').textContent=T('copy');
-  $('#btnWa').textContent=ar?'واتساب':'WhatsApp';
-}
-
-/* ---------- render ---------- */
-function render(){
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.tab===view.tab&&!view.q)});
-  var h='';
-  if(view.q) h=renderSearch();
-  else if(view.tab==='mat') h=renderSite()+(view.cat?renderCat(view.cat):renderCats());
-  else if(view.tab==='kit') h=renderKits();
-  else h=renderCart();
-  main.innerHTML=h; refreshCounts();
-}
-function placeOf(id){return PLACES.find(function(p){return p.id===id})}
-function renderSite(){
-  var s=state.site, pl=placeOf(s.luogo);
-  var sum=[s.cliente,s.indirizzo,pl?N(pl):''].filter(Boolean).join(' · ')||T('siteHint');
-  if(!s.open) return '<div class="card"><button class="site-head" style="width:100%;text-align:start" data-act="siteopen"><b>'+T('site')+'</b><span class="mini">'+T('edit')+'</span></button><div class="site-sum">'+esc(sum)+'</div></div>';
-  var chips=PLACES.map(function(p){return '<button class="chip'+(s.luogo===p.id?' on':'')+'" data-act="place" data-v="'+p.id+'">'+esc(N(p))+'</button>'}).join('');
-  return '<div class="card"><button class="site-head" style="width:100%;text-align:start" data-act="siteclose"><b>'+T('site')+'</b><span class="mini">'+T('hide')+'</span></button>'+
-   '<div class="field"><label>'+T('cliente')+'</label><input data-f="cliente" value="'+esc(s.cliente)+'" placeholder="'+T('clienteP')+'"></div>'+
-   '<div class="field"><label>'+T('indirizzo')+'</label><input data-f="indirizzo" value="'+esc(s.indirizzo)+'" placeholder="Via …, Roma"></div>'+
-   '<div class="field"><label>'+T('luogo')+'</label><div class="chips">'+chips+'</div></div>'+
-   '<div class="field"><label>'+T('note')+'</label><textarea data-f="note" rows="2" placeholder="'+T('noteP')+'">'+esc(s.note)+'</textarea></div></div>';
-}
-function renderCats(){
-  return '<div class="grid">'+CATEGORIES.map(function(c){
-    return '<button class="cat" data-act="cat" data-v="'+c.id+'"><span class="ic">'+c.ic+'</span><b>'+esc(N(c))+'</b><span>'+c.list.length+' '+T('items')+'</span></button>'}).join('')+
-   '<button class="cat" data-act="custom"><span class="ic">➕</span><b>'+T('custom')+'</b></button></div>';
-}
-function itemRow(it){
-  var h=haveQty(it), i=ITEMS.indexOf(it);
-  var sub=it.sizes.length?it.sizes.slice(0,4).join(' · ')+(it.sizes.length>4?' …':''):'';
-  return '<button class="row" data-act="item" data-v="'+i+'"><div class="t"><b>'+esc(N(it))+'</b>'+(sub?'<span class="ltr" style="text-align:start">'+esc(sub)+'</span>':'')+'</div>'+
-    (h?'<span class="have">'+fmt(h)+' '+N(unit(it.unit))+'</span>':'')+'<span class="plus">+</span></button>';
-}
-function renderCat(id){
-  var c=CATBY[id];
-  return '<button class="back" data-act="back">'+(settings.ui==='ar'?'→ ':'← ')+T('allCats')+'</button><div class="sec">'+c.ic+' '+esc(N(c))+'</div><div class="list">'+c.list.map(itemRow).join('')+'</div>';
-}
-function renderSearch(){
-  var words=norm(view.q).split(' ').filter(Boolean);
-  var res=ITEMS.filter(function(i){return words.every(function(w){return i._s.indexOf(w)>=0})});
-  var kits=KITS.filter(function(k){var s=norm(k.it+' '+k.ar);return words.every(function(w){return s.indexOf(w)>=0})});
-  var h='';
-  if(kits.length) h+='<div class="sec">'+T('kits')+'</div><div class="list">'+kits.map(kitRow).join('')+'</div>';
-  if(res.length) h+='<div class="sec">'+T('materials')+' ('+res.length+')</div><div class="list">'+res.slice(0,80).map(itemRow).join('')+'</div>';
-  if(!res.length&&!kits.length) h+='<div class="empty"><div class="big">🔎</div>'+T('notFound')+' «'+esc(view.q)+'»</div>';
-  h+='<button class="btn main" data-act="custom" data-v="'+esc(view.q)+'">➕ '+esc(T('addNew').replace('%',view.q))+'</button>';
-  return h;
-}
-function kitRow(k){var i=KITS.indexOf(k);return '<button class="row" data-act="kit" data-v="'+i+'"><span style="font-size:24px">'+k.ic+'</span><div class="t"><b>'+esc(N(k))+'</b><span>'+k.parts.length+' '+T('items')+'</span></div><span class="plus">+</span></button>'}
-function renderKits(){
-  return '<div class="note" style="margin:0 0 12px">'+T('kitInfo')+'</div><div class="list">'+KITS.map(kitRow).join('')+'</div>';
-}
-function renderCart(){
-  if(!state.lines.length) return '<div class="empty"><div class="big">🧺</div>'+T('emptyCart')+'</div>';
-  var groups={}, order=[];
-  state.lines.forEach(function(l,i){var g=l.cat||'x';if(!groups[g]){groups[g]=[];order.push(g)}groups[g].push(i)});
-  order.sort(function(a,b){return catIndex(a)-catIndex(b)});
-  var h='';
-  order.forEach(function(g){
-    var c=CATBY[g];
-    h+='<div class="sec">'+(c?c.ic+' '+esc(N(c)):'➕ '+T('other'))+'</div><div class="list">';
-    groups[g].forEach(function(i){
-      var l=state.lines[i];
-      h+='<div class="line"><div class="t"><b>'+esc(N(l))+'</b>'+(l.size?'<span class="ltr" style="text-align:start">'+esc(l.size)+'</span>':'')+(l.note?'<i>📝 '+esc(l.note)+'</i>':'')+'</div>'+
-        '<div class="stepper"><button data-act="dec" data-v="'+i+'">−</button><input inputmode="decimal" data-q="'+i+'" value="'+fmt(l.qty)+'"><span class="u">'+N(unit(l.unit))+'</span><button data-act="inc" data-v="'+i+'">+</button></div>'+
-        '<button class="del" data-act="del" data-v="'+i+'">🗑</button></div>';
-    });
-    h+='</div>';
-  });
-  h+='<div class="row2" style="margin-top:14px"><button class="btn ghost" data-act="preview">'+T('preview')+'</button><button class="btn ghost" data-act="clear" style="color:var(--danger)">'+T('clear')+'</button></div>';
-  return h;
-}
-function catIndex(id){var i=CATEGORIES.findIndex(function(c){return c.id===id});return i<0?999:i}
-
-/* ---------- sheet ---------- */
-var sheet=$('#sheet'), bg=$('#sheetBg'), sheetOpen=false;
-function openSheet(html){sheet.innerHTML='<div class="grab"></div>'+html;bg.style.display='block';requestAnimationFrame(function(){sheet.classList.add('open')});sheetOpen=true}
-function closeSheet(){sheet.classList.remove('open');bg.style.display='none';sheetOpen=false;document.activeElement&&document.activeElement.blur()}
-bg.onclick=closeSheet;
-
-function qtyBlock(u,val){
-  var quick=u==='m'?[5,10,25,50,100]:[1,2,5,10,20];
-  return '<h3>'+T('qty')+'</h3><div class="qty-big"><button data-s="-">−</button><input id="sq" inputmode="decimal" value="'+fmt(val)+'"><button data-s="+">+</button><span class="u">'+N(unit(u))+'</span></div>'+
-   '<div class="quick">'+quick.map(function(n){return '<button class="chip" data-quick="'+n+'">'+n+'</button>'}).join('')+'</div>';
-}
-function wireQty(step){
-  var q=$('#sq');
-  sheet.querySelectorAll('[data-s]').forEach(function(b){b.onclick=function(){var v=parseFloat(String(q.value).replace(',','.'))||0;v=b.dataset.s==='+'?v+step:Math.max(0,v-step);q.value=fmt(v)}});
-  sheet.querySelectorAll('[data-quick]').forEach(function(b){b.onclick=function(){q.value=b.dataset.quick}});
-}
-function readQty(){return parseFloat(String($('#sq').value).replace(',','.'))||0}
-
-function itemSheet(it){
-  var U=unit(it.unit), sel=it.sizes.length===1?it.sizes[0]:'';
-  var sizes=it.sizes.length?'<h3>'+T('size')+'</h3><div class="chips">'+it.sizes.map(function(s){return '<button class="chip ltr'+(s===sel?' on':'')+'" data-size="'+esc(s)+'">'+esc(s)+'</button>'}).join('')+'</div>':'';
-  openSheet('<h2>'+esc(N(it))+'</h2>'+sizes+
-   '<div class="field"><label>'+(it.sizes.length?T('sizeOther'):T('sizeFree'))+'</label><input id="szc" placeholder="3 moduli, bianco…"></div>'+
-   qtyBlock(it.unit,U.step)+
-   '<div class="field"><label>'+T('itemNote')+'</label><input id="sn" placeholder="'+T('itemNoteP')+'"></div>'+
-   '<button class="btn main" id="sadd">'+T('add')+'</button>');
-  wireQty(U.step);
-  sheet.querySelectorAll('[data-size]').forEach(function(b){b.onclick=function(){sel=b.classList.contains('on')?'':b.dataset.size;sheet.querySelectorAll('[data-size]').forEach(function(x){x.classList.toggle('on',x.dataset.size===sel)});$('#szc').value=''}});
-  $('#sadd').onclick=function(){
-    var size=$('#szc').value.trim()||sel, qty=readQty();
-    if(qty<=0){toast(T('needQty'));return}
-    if(it.sizes.length>1&&!size){toast(T('needSize'));return}
-    addLine({it:it.it,ar:it.ar,cat:it.cat,unit:it.unit,size:size,qty:qty,note:$('#sn').value.trim()});
-    closeSheet(); toast(T('added')+' '+qty+' '+N(U)+' '+N(it)); render();
-  };
-}
-function customSheet(name){
-  var u='pz';
-  openSheet('<h2>➕ '+T('custom')+'</h2><div class="it">'+T('customSub')+'</div>'+
-   '<div class="field"><label>'+T('name')+'</label><input id="cn" value="'+esc(name||'')+'"></div>'+
-   '<div class="field"><label>'+T('unit')+'</label><div class="chips">'+Object.keys(UNITS).map(function(k){return '<button class="chip'+(k===u?' on':'')+'" data-u="'+k+'">'+N(UNITS[k])+'</button>'}).join('')+'</div></div>'+
-   qtyBlock(u,1)+'<div class="field"><label>'+T('itemNote')+'</label><input id="sn"></div><button class="btn main" id="sadd">'+T('add')+'</button>');
-  wireQty(1);
-  sheet.querySelectorAll('[data-u]').forEach(function(b){b.onclick=function(){u=b.dataset.u;sheet.querySelectorAll('[data-u]').forEach(function(x){x.classList.toggle('on',x.dataset.u===u)})}});
-  $('#sadd').onclick=function(){
-    var n=$('#cn').value.trim(), qty=readQty();
-    if(!n){toast(T('needName'));return} if(qty<=0){toast(T('needQty'));return}
-    // articolo libero: stesso testo in entrambe le lingue
-    addLine({it:n,ar:n,cat:'x',unit:u,qty:qty,note:$('#sn').value.trim()});
-    closeSheet();toast(T('added')+' '+n);render();
-  };
-}
-function kitSheet(k){
-  var n=1;
-  function partsHtml(){
-    return k.parts.map(function(p,j){var it=BYNAME[p[0]]||{it:p[0],ar:p[0],unit:'pz'};
-      return '<div class="kitpart"><div class="t">'+esc(N(it))+(p[1]?'<span class="ltr" style="text-align:start">'+esc(p[1])+'</span>':'')+'</div>'+
-       '<div class="stepper"><input inputmode="decimal" data-kq="'+j+'" value="'+fmt(p[2]*n)+'"><span class="u">'+N(unit(it.unit))+'</span></div></div>'}).join('');
-  }
-  var note=settings.ui==='it'?k.noteIt:k.note;
-  openSheet('<h2>'+k.ic+' '+esc(N(k))+'</h2>'+
-   '<h3>'+T('howMany')+'</h3><div class="qty-big"><button data-n="-">−</button><input id="kn" inputmode="numeric" value="1"><button data-n="+">+</button></div>'+
-   (note?'<div class="note">'+esc(note)+'</div>':'')+
-   '<h3>'+T('parts')+'</h3><div id="kp">'+partsHtml()+'</div>'+
-   '<div class="field"><label>'+T('kitNote')+'</label><input id="sn" placeholder="'+T('kitNoteP')+'"></div>'+
-   '<button class="btn main" id="kadd">'+T('addKit')+'</button>');
-  function setN(v){n=Math.max(1,Math.round(v)||1);$('#kn').value=n;$('#kp').innerHTML=partsHtml()}
-  sheet.querySelectorAll('[data-n]').forEach(function(b){b.onclick=function(){setN(n+(b.dataset.n==='+'?1:-1))}});
-  $('#kn').oninput=function(){var v=parseInt(this.value,10);if(v>0){n=v;$('#kp').innerHTML=partsHtml()}};
-  $('#kadd').onclick=function(){
-    var nt=$('#sn').value.trim();
-    k.parts.forEach(function(p,j){var it=BYNAME[p[0]]||{it:p[0],ar:p[0],unit:'pz',cat:'x'};
-      var q=parseFloat(String(sheet.querySelector('[data-kq="'+j+'"]').value).replace(',','.'))||0;
-      addLine({it:it.it,ar:it.ar,cat:it.cat,unit:it.unit,size:p[1],qty:q,note:nt})});
-    closeSheet();toast(T('kitAdded')+' '+N(k)+' × '+n);render();
-  };
-}
-function segChips(name,cur,opts){return '<div class="seg">'+opts.map(function(o){return '<button class="chip'+(o[0]===cur?' on':'')+'" data-'+name+'="'+o[0]+'">'+o[1]+'</button>'}).join('')+'</div>'}
-function settingsSheet(){
-  var ui=settings.ui, out=settings.out;
-  openSheet('<h2>'+T('settings')+'</h2>'+
-   '<h3>'+T('uiLang')+'</h3>'+segChips('ui',ui,[['ar','العربية'],['it','Italiano']])+
-   '<h3>'+T('outLang')+'</h3>'+segChips('out',out,[['it',T('langIt')],['ar',T('langAr')],['both',T('langBoth')]])+
-   '<div class="field"><label>'+T('tecnico')+'</label><input id="st" value="'+esc(settings.tecnico)+'"></div>'+
-   '<div class="field"><label>'+T('ditta')+'</label><input id="sd" value="'+esc(settings.ditta)+'" placeholder="Elettrica Roma System"></div>'+
-   '<div class="field"><label>'+T('waNum')+'</label><input id="sw" class="ltr" inputmode="tel" value="'+esc(settings.waNum)+'" placeholder="+39 333 1234567"></div>'+
-   '<div class="mini">'+T('waHint')+'</div>'+
-   '<button class="btn main" id="ssave">'+T('save')+'</button>'+
-   '<h3 style="margin-top:24px">'+T('contact')+'</h3><div class="mini">'+T('contactHint')+'</div>'+
-   '<button class="contact" data-link="wa"><span class="ci" style="background:#1DA851">✉</span><div><b>'+T('report')+'</b><span class="ltr" style="display:block;text-align:start">'+CONTACT.phone+'</span></div></button>'+
-   '<button class="contact" data-link="tel"><span class="ci" style="background:#1F4FD8">☎</span><div><b>'+T('call')+'</b><span class="ltr" style="display:block;text-align:start">'+CONTACT.phone+'</span></div></button>'+
-   '<button class="contact" data-link="ig"><span class="ci" style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)">IG</span><div><b>Instagram</b><span class="ltr" style="display:block;text-align:start">@'+CONTACT.ig+'</span></div></button>'+
-   '<button class="contact" data-link="tt"><span class="ci" style="background:#111">♪</span><div><b>TikTok</b><span class="ltr" style="display:block;text-align:start">@'+CONTACT.tt+'</span></div></button>'+
-   '<div class="mini" style="text-align:center;margin-top:14px" dir="ltr">v'+appVersion()+'</div>');
-  sheet.querySelectorAll('[data-link]').forEach(function(b){b.onclick=function(){openContact(b.dataset.link)}});
-  sheet.querySelectorAll('[data-ui]').forEach(function(b){b.onclick=function(){ui=b.dataset.ui;sheet.querySelectorAll('[data-ui]').forEach(function(x){x.classList.toggle('on',x.dataset.ui===ui)})}});
-  sheet.querySelectorAll('[data-out]').forEach(function(b){b.onclick=function(){out=b.dataset.out;sheet.querySelectorAll('[data-out]').forEach(function(x){x.classList.toggle('on',x.dataset.out===out)})}});
-  $('#ssave').onclick=function(){settings.tecnico=$('#st').value.trim();settings.ditta=$('#sd').value.trim();settings.waNum=$('#sw').value.trim();settings.ui=ui;settings.out=out;save();closeSheet();applyLang();render();toast(T('saved'))};
-}
-var CONTACT={phone:'+39 329 558 6046',num:'393295586046',ig:'rage_simo',tt:'banbochagaming'};
-function appVersion(){try{return (A&&A.version)?A.version():'web'}catch(e){return 'web'}}
-function openUrl(u){if(A&&A.open)A.open(u);else location.href=u}
-function openContact(k){
-  if(k==='wa'){var t=T('reportMsg')+'\n\n(v'+appVersion()+')';if(A&&A.whatsapp)A.whatsapp(t,CONTACT.num);else openUrl('https://wa.me/'+CONTACT.num+'?text='+encodeURIComponent(t))}
-  else if(k==='tel') openUrl('tel:+'+CONTACT.num);
-  else if(k==='ig') openUrl('https://www.instagram.com/'+CONTACT.ig+'/');
-  else if(k==='tt') openUrl('https://www.tiktok.com/@'+CONTACT.tt);
-}
-function confirmSheet(msg,okText,fn){
-  openSheet('<h2>'+msg+'</h2><div class="row2" style="margin-top:18px"><button class="btn ghost" id="cno">'+T('cancel')+'</button><button class="btn" style="background:var(--danger);color:#fff" id="cok">'+okText+'</button></div>');
-  $('#cno').onclick=closeSheet; $('#cok').onclick=function(){closeSheet();fn()};
-}
-
-/* ---------- output (messaggio + PDF) ---------- */
-// lingua: 'it' | 'ar' | 'both'
-function O(lang,k){return lang==='both'?OUT.it[k]+' / '+OUT.ar[k]:OUT[lang][k]}
-function nameOut(lang,o){ // o = {it, ar}
-  if(lang==='it') return o.it; if(lang==='ar') return o.ar||o.it;
-  return o.it+(o.ar&&o.ar!==o.it?' / '+o.ar:'');
-}
-function unitOut(lang,u){var U=unit(u);return lang==='ar'?U.ar:U.it}
-function placeOut(lang){var p=placeOf(state.site.luogo);return p?nameOut(lang,p):''}
-function dateTxt(){var d=new Date();function z(n){return (n<10?'0':'')+n}return z(d.getDate())+'/'+z(d.getMonth()+1)+'/'+d.getFullYear()}
-function sortedLines(){return state.lines.slice().sort(function(a,b){return catIndex(a.cat)-catIndex(b.cat)})}
-function buildText(wa,lang){
-  lang=lang||settings.out;
-  var B=wa?'*':'', s=state.site, out=[];
-  out.push(B+'📋 '+O(lang,'title')+B);
-  if(s.cliente) out.push('👤 '+O(lang,'cliente')+': '+s.cliente);
-  if(s.indirizzo) out.push('📍 '+O(lang,'indirizzo')+': '+s.indirizzo);
-  if(s.luogo) out.push('🏠 '+O(lang,'luogo')+': '+placeOut(lang));
-  out.push('📅 '+O(lang,'data')+': '+dateTxt());
-  if(settings.tecnico) out.push('👷 '+O(lang,'tecnico')+': '+settings.tecnico);
-  var last=null, n=0;
-  sortedLines().forEach(function(l){
-    if(l.cat!==last){last=l.cat;var c=CATBY[l.cat];out.push('');out.push(B+'— '+(c?nameOut(lang,c):O(lang,'other'))+' —'+B)}
-    n++;
-    if(lang==='both'){
-      out.push(n+'. '+fmt(l.qty)+' '+unitOut('it',l.unit)+' — '+l.it+(l.size?' '+l.size:'')+(l.ar&&l.ar!==l.it?'\n    ('+l.ar+')':''));
-    } else {
-      out.push(n+'. '+fmt(l.qty)+' '+unitOut(lang,l.unit)+' — '+nameOut(lang,l)+(l.size?' '+l.size:''));
-    }
-    if(l.note) out.push('    📝 '+l.note);
-  });
-  if(s.note){out.push('');out.push('📝 '+O(lang,'note')+': '+s.note)}
-  out.push('');
-  out.push(O(lang,'tot')+': '+n);
-  return out.join('\n');
-}
-function buildReport(lang){
-  lang=lang||settings.out;
-  var rtl=lang==='ar', s=state.site, rows='', last=null, n=0;
-  function lab(k){return lang==='both'?OUT.it[k]+' / <span dir="rtl">'+OUT.ar[k]+'</span>':OUT[lang][k]}
-  sortedLines().forEach(function(l){
-    if(l.cat!==last){last=l.cat;var c=CATBY[l.cat];rows+='<div class="blk cat">'+(c?(lang==='both'?esc(c.it)+' <span dir="rtl">'+esc(c.ar)+'</span>':esc(nameOut(lang,c))):lab('other'))+'</div>'}
-    n++;
-    var nm=lang==='both'?'<b>'+esc(l.it)+'</b>'+(l.ar&&l.ar!==l.it?'<div class="ar" dir="rtl">'+esc(l.ar)+'</div>':''):'<b>'+esc(nameOut(lang,l))+'</b>';
-    rows+='<div class="blk r'+(n%2?'':' alt')+'"><div class="n">'+n+'</div><div class="d">'+nm+(l.note?'<div class="nt">📝 <span dir="auto">'+esc(l.note)+'</span></div>':'')+'</div><div class="s" dir="ltr">'+esc(l.size||'—')+'</div><div class="q"><span dir="ltr">'+fmt(l.qty)+'</span> <small>'+unitOut(lang==='both'?'it':lang,l.unit)+'</small></div></div>';
-  });
-  var info=[['cliente',s.cliente],['indirizzo',s.indirizzo],['luogo',placeOut(lang)],['data',dateTxt()],['tecnico',settings.tecnico]]
-    .filter(function(x){return x[1]}).map(function(x){return '<div><span>'+lab(x[0])+'</span><b dir="auto">'+esc(x[1])+'</b></div>'}).join('');
-  var title=lang==='both'?OUT.it.title.charAt(0)+OUT.it.title.slice(1).toLowerCase()+'<small dir="rtl">'+OUT.ar.title+'</small>':(lang==='it'?'Richiesta materiale':OUT.ar.title);
-  return '<!doctype html><html dir="'+(rtl?'rtl':'ltr')+'"><head><meta charset="utf-8"><meta name="viewport" content="width=794"><style>'+
-   '*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans","Noto Sans Arabic",sans-serif;color:#16192B;font-size:14px;background:#fff}'+
-   '.wrap{padding:0 40px}.pad{height:36px}'+
-   '.hd{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #1F4FD8;padding-bottom:12px}'+
-   '.hd h1{margin:0;font-size:24px;color:#1F4FD8}.hd h1 small{display:block;font-size:16px;color:#646A80;font-weight:600;text-align:start}.hd .co{font-weight:700;font-size:15px}'+
-   '.info{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin:14px 0 6px}.info div{display:flex;flex-direction:column;border-bottom:1px solid #E3E5EC;padding-bottom:4px}.info span{font-size:11px;color:#646A80}.info b{font-size:14px}'+
-   '.th,.r{display:grid;grid-template-columns:34px 1fr 150px 90px;gap:10px;align-items:center;padding:8px 8px}'+
-   '.th{background:#1F4FD8;color:#fff;font-size:12px;font-weight:700;border-radius:6px;margin-top:14px}.th .q,.r .q{text-align:end}'+
-   '.r{border-bottom:1px solid #EEF0F4}.r.alt{background:#F7F8FB}.r .n{color:#646A80}.r .ar{color:#4A5068;font-size:13px;text-align:start}.r .nt{color:#B35C00;font-size:12px}.r .q{font-weight:800;font-size:15px}.r .q small{font-weight:400;color:#646A80}.r .s{font-size:13px;text-align:start}'+
-   '.cat{margin-top:12px;padding:6px 8px;font-weight:800;color:#1F4FD8;font-size:13px;border-bottom:2px solid #E4EBFF}.cat span{margin-inline-start:8px;color:#646A80;font-weight:600}'+
-   '.foot{margin-top:16px;display:flex;justify-content:space-between;font-size:13px;color:#646A80}.notes{margin-top:14px;padding:10px 12px;background:#FFF6E8;border-radius:8px;font-size:13px}'+
-   '.sp{height:0}'+
-   '</style></head><body><div class="wrap"><div class="pad"></div>'+
-   '<div class="blk hd"><h1>'+title+'</h1><div class="co">'+esc(settings.ditta)+'</div></div>'+
-   '<div class="blk info">'+info+'</div>'+
-   '<div class="blk th"><div>#</div><div>'+lab('mat')+'</div><div>'+lab('size')+'</div><div class="q">'+(lang==='ar'?OUT.ar.qty:OUT.it.qty)+'</div></div>'+
-   rows+
-   (s.note?'<div class="blk notes"><b>'+lab('note')+':</b> <span dir="auto">'+esc(s.note)+'</span></div>':'')+
-   '<div class="blk foot"><span>'+lab('tot')+': <b>'+n+'</b></span><span dir="ltr">'+dateTxt()+'</span></div><div class="pad"></div></div>'+
-   '<script>'+PAGINATE+'<\/script></body></html>';
-}
-// impaginazione dentro il report: evita righe tagliate tra due pagine
-var PAGINATE="(function(){function go(){var W=document.documentElement.clientWidth||794,P=W*297/210,M=36,b=document.querySelectorAll('.blk');for(var i=0;i<b.length;i++){var e=b[i],r=e.getBoundingClientRect(),t=r.top+window.scrollY,h=r.height,pg=Math.floor(t/P),end=(pg+1)*P-M;if(t+h>end&&h<P-2*M){var sp=document.createElement('div');sp.className='sp';sp.style.height=((pg+1)*P+M-t)+'px';e.parentNode.insertBefore(sp,e)}}var H=document.body.scrollHeight;if(window.Report)Report.ready(H,W);}if(document.readyState==='complete')setTimeout(go,60);else window.addEventListener('load',function(){setTimeout(go,60)})})();";
-
-function fileName(){
-  var c=(state.site.cliente||'').replace(/[^\w؀-ۿ -]+/g,'').trim().replace(/\s+/g,'_');
-  var d=new Date(), base=settings.out==='ar'?'طلب_مواد':'Richiesta_materiale';
-  return base+(c?'_'+c:'')+'_'+d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)+'.pdf';
-}
-function doWa(){
-  var t=buildText(true), num=settings.waNum.replace(/[^\d]/g,'');
-  if(A&&A.whatsapp) A.whatsapp(t,num);
-  else location.href='https://wa.me/'+num+'?text='+encodeURIComponent(t);
-}
-function doCopy(){
-  var t=buildText(false);
-  if(A&&A.copy){A.copy(t);toast(T('copied'))}
-  else if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){toast(T('copied'))})}
-}
-function doPdf(){
-  if(A&&A.pdf){toast(T('pdfWait'));A.pdf(buildReport(),fileName())}
-  else{var w=window.open('','_blank');w.document.write(buildReport().replace(/<script>[\s\S]*?<\/script>/,''));w.document.close();setTimeout(function(){w.print()},300)}
-}
-window.onPdfDone=function(ok){toast(ok?T('pdfOk'):T('pdfErr'))};
-
-/* ---------- eventi ---------- */
-document.addEventListener('click',function(e){
-  var b=e.target.closest('[data-act],[data-tab]'); if(!b) return;
-  if(b.dataset.tab){view.tab=b.dataset.tab;view.cat=null;clearSearch();render();window.scrollTo(0,0);return}
-  var a=b.dataset.act, v=b.dataset.v;
-  if(a==='cat'){view.cat=v;render();window.scrollTo(0,0)}
-  else if(a==='back'){view.cat=null;render()}
-  else if(a==='item') itemSheet(ITEMS[+v]);
-  else if(a==='kit') kitSheet(KITS[+v]);
-  else if(a==='custom') customSheet(v||'');
-  else if(a==='siteopen'){state.site.open=true;save();render()}
-  else if(a==='siteclose'){state.site.open=false;save();render()}
-  else if(a==='place'){state.site.luogo=state.site.luogo===v?'':v;save();render()}
-  else if(a==='inc'||a==='dec'){var l=state.lines[+v],st=unit(l.unit).step;l.qty=Math.max(0,Math.round((l.qty+(a==='inc'?st:-st))*100)/100);if(l.qty===0)state.lines.splice(+v,1);save();render()}
-  else if(a==='del'){state.lines.splice(+v,1);save();render()}
-  else if(a==='clear') confirmSheet(T('clearQ'),T('clear'),function(){state.lines=[];save();render()});
-  else if(a==='preview') openSheet('<h2>'+T('previewT')+'</h2><pre dir="'+(settings.out==='ar'?'rtl':'ltr')+'" style="white-space:pre-wrap;font-family:inherit;font-size:14px;background:#F3F4F8;padding:12px;border-radius:12px;text-align:start">'+esc(buildText(false))+'</pre>');
-});
-main.addEventListener('input',function(e){var t=e.target;if(t.dataset.f){state.site[t.dataset.f]=t.value;save()}});
-main.addEventListener('change',function(e){
-  var t=e.target;
-  if(t.dataset.q!=null){var i=+t.dataset.q,v=parseFloat(String(t.value).replace(',','.'))||0;if(v<=0)state.lines.splice(i,1);else state.lines[i].qty=v;save();render()}
-});
-var qi=$('#q');
-qi.addEventListener('input',function(){view.q=qi.value.trim();$('#qx').style.display=view.q?'block':'none';render()});
-function clearSearch(){qi.value='';view.q='';$('#qx').style.display='none'}
-$('#qx').onclick=function(){clearSearch();render()};
-$('#btnSettings').onclick=settingsSheet;
-// تبديل سريع للغة الواجهة / cambio rapido lingua
-$('#btnLang').onclick=function(){
-  settings.ui=settings.ui==='ar'?'it':'ar'; // il messaggio resta nella lingua scelta (default: italiano)
-  save();applyLang();render();
-};
-$('#btnNew').onclick=function(){
-  if(!state.lines.length&&!state.site.cliente){toast(T('alreadyEmpty'));return}
-  confirmSheet(T('newQ'),T('newBtn'),function(){state=blank();save();view={tab:'mat',cat:null,q:''};clearSearch();render()});
-};
-$('#btnWa').onclick=doWa; $('#btnCopy').onclick=doCopy; $('#btnPdf').onclick=doPdf;
-
-window.appBack=function(){
-  if(sheetOpen){closeSheet();return true}
-  if(view.q){clearSearch();render();return true}
-  if(view.cat){view.cat=null;render();return true}
-  if(view.tab!=='mat'){view.tab='mat';render();return true}
-  return false;
-};
-window.__test={state:function(){return state},settings:function(){return settings},buildText:buildText,buildReport:buildReport};
-applyLang(); render();
-})();
-</script>
+<script src="app.js"></script>
 </body>
 </html>

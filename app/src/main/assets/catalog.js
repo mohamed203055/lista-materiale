@@ -8,6 +8,19 @@ window.UNITS = {
   coppia:{ it: 'coppia',ar: 'زوج',   step: 1 }
 };
 
+// Colori dei cavi unipolari (campo finale 'C' nella riga dell'articolo)
+window.COLORS = [
+  { id: 'blu', it: 'blu', ar: 'أزرق', hex: '#1E5BD6' },
+  { id: 'marrone', it: 'marrone', ar: 'بني', hex: '#7A4A21' },
+  { id: 'nero', it: 'nero', ar: 'أسود', hex: '#111111' },
+  { id: 'grigio', it: 'grigio', ar: 'رمادي', hex: '#8A8F99' },
+  { id: 'giallo-verde', it: 'giallo-verde', ar: 'أصفر-أخضر', hex: 'linear-gradient(135deg,#F2D200 50%,#1F9D3A 50%)' },
+  { id: 'rosso', it: 'rosso', ar: 'أحمر', hex: '#D62828' },
+  { id: 'bianco', it: 'bianco', ar: 'أبيض', hex: '#FFFFFF' },
+  { id: 'arancione', it: 'arancione', ar: 'برتقالي', hex: '#F28C28' },
+  { id: 'viola', it: 'viola', ar: 'بنفسجي', hex: '#7B3FBF' }
+];
+
 window.CATEGORIES = [
   { id: 'tubi', ic: '🧵', it: 'Tubi, canaline e scatole', ar: 'أنابيب وقنوات وعلب', items: `
 Tubo corrugato|أنبوب مموّج مرن|m|Ø16;Ø20;Ø25;Ø32;Ø40;Ø50
@@ -26,24 +39,24 @@ Tappo terminale per canalina|غطاء نهاية القناة|pz|
 Battiscopa passacavi|قناة أرضية (باتيسكوبا)|m|
 Passerella portacavi metallica|حامل كابلات معدني|m|100x50;200x50;300x75
 Passerella a filo|حامل كابلات شبكي|m|100x50;200x60;300x60
-Scatola da incasso 503|علبة حائط 503 (3 وحدات)|pz|
-Scatola da incasso 504|علبة حائط 504 (4 وحدات)|pz|
-Scatola da incasso 506|علبة حائط 506 (7 وحدات)|pz|
-Scatola tonda da incasso|علبة دائرية للحائط|pz|Ø60;Ø65
-Scatola per cartongesso|علبة للجبس بورد|pz|503;504;506;tonda
-Scatola di derivazione da incasso|علبة توزيع داخل الحائط|pz|92x92;118x96;152x98;160x130;196x152;294x152;392x152;480x160
+Scatola da incasso 503 (muratura)|علبة حائط 503 للبناء (3 وحدات)|pz|
+Scatola da incasso 504 (muratura)|علبة حائط 504 للبناء (4 وحدات)|pz|
+Scatola da incasso 506 (muratura)|علبة حائط 506 للبناء (7 وحدات)|pz|
+Scatola tonda da incasso (muratura)|علبة دائرية للبناء|pz|Ø60;Ø65
+Scatola per cartongesso|علبة للجبس بورد (cartongesso)|pz|503;504;506;tonda
+Scatola di derivazione da incasso|علبة توزيع داخل الحائط للبناء|pz|92x92;118x96;152x98;160x130;196x152;294x152;392x152;480x160
 Coperchio per scatola di derivazione|غطاء علبة التوزيع|pz|92x92;118x96;152x98;196x152;294x152;392x152
 Scatola di derivazione stagna|علبة توزيع خارجية محكمة|pz|80x80;100x100;150x110;190x140;240x190
-Scatola da esterno porta frutti|علبة خارجية للمفاتيح|pz|1 posto;2 posti;3 posti
+Scatola da esterno porta frutti|علبة خارجية للمفاتيح (سطحية)|pz|1 posto;2 posti;3 posti
 Pressacavo|سدادة مدخل كابل|pz|PG7;PG9;PG11;PG13.5;PG16;PG21;M16;M20;M25;M32
 Pozzetto|غرفة تفتيش أرضية|pz|20x20;30x30;40x40;55x55
 Chiusino per pozzetto|غطاء غرفة التفتيش|pz|20x20;30x30;40x40;55x55` },
 
   { id: 'cavi', ic: '〰️', it: 'Cavi', ar: 'كابلات وأسلاك', items: `
-Cavo unipolare FS17|سلك أحادي FS17|m|1 mm²;1.5 mm²;2.5 mm²;4 mm²;6 mm²;10 mm²;16 mm²;25 mm²
-Cavo unipolare FG17|سلك أحادي FG17 (ضد اللهب)|m|1.5 mm²;2.5 mm²;4 mm²;6 mm²;10 mm²;16 mm²
+Cavo unipolare FS17|سلك أحادي FS17|m|1 mm²;1.5 mm²;2.5 mm²;4 mm²;6 mm²;10 mm²;16 mm²;25 mm²|C
+Cavo unipolare FG17|سلك أحادي FG17 (ضد اللهب)|m|1.5 mm²;2.5 mm²;4 mm²;6 mm²;10 mm²;16 mm²|C
 Cavo multipolare FG16OR16|كابل متعدد الأسلاك FG16OR16|m|2x1.5;3G1.5;3G2.5;3G4;3G6;3G10;5G1.5;5G2.5;5G4;5G6;5G10;5G16
-Cavo unipolare FG16R16|كابل أحادي FG16R16|m|6 mm²;10 mm²;16 mm²;25 mm²;35 mm²;50 mm²
+Cavo unipolare FG16R16|كابل أحادي FG16R16|m|6 mm²;10 mm²;16 mm²;25 mm²;35 mm²;50 mm²|C
 Cavo FROR / H05VV-F|كابل مرن متعدد (كوردينا)|m|2x1;3G1;3G1.5;3G2.5;5G1.5
 Cavo resistente al fuoco FTG18OM16|كابل مقاوم للحريق|m|2x1.5;3G1.5;3G2.5
 Cavo giallo-verde|سلك أرضي أصفر-أخضر|m|1.5 mm²;2.5 mm²;6 mm²;10 mm²;16 mm²;25 mm²;35 mm²
@@ -269,25 +282,25 @@ Punta per trapano|ريشة دريل|pz|Ø6;Ø8;Ø10;Ø12;tazza 68 mm
 Sacchi per macerie|أكياس ردم|conf|` }
 ];
 
-// Kit pronti: [nome italiano articolo, misura, quantità per 1 kit]
+// Kit pronti: [nome italiano articolo, misura, quantità per 1 kit, colore facoltativo]
 window.KITS = [
   { id: 'luce1', ic: '💡', it: 'Punto luce interrotto', ar: 'نقطة إنارة بمفتاح', parts: [
-    ['Scatola da incasso 503', '', 1], ['Supporto', '3 moduli', 1], ['Interruttore 1P 16A', '', 1], ['Placca', '3 moduli', 1],
-    ['Tubo corrugato', 'Ø20', 6], ['Cavo unipolare FS17', '1.5 mm²', 18], ['Morsetto a leva Wago', '3 poli', 3] ] },
+    ['Scatola da incasso 503 (muratura)', '', 1], ['Supporto', '3 moduli', 1], ['Interruttore 1P 16A', '', 1], ['Placca', '3 moduli', 1],
+    ['Tubo corrugato', 'Ø20', 6], ['Cavo unipolare FS17', '1.5 mm²', 6, 'marrone'], ['Cavo unipolare FS17', '1.5 mm²', 6, 'blu'], ['Cavo unipolare FS17', '1.5 mm²', 6, 'grigio'], ['Cavo unipolare FS17', '1.5 mm²', 6, 'giallo-verde'], ['Morsetto a leva Wago', '3 poli', 3] ] },
   { id: 'luce2', ic: '🔁', it: 'Punto luce deviato (2 punti)', ar: 'نقطة إنارة من مكانين', parts: [
-    ['Scatola da incasso 503', '', 2], ['Supporto', '3 moduli', 2], ['Deviatore', '', 2], ['Placca', '3 moduli', 2],
-    ['Tubo corrugato', 'Ø20', 10], ['Cavo unipolare FS17', '1.5 mm²', 30], ['Morsetto a leva Wago', '3 poli', 4] ] },
+    ['Scatola da incasso 503 (muratura)', '', 2], ['Supporto', '3 moduli', 2], ['Deviatore', '', 2], ['Placca', '3 moduli', 2],
+    ['Tubo corrugato', 'Ø20', 10], ['Cavo unipolare FS17', '1.5 mm²', 10, 'marrone'], ['Cavo unipolare FS17', '1.5 mm²', 10, 'blu'], ['Cavo unipolare FS17', '1.5 mm²', 10, 'nero'], ['Cavo unipolare FS17', '1.5 mm²', 10, 'grigio'], ['Cavo unipolare FS17', '1.5 mm²', 10, 'giallo-verde'], ['Morsetto a leva Wago', '3 poli', 4] ] },
   { id: 'luce3', ic: '🔀', it: 'Punto luce invertito (3 punti)', ar: 'نقطة إنارة من 3 أماكن', parts: [
-    ['Scatola da incasso 503', '', 3], ['Supporto', '3 moduli', 3], ['Deviatore', '', 2], ['Invertitore', '', 1], ['Placca', '3 moduli', 3],
-    ['Tubo corrugato', 'Ø20', 15], ['Cavo unipolare FS17', '1.5 mm²', 45], ['Morsetto a leva Wago', '3 poli', 6] ] },
+    ['Scatola da incasso 503 (muratura)', '', 3], ['Supporto', '3 moduli', 3], ['Deviatore', '', 2], ['Invertitore', '', 1], ['Placca', '3 moduli', 3],
+    ['Tubo corrugato', 'Ø20', 15], ['Cavo unipolare FS17', '1.5 mm²', 15, 'marrone'], ['Cavo unipolare FS17', '1.5 mm²', 15, 'blu'], ['Cavo unipolare FS17', '1.5 mm²', 15, 'nero'], ['Cavo unipolare FS17', '1.5 mm²', 15, 'grigio'], ['Cavo unipolare FS17', '1.5 mm²', 15, 'giallo-verde'], ['Morsetto a leva Wago', '3 poli', 6] ] },
   { id: 'presa', ic: '🔌', it: 'Punto presa 10/16A', ar: 'نقطة مقبس 10/16A', parts: [
-    ['Scatola da incasso 503', '', 1], ['Supporto', '3 moduli', 1], ['Presa bipasso 10/16A', '', 1], ['Placca', '3 moduli', 1],
-    ['Tubo corrugato', 'Ø20', 6], ['Cavo unipolare FS17', '2.5 mm²', 18], ['Morsetto a leva Wago', '3 poli', 3] ] },
+    ['Scatola da incasso 503 (muratura)', '', 1], ['Supporto', '3 moduli', 1], ['Presa bipasso 10/16A', '', 1], ['Placca', '3 moduli', 1],
+    ['Tubo corrugato', 'Ø20', 6], ['Cavo unipolare FS17', '2.5 mm²', 6, 'marrone'], ['Cavo unipolare FS17', '2.5 mm²', 6, 'blu'], ['Cavo unipolare FS17', '2.5 mm²', 6, 'giallo-verde'], ['Morsetto a leva Wago', '3 poli', 3] ] },
   { id: 'presa2', ic: '🔌', it: 'Punto presa Schuko + bipasso', ar: 'نقطة مقبس شوكو + إيطالي', parts: [
-    ['Scatola da incasso 503', '', 1], ['Supporto', '3 moduli', 1], ['Presa Schuko / universale', '', 1], ['Presa bipasso 10/16A', '', 1], ['Placca', '3 moduli', 1],
-    ['Tubo corrugato', 'Ø20', 6], ['Cavo unipolare FS17', '2.5 mm²', 18] ] },
+    ['Scatola da incasso 503 (muratura)', '', 1], ['Supporto', '3 moduli', 1], ['Presa Schuko / universale', '', 1], ['Presa bipasso 10/16A', '', 1], ['Placca', '3 moduli', 1],
+    ['Tubo corrugato', 'Ø20', 6], ['Cavo unipolare FS17', '2.5 mm²', 6, 'marrone'], ['Cavo unipolare FS17', '2.5 mm²', 6, 'blu'], ['Cavo unipolare FS17', '2.5 mm²', 6, 'giallo-verde'] ] },
   { id: 'tvdati', ic: '📺', it: 'Punto TV + dati', ar: 'نقطة تلفاز + شبكة', parts: [
-    ['Scatola da incasso 503', '', 1], ['Supporto', '3 moduli', 1], ['Presa TV', 'TV', 1], ['Presa RJ45', 'Cat 6', 1], ['Placca', '3 moduli', 1],
+    ['Scatola da incasso 503 (muratura)', '', 1], ['Supporto', '3 moduli', 1], ['Presa TV', 'TV', 1], ['Presa RJ45', 'Cat 6', 1], ['Placca', '3 moduli', 1],
     ['Tubo corrugato', 'Ø25', 8], ['Cavo coassiale TV', '5 mm', 10], ['Cavo LAN', 'Cat 6 UTP', 10] ] },
   { id: 'esterno', ic: '🌧️', it: 'Punto luce esterno stagno', ar: 'نقطة إنارة خارجية محكمة', parts: [
     ['Scatola di derivazione stagna', '100x100', 1], ['Interruttore stagno IP55', '', 1], ['Applique da esterno', '', 1], ['Pressacavo', 'M20', 2],

@@ -12,13 +12,17 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.provider.MediaStore
 import android.webkit.JavascriptInterface
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
@@ -31,6 +35,24 @@ class MainActivity : ComponentActivity() {
     private var pdfView: WebView? = null
     private var pdfName = "Richiesta.pdf"
     private val ui = Handler(Looper.getMainLooper())
+
+    // ---------- scelta file / foto per <input type=file> ----------
+    private var fileCb: ValueCallback<Array<Uri>>? = null
+    private var cameraUri: Uri? = null
+    private var cameraFile: File? = null
+    private val chooser = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
+        var out: Array<Uri>? = null
+        if (res.resultCode == RESULT_OK) {
+            val picked = res.data?.data
+            out = when {
+                picked != null -> arrayOf(picked)
+                cameraFile?.let { it.exists() && it.length() > 0 } == true -> arrayOf(cameraUri!!)
+                else -> null
+            }
+        }
+        fileCb?.onReceiveValue(out)
+        fileCb = null
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +73,31 @@ class MainActivity : ComponentActivity() {
                 if (u.scheme == "file") return false
                 openExternal(u)
                 return true
+            }
+        }
+        web.webChromeClient = object : WebChromeClient() {
+            override fun onShowFileChooser(view: WebView, cb: ValueCallback<Array<Uri>>, params: FileChooserParams): Boolean {
+                fileCb?.onReceiveValue(null)
+                fileCb = cb
+                val image = params.acceptTypes.any { it.startsWith("image") }
+                val pick = Intent(Intent.ACTION_GET_CONTENT)
+                    .addCategory(Intent.CATEGORY_OPENABLE)
+                    .setType(if (image) "image/*" else "*/*")
+                val ch = Intent.createChooser(pick, if (image) "Foto" else "File")
+                cameraFile = null
+                if (image) {
+                    try {
+                        val dir = File(cacheDir, "photos").apply { mkdirs() }
+                        val f = File(dir, "camera.jpg"); f.delete()
+                        cameraFile = f
+                        cameraUri = FileProvider.getUriForFile(this@MainActivity, "$packageName.files", f)
+                        val cam = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                            .putExtra(MediaStore.EXTRA_OUTPUT, cameraUri)
+                            .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        ch.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cam))
+                    } catch (_: Exception) { }
+                }
+                return try { chooser.launch(ch); true } catch (_: Exception) { fileCb = null; false }
             }
         }
         root.addView(web, FrameLayout.LayoutParams(-1, -1))
@@ -88,6 +135,23 @@ class MainActivity : ComponentActivity() {
             ui.post {
                 val i = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text)
                 startActivity(Intent.createChooser(i, "Invia"))
+            }
+        }
+
+        @JavascriptInterface
+        fun shareFile(name: String, content: String, mime: String) {
+            ui.post {
+                try {
+                    val dir = File(cacheDir, "export").apply { mkdirs() }
+                    dir.listFiles()?.forEach { it.delete() }
+                    val f = File(dir, name)
+                    f.writeText(content, Charsets.UTF_8)
+                    val uri = FileProvider.getUriForFile(this@MainActivity, "$packageName.files", f)
+                    val i = Intent(Intent.ACTION_SEND).setType(mime)
+                        .putExtra(Intent.EXTRA_STREAM, uri)
+                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    startActivity(Intent.createChooser(i, name))
+                } catch (_: Exception) { }
             }
         }
 
