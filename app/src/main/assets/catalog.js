@@ -292,7 +292,7 @@ window.KITS = [
   { id: 'esterno', ic: '🌧️', it: 'Punto luce esterno stagno', ar: 'نقطة إنارة خارجية محكمة', parts: [
     ['Scatola di derivazione stagna', '100x100', 1], ['Interruttore stagno IP55', '', 1], ['Applique da esterno', '', 1], ['Pressacavo', 'M20', 2],
     ['Tubo rigido PVC', 'Ø20', 4], ['Cavo multipolare FG16OR16', '3G1.5', 10] ] },
-  { id: 'quadro', ic: '🗄️', it: 'Quadro appartamento (base)', ar: 'لوحة شقة (أساسية)', note: 'القيم تقريبية — عدّلها حسب التصميم', parts: [
+  { id: 'quadro', ic: '🗄️', it: 'Quadro appartamento (base)', ar: 'لوحة شقة (أساسية)', note: 'القيم تقريبية — عدّلها حسب التصميم', noteIt: 'Valori indicativi — da adattare al progetto', parts: [
     ['Centralino da incasso', '12 moduli', 1], ['Differenziale puro 2P', '40A 30mA', 1], ['Magnetotermico 1P+N', '10A', 1], ['Magnetotermico 1P+N', '16A', 2],
     ['Scaricatore di sovratensione SPD', 'monofase', 1], ['Pettine di collegamento', '1P+N', 1] ] },
   { id: 'striscia', ic: '🌈', it: 'Striscia LED 24V (5 m)', ar: 'شريط LED 24V (5 متر)', parts: [
