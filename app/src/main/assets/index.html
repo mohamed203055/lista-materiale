@@ -104,6 +104,9 @@ main{padding:12px 12px 0}
 .iconbtn.lang{font-size:14px;font-weight:800;width:auto;padding:0 10px}
 .seg{display:flex;gap:6px}
 .seg .chip{flex:1;text-align:center}
+.contact{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;margin-top:8px;width:100%;text-align:start}
+.contact .ci{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px;flex:none}
+.contact b{display:block;font-size:15px}.contact span{font-size:12.5px;color:var(--sub)}
 </style>
 </head>
 <body>
@@ -146,6 +149,7 @@ main{padding:12px 12px 0}
 var KEY='lm_state_v1', SKEY='lm_settings_v1';
 var $=function(s){return document.querySelector(s)};
 var main=$('#main');
+var A=window.Android;
 
 /* ---------- testi interfaccia / نصوص الواجهة ---------- */
 var TXT={
@@ -162,7 +166,7 @@ var TXT={
   waHint:'إذا كتبت الرقم، زر واتساب يفتح محادثة المدير مباشرة.',uiLang:'لغة التطبيق',outLang:'لغة الرسالة وملف PDF',
   langIt:'الإيطالية',langAr:'العربية',langBoth:'الاثنتان',save:'حفظ',saved:'تم الحفظ',cancel:'إلغاء',
   clearQ:'مسح كل المواد من الطلب؟',newQ:'بدء طلب جديد؟ سيُمسح الطلب الحالي.',newBtn:'طلب جديد',alreadyEmpty:'الطلب فارغ أصلاً',
-  copied:'تم نسخ الطلب ✓',pdfWait:'جاري تجهيز PDF…',pdfOk:'PDF جاهز ✓',pdfErr:'تعذّر إنشاء PDF',previewT:'معاينة الرسالة'},
+  copied:'تم نسخ الطلب ✓',pdfWait:'جاري تجهيز PDF…',pdfOk:'PDF جاهز ✓',pdfErr:'تعذّر إنشاء PDF',previewT:'معاينة الرسالة',contact:'📞 تواصل معنا',contactHint:'وجدت خطأ أو عندك فكرة؟ راسلنا وسنصلحه.',report:'أبلغ عن خطأ عبر واتساب',call:'اتصال',reportMsg:'مرحباً، عندي ملاحظة عن تطبيق «طلب مواد»:'},
  it:{title:'Richiesta materiale',search:'Cerca… es. 503, cavo, scatola',mat:'Materiali',kit:'Kit',cart:'Richiesta',items:'voci',copy:'Copia',
   site:'📍 Dati del cantiere',edit:'Modifica ▾',hide:'Nascondi ▴',siteHint:'Tocca per inserire cliente e indirizzo',cliente:'Cliente',clienteP:'Nome cliente o azienda',
   indirizzo:'Indirizzo',luogo:'Tipo di luogo',note:'Note generali',noteP:'es. serie BTicino Living bianca',
@@ -176,7 +180,7 @@ var TXT={
   waHint:'Se inserisci il numero, il tasto WhatsApp apre subito la sua chat.',uiLang:'Lingua dell\'app',outLang:'Lingua del messaggio e del PDF',
   langIt:'Italiano',langAr:'Arabo',langBoth:'Entrambe',save:'Salva',saved:'Salvato',cancel:'Annulla',
   clearQ:'Svuotare tutta la richiesta?',newQ:'Nuova richiesta? Quella attuale verrà cancellata.',newBtn:'Nuova',alreadyEmpty:'La richiesta è già vuota',
-  copied:'Richiesta copiata ✓',pdfWait:'Preparazione PDF…',pdfOk:'PDF pronto ✓',pdfErr:'Impossibile creare il PDF',previewT:'Anteprima messaggio'}
+  copied:'Richiesta copiata ✓',pdfWait:'Preparazione PDF…',pdfOk:'PDF pronto ✓',pdfErr:'Impossibile creare il PDF',previewT:'Anteprima messaggio',contact:'📞 Contatti',contactHint:'Hai trovato un errore o hai un\'idea? Scrivici e lo sistemiamo.',report:'Segnala un errore su WhatsApp',call:'Chiama',reportMsg:'Ciao, ho una segnalazione sull\'app «Richiesta materiale»:'}
 };
 // testi del messaggio / PDF
 var OUT={
@@ -407,10 +411,26 @@ function settingsSheet(){
    '<div class="field"><label>'+T('ditta')+'</label><input id="sd" value="'+esc(settings.ditta)+'" placeholder="Elettrica Roma System"></div>'+
    '<div class="field"><label>'+T('waNum')+'</label><input id="sw" class="ltr" inputmode="tel" value="'+esc(settings.waNum)+'" placeholder="+39 333 1234567"></div>'+
    '<div class="mini">'+T('waHint')+'</div>'+
-   '<button class="btn main" id="ssave">'+T('save')+'</button>');
+   '<button class="btn main" id="ssave">'+T('save')+'</button>'+
+   '<h3 style="margin-top:24px">'+T('contact')+'</h3><div class="mini">'+T('contactHint')+'</div>'+
+   '<button class="contact" data-link="wa"><span class="ci" style="background:#1DA851">✉</span><div><b>'+T('report')+'</b><span class="ltr" style="display:block;text-align:start">'+CONTACT.phone+'</span></div></button>'+
+   '<button class="contact" data-link="tel"><span class="ci" style="background:#1F4FD8">☎</span><div><b>'+T('call')+'</b><span class="ltr" style="display:block;text-align:start">'+CONTACT.phone+'</span></div></button>'+
+   '<button class="contact" data-link="ig"><span class="ci" style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)">IG</span><div><b>Instagram</b><span class="ltr" style="display:block;text-align:start">@'+CONTACT.ig+'</span></div></button>'+
+   '<button class="contact" data-link="tt"><span class="ci" style="background:#111">♪</span><div><b>TikTok</b><span class="ltr" style="display:block;text-align:start">@'+CONTACT.tt+'</span></div></button>'+
+   '<div class="mini" style="text-align:center;margin-top:14px" dir="ltr">v'+appVersion()+'</div>');
+  sheet.querySelectorAll('[data-link]').forEach(function(b){b.onclick=function(){openContact(b.dataset.link)}});
   sheet.querySelectorAll('[data-ui]').forEach(function(b){b.onclick=function(){ui=b.dataset.ui;sheet.querySelectorAll('[data-ui]').forEach(function(x){x.classList.toggle('on',x.dataset.ui===ui)})}});
   sheet.querySelectorAll('[data-out]').forEach(function(b){b.onclick=function(){out=b.dataset.out;sheet.querySelectorAll('[data-out]').forEach(function(x){x.classList.toggle('on',x.dataset.out===out)})}});
   $('#ssave').onclick=function(){settings.tecnico=$('#st').value.trim();settings.ditta=$('#sd').value.trim();settings.waNum=$('#sw').value.trim();settings.ui=ui;settings.out=out;save();closeSheet();applyLang();render();toast(T('saved'))};
+}
+var CONTACT={phone:'+39 329 558 6046',num:'393295586046',ig:'rage_simo',tt:'banbochagaming'};
+function appVersion(){try{return (A&&A.version)?A.version():'web'}catch(e){return 'web'}}
+function openUrl(u){if(A&&A.open)A.open(u);else location.href=u}
+function openContact(k){
+  if(k==='wa'){var t=T('reportMsg')+'\n\n(v'+appVersion()+')';if(A&&A.whatsapp)A.whatsapp(t,CONTACT.num);else openUrl('https://wa.me/'+CONTACT.num+'?text='+encodeURIComponent(t))}
+  else if(k==='tel') openUrl('tel:+'+CONTACT.num);
+  else if(k==='ig') openUrl('https://www.instagram.com/'+CONTACT.ig+'/');
+  else if(k==='tt') openUrl('https://www.tiktok.com/@'+CONTACT.tt);
 }
 function confirmSheet(msg,okText,fn){
   openSheet('<h2>'+msg+'</h2><div class="row2" style="margin-top:18px"><button class="btn ghost" id="cno">'+T('cancel')+'</button><button class="btn" style="background:var(--danger);color:#fff" id="cok">'+okText+'</button></div>');
@@ -495,7 +515,6 @@ function fileName(){
   var d=new Date(), base=settings.out==='ar'?'طلب_مواد':'Richiesta_materiale';
   return base+(c?'_'+c:'')+'_'+d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)+'.pdf';
 }
-var A=window.Android;
 function doWa(){
   var t=buildText(true), num=settings.waNum.replace(/[^\d]/g,'');
   if(A&&A.whatsapp) A.whatsapp(t,num);

@@ -67,7 +67,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun openExternal(u: Uri) {
-        try { startActivity(Intent(Intent.ACTION_VIEW, u)) } catch (_: Exception) {}
+        val i = if (u.scheme == "tel") Intent(Intent.ACTION_DIAL, u) else Intent(Intent.ACTION_VIEW, u)
+        try { startActivity(i) } catch (_: Exception) {}
     }
 
     inner class Bridge {
@@ -89,6 +90,16 @@ class MainActivity : ComponentActivity() {
                 startActivity(Intent.createChooser(i, "Invia"))
             }
         }
+
+        @JavascriptInterface
+        fun open(url: String) {
+            ui.post { openExternal(Uri.parse(url)) }
+        }
+
+        @JavascriptInterface
+        fun version(): String = try {
+            packageManager.getPackageInfo(packageName, 0).versionName ?: ""
+        } catch (_: Exception) { "" }
 
         @JavascriptInterface
         fun pdf(html: String, name: String) {
