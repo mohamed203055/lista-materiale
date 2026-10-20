@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>طلب مواد</title>
+<style>
+:root{
+  --bg:#F3F4F8; --card:#FFFFFF; --ink:#16192B; --sub:#646A80; --line:#E3E5EC;
+  --brand:#1F4FD8; --brand-soft:#E4EBFF; --accent:#FF8A00; --danger:#D93636;
+  --wa:#1DA851; --radius:16px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,"Noto Sans Arabic","Noto Naskh Arabic",sans-serif;font-size:16px}
+body{padding-bottom:96px}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input,textarea{font:inherit;color:inherit}
+.ltr{direction:ltr;unicode-bidi:isolate}
+header{position:sticky;top:0;z-index:20;background:var(--brand);color:#fff;padding:14px 16px 10px}
+.top{display:flex;align-items:center;gap:10px}
+.top h1{flex:1;margin:0;font-size:20px}
+.top h1 small{display:block;font-size:12px;font-weight:400;opacity:.8}
+.iconbtn{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:19px}
+.search{margin-top:10px;display:flex;align-items:center;background:#fff;border-radius:12px;padding:0 12px;color:var(--ink)}
+.search input{flex:1;border:0;outline:0;padding:11px 8px;background:none}
+.search .x{font-size:18px;color:var(--sub);padding:6px}
+.tabs{display:flex;gap:6px;margin-top:10px}
+.tab{flex:1;padding:9px 4px;border-radius:10px;background:rgba(255,255,255,.14);color:#fff;font-size:14px;font-weight:600}
+.tab.on{background:#fff;color:var(--brand)}
+.badge{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:var(--accent);color:#fff;font-size:12px;line-height:20px;margin-inline-start:4px}
+main{padding:12px 12px 0}
+.card{background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:12px;box-shadow:0 1px 2px rgba(20,25,60,.06)}
+.site-head{display:flex;align-items:center;gap:8px}
+.site-head b{flex:1}
+.site-sum{color:var(--sub);font-size:14px;margin-top:4px}
+.field{margin-top:10px}
+.field label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+.field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#FAFBFD;outline:0}
+.field input:focus,.field textarea:focus{border-color:var(--brand)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:14px}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cat{background:var(--card);border-radius:var(--radius);padding:14px 12px;text-align:start;min-height:92px;box-shadow:0 1px 2px rgba(20,25,60,.06);display:flex;flex-direction:column;gap:4px}
+.cat .ic{font-size:24px}
+.cat b{font-size:15px}
+.cat span{font-size:12px;color:var(--sub)}
+.back{display:flex;align-items:center;gap:8px;margin:2px 0 10px;font-weight:700;color:var(--brand)}
+.list{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 2px rgba(20,25,60,.06)}
+.row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);width:100%;text-align:start}
+.row:last-child{border-bottom:0}
+.row .t{flex:1;min-width:0}
+.row .t b{display:block;font-size:15px;font-weight:600}
+.row .t span{display:block;font-size:13px;color:var(--sub)}
+.row .plus{width:34px;height:34px;border-radius:10px;background:var(--brand-soft);color:var(--brand);font-size:22px;display:grid;place-items:center;flex:none}
+.row .have{font-size:12px;color:#fff;background:var(--accent);border-radius:8px;padding:2px 7px;flex:none}
+.sec{font-size:13px;font-weight:700;color:var(--brand);margin:14px 4px 6px}
+.empty{text-align:center;color:var(--sub);padding:36px 16px}
+.empty .big{font-size:42px}
+.line{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.line:last-child{border-bottom:0}
+.line .t{flex:1;min-width:0}
+.line .t b{display:block;font-size:15px}
+.line .t span{display:block;font-size:12.5px;color:var(--sub)}
+.line .t i{display:block;font-style:normal;font-size:12.5px;color:var(--accent)}
+.stepper{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden;flex:none}
+.stepper button{width:34px;height:34px;font-size:20px;color:var(--brand)}
+.stepper input{width:46px;text-align:center;border:0;outline:0;font-weight:700;padding:0;background:none;direction:ltr}
+.stepper .u{font-size:11px;color:var(--sub);padding-inline-end:6px}
+.del{color:var(--danger);font-size:18px;padding:6px}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center}
+.bar .count{font-size:12px;color:var(--sub);text-align:center;min-width:46px;line-height:1.2}
+.bar .count b{display:block;font-size:20px;color:var(--ink)}
+.btn{flex:1;padding:12px 6px;border-radius:12px;font-weight:700;font-size:14.5px;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn.wa{background:var(--wa);color:#fff}
+.btn.cp{background:var(--brand-soft);color:var(--brand)}
+.btn.pdf{background:#FFEEDB;color:#B35C00}
+.btn.main{background:var(--brand);color:#fff;width:100%;flex:none;margin-top:14px;padding:14px}
+.btn.ghost{background:#F1F2F6;color:var(--ink)}
+.btn:disabled{opacity:.45}
+.sheet-bg{position:fixed;inset:0;background:rgba(10,14,30,.45);z-index:50;display:none}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:51;background:#fff;border-radius:22px 22px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto;transform:translateY(105%);transition:transform .22s ease,visibility .22s;visibility:hidden;overflow-x:hidden}
+.sheet.open{transform:none;visibility:visible}
+.sheet .grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
+.sheet h2{margin:0;font-size:19px}
+.sheet .it{color:var(--sub);font-size:14px;margin-top:2px}
+.sheet h3{font-size:14px;color:var(--sub);margin:16px 0 8px;font-weight:600}
+.qty-big{display:flex;align-items:center;gap:10px}
+.qty-big button{width:52px;height:52px;border-radius:14px;background:var(--brand-soft);color:var(--brand);font-size:28px}
+.qty-big input{flex:1;min-width:0;width:0;height:52px;text-align:center;font-size:24px;font-weight:800;border:1px solid var(--line);border-radius:14px;outline:0;direction:ltr}
+.qty-big .u{min-width:44px;text-align:center;color:var(--sub)}
+.quick{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.quick .chip{padding:5px 12px}
+.kitpart{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+.kitpart .t{flex:1;min-width:0;font-size:14px}
+.kitpart .t span{display:block;color:var(--sub);font-size:12px}
+.note{background:#FFF6E8;color:#8A4B00;border-radius:10px;padding:8px 10px;font-size:13px;margin-top:10px}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(20px);background:#16192B;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:.2s;z-index:80;pointer-events:none;max-width:86vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.mini{font-size:12.5px;color:var(--sub)}
+.danger-link{color:var(--danger);font-weight:600;font-size:14px;padding:8px}
+.row2{display:flex;gap:8px}
+.row2 .btn{flex:1}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>طلب مواد <small class="ltr">Richiesta materiale</small></h1>
+    <button class="iconbtn" id="btnNew" title="طلب جديد">🗒️</button>
+    <button class="iconbtn" id="btnSettings" title="الإعدادات">⚙️</button>
+  </div>
+  <div class="search">
+    <span>🔍</span>
+    <input id="q" type="search" placeholder="ابحث بالعربي أو بالإيطالي… مثلاً 503 أو cavo" autocomplete="off">
+    <button class="x" id="qx" style="display:none">✕</button>
+  </div>
+  <div class="tabs">
+    <button class="tab on" data-tab="mat">المواد</button>
+    <button class="tab" data-tab="kit">الكيتات</button>
+    <button class="tab" data-tab="cart">الطلب<span class="badge" id="badge">0</span></button>
+  </div>
+</header>
+
+<main id="main"></main>
+
+<div class="bar">
+  <div class="count"><b id="cnt">0</b>مادة</div>
+  <button class="btn wa" id="btnWa">واتساب</button>
+  <button class="btn cp" id="btnCopy">نسخ</button>
+  <button class="btn pdf" id="btnPdf">PDF</button>
+</div>
+
+<div class="sheet-bg" id="sheetBg"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+
+<script src="catalog.js"></script>
+<script>
+(function(){
+'use strict';
+var KEY='lm_state_v1', SKEY='lm_settings_v1';
+var $=function(s){return document.querySelector(s)};
+var main=$('#main');
+
+/* ---------- dati ---------- */
+var ITEMS=[], BYNAME={};
+CATEGORIES.forEach(function(c){
+  c.list=[];
+  c.items.trim().split('\n').forEach(function(l){
+    var p=l.split('|'); if(p.length<3) return;
+    var it={cat:c.id,it:p[0].trim(),ar:p[1].trim(),unit:p[2].trim(),sizes:(p[3]||'').split(';').map(function(s){return s.trim()}).filter(Boolean)};
+    c.list.push(it); ITEMS.push(it); BYNAME[it.it]=it;
+  });
+});
+var CATBY={}; CATEGORIES.forEach(function(c){CATBY[c.id]=c});
+var PLACES=[['appartamento','شقة'],['villa','فيلا / بيت'],['ufficio','مكتب'],['negozio','محل'],['azienda','شركة / مصنع'],['condominio','عمارة'],['cantiere','ورشة بناء']];
+
+function load(k,d){try{var v=JSON.parse(localStorage.getItem(k));return v||d}catch(e){return d}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(SKEY,JSON.stringify(settings))}catch(e){}}
+var settings=load(SKEY,{tecnico:'',ditta:'',waNum:''});
+function blank(){return {site:{cliente:'',indirizzo:'',luogo:'',note:'',open:true},lines:[],created:Date.now()}}
+var state=load(KEY,null)||blank();
+var view={tab:'mat',cat:null,q:''};
+
+/* ---------- util ---------- */
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function norm(s){
+  return String(s||'').toLowerCase()
+   .normalize('NFD').replace(/[̀-ͯ]/g,'')
+   .replace(/[ً-ٰٟـ]/g,'')
+   .replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/ؤ/g,'و').replace(/ئ/g,'ي')
+   .replace(/²/g,'2').replace(/ø/g,'o').replace(/\s+/g,' ').trim();
+}
+ITEMS.forEach(function(i){i._s=norm(i.it+' '+i.ar+' '+i.sizes.join(' '))});
+function unit(u){return UNITS[u]||{it:u,ar:u,step:1}}
+function fmt(n){n=Math.round(n*100)/100;return String(n)}
+function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(function(){t.classList.remove('show')},2000)}
+function haveQty(it){var s=0;state.lines.forEach(function(l){if(l.it===it.it)s+=l.qty});return s}
+
+/* ---------- linee ---------- */
+function addLine(o){
+  var qty=+o.qty||0; if(qty<=0) return;
+  var ex=state.lines.find(function(l){return l.it===o.it&&l.size===(o.size||'')&&(l.note||'')===(o.note||'')});
+  if(ex){ex.qty=Math.round((ex.qty+qty)*100)/100}
+  else state.lines.push({it:o.it,ar:o.ar,cat:o.cat||'x',unit:o.unit||'pz',size:o.size||'',qty:qty,note:o.note||''});
+  save(); refreshCounts();
+}
+function refreshCounts(){var n=state.lines.length;$('#badge').textContent=n;$('#cnt').textContent=n;['#btnWa','#btnCopy','#btnPdf'].forEach(function(b){$(b).disabled=!n})}
+
+/* ---------- render ---------- */
+function render(){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.tab===view.tab&&!view.q)});
+  var h='';
+  if(view.q) h=renderSearch();
+  else if(view.tab==='mat') h=renderSite()+(view.cat?renderCat(view.cat):renderCats());
+  else if(view.tab==='kit') h=renderKits();
+  else h=renderCart();
+  main.innerHTML=h; refreshCounts();
+}
+function renderSite(){
+  var s=state.site, pl=PLACES.find(function(p){return p[0]===s.luogo});
+  var sum=[s.cliente,s.indirizzo,pl?pl[1]:''].filter(Boolean).join(' · ')||'اضغط لإدخال اسم الزبون والعنوان';
+  if(!s.open) return '<div class="card"><button class="site-head" style="width:100%;text-align:start" data-act="siteopen"><b>📍 بيانات الموقع</b><span class="mini">تعديل ▾</span></button><div class="site-sum">'+esc(sum)+'</div></div>';
+  var chips=PLACES.map(function(p){return '<button class="chip'+(s.luogo===p[0]?' on':'')+'" data-act="place" data-v="'+p[0]+'">'+p[1]+'</button>'}).join('');
+  return '<div class="card"><button class="site-head" style="width:100%;text-align:start" data-act="siteclose"><b>📍 بيانات الموقع</b><span class="mini">إخفاء ▴</span></button>'+
+   '<div class="field"><label>الزبون / Cliente</label><input data-f="cliente" value="'+esc(s.cliente)+'" placeholder="اسم الزبون أو الشركة"></div>'+
+   '<div class="field"><label>العنوان / Indirizzo</label><input data-f="indirizzo" value="'+esc(s.indirizzo)+'" placeholder="Via …, Roma"></div>'+
+   '<div class="field"><label>نوع المكان / Tipo di luogo</label><div class="chips">'+chips+'</div></div>'+
+   '<div class="field"><label>ملاحظات عامة / Note</label><textarea data-f="note" rows="2" placeholder="مثلاً: السلسلة BTicino Living بيضاء">'+esc(s.note)+'</textarea></div></div>';
+}
+function renderCats(){
+  return '<div class="grid">'+CATEGORIES.map(function(c){
+    return '<button class="cat" data-act="cat" data-v="'+c.id+'"><span class="ic">'+c.ic+'</span><b>'+esc(c.ar)+'</b><span class="ltr">'+esc(c.it)+'</span></button>'}).join('')+
+   '<button class="cat" data-act="custom"><span class="ic">➕</span><b>مادة غير موجودة</b><span class="ltr">Articolo libero</span></button></div>';
+}
+function itemRow(it){
+  var h=haveQty(it), i=ITEMS.indexOf(it);
+  return '<button class="row" data-act="item" data-v="'+i+'"><div class="t"><b>'+esc(it.ar)+'</b><span class="ltr">'+esc(it.it)+'</span></div>'+
+    (h?'<span class="have">'+fmt(h)+' '+unit(it.unit).ar+'</span>':'')+'<span class="plus">+</span></button>';
+}
+function renderCat(id){
+  var c=CATBY[id];
+  return '<button class="back" data-act="back">→ كل الفئات</button><div class="sec">'+c.ic+' '+esc(c.ar)+' · <span class="ltr">'+esc(c.it)+'</span></div><div class="list">'+c.list.map(itemRow).join('')+'</div>';
+}
+function renderSearch(){
+  var words=norm(view.q).split(' ').filter(Boolean);
+  var res=ITEMS.filter(function(i){return words.every(function(w){return i._s.indexOf(w)>=0})});
+  var kits=KITS.filter(function(k){var s=norm(k.it+' '+k.ar);return words.every(function(w){return s.indexOf(w)>=0})});
+  var h='';
+  if(kits.length) h+='<div class="sec">الكيتات</div><div class="list">'+kits.map(kitRow).join('')+'</div>';
+  if(res.length) h+='<div class="sec">المواد ('+res.length+')</div><div class="list">'+res.slice(0,80).map(itemRow).join('')+'</div>';
+  if(!res.length&&!kits.length) h+='<div class="empty"><div class="big">🔎</div>لم أجد «'+esc(view.q)+'»</div>';
+  h+='<button class="btn main" data-act="custom" data-v="'+esc(view.q)+'">➕ أضف «'+esc(view.q)+'» كمادة جديدة</button>';
+  return h;
+}
+function kitRow(k){var i=KITS.indexOf(k);return '<button class="row" data-act="kit" data-v="'+i+'"><span style="font-size:24px">'+k.ic+'</span><div class="t"><b>'+esc(k.ar)+'</b><span class="ltr">'+esc(k.it)+' · '+k.parts.length+' pz</span></div><span class="plus">+</span></button>'}
+function renderKits(){
+  return '<div class="note" style="margin:0 0 12px">الكيت يضيف كل قطع النقطة بضغطة واحدة. الكميات تقريبية وتستطيع تعديلها قبل الإضافة.</div><div class="list">'+KITS.map(kitRow).join('')+'</div>';
+}
+function renderCart(){
+  if(!state.lines.length) return '<div class="empty"><div class="big">🧺</div>لم تضف أي مادة بعد.<br>اختر من «المواد» أو «الكيتات».</div>';
+  var groups={}, order=[];
+  state.lines.forEach(function(l,i){var g=l.cat||'x';if(!groups[g]){groups[g]=[];order.push(g)}groups[g].push(i)});
+  order.sort(function(a,b){return catIndex(a)-catIndex(b)});
+  var h='';
+  order.forEach(function(g){
+    var c=CATBY[g];
+    h+='<div class="sec">'+(c?c.ic+' '+esc(c.ar):'➕ مواد أخرى')+'</div><div class="list">';
+    groups[g].forEach(function(i){
+      var l=state.lines[i];
+      h+='<div class="line"><div class="t"><b>'+esc(l.ar||l.it)+(l.size?' · <span class="ltr">'+esc(l.size)+'</span>':'')+'</b><span class="ltr">'+esc(l.it)+'</span>'+(l.note?'<i>📝 '+esc(l.note)+'</i>':'')+'</div>'+
+        '<div class="stepper"><button data-act="dec" data-v="'+i+'">−</button><input inputmode="decimal" data-q="'+i+'" value="'+fmt(l.qty)+'"><span class="u">'+unit(l.unit).ar+'</span><button data-act="inc" data-v="'+i+'">+</button></div>'+
+        '<button class="del" data-act="del" data-v="'+i+'">🗑</button></div>';
+    });
+    h+='</div>';
+  });
+  h+='<div class="row2" style="margin-top:14px"><button class="btn ghost" data-act="preview">👁 معاينة الرسالة</button><button class="btn ghost" data-act="clear" style="color:var(--danger)">مسح الكل</button></div>';
+  return h;
+}
+function catIndex(id){var i=CATEGORIES.findIndex(function(c){return c.id===id});return i<0?999:i}
+
+/* ---------- sheet ---------- */
+var sheet=$('#sheet'), bg=$('#sheetBg'), sheetOpen=false;
+function openSheet(html){sheet.innerHTML='<div class="grab"></div>'+html;bg.style.display='block';requestAnimationFrame(function(){sheet.classList.add('open')});sheetOpen=true}
+function closeSheet(){sheet.classList.remove('open');bg.style.display='none';sheetOpen=false;document.activeElement&&document.activeElement.blur()}
+bg.onclick=closeSheet;
+
+function qtyBlock(u,val){
+  var U=unit(u), quick=u==='m'?[5,10,25,50,100]:[1,2,5,10,20];
+  return '<h3>الكمية / Quantità</h3><div class="qty-big"><button data-s="-">−</button><input id="sq" inputmode="decimal" value="'+fmt(val)+'"><button data-s="+">+</button><span class="u">'+U.ar+'<br><span class="ltr mini">'+U.it+'</span></span></div>'+
+   '<div class="quick">'+quick.map(function(n){return '<button class="chip" data-quick="'+n+'">'+n+'</button>'}).join('')+'</div>';
+}
+function wireQty(step){
+  var q=$('#sq');
+  sheet.querySelectorAll('[data-s]').forEach(function(b){b.onclick=function(){var v=parseFloat(String(q.value).replace(',','.'))||0;v=b.dataset.s==='+'?v+step:Math.max(0,v-step);q.value=fmt(v)}});
+  sheet.querySelectorAll('[data-quick]').forEach(function(b){b.onclick=function(){q.value=b.dataset.quick}});
+}
+function readQty(){return parseFloat(String($('#sq').value).replace(',','.'))||0}
+
+function itemSheet(it){
+  var U=unit(it.unit), sel=it.sizes.length===1?it.sizes[0]:'';
+  var sizes=it.sizes.length?'<h3>المقاس / Misura</h3><div class="chips" id="sz">'+it.sizes.map(function(s){return '<button class="chip ltr'+(s===sel?' on':'')+'" data-size="'+esc(s)+'">'+esc(s)+'</button>'}).join('')+'</div>':'';
+  openSheet('<h2>'+esc(it.ar)+'</h2><div class="it ltr">'+esc(it.it)+'</div>'+sizes+
+   '<div class="field"><label>'+(it.sizes.length?'مقاس آخر (اختياري)':'المقاس أو النوع (اختياري)')+'</label><input id="szc" class="ltr" placeholder="es. 3 moduli, bianco…"></div>'+
+   qtyBlock(it.unit,U.step)+
+   '<div class="field"><label>ملاحظة (اللون، الماركة، السلسلة…)</label><input id="sn" placeholder="مثلاً BTicino Living أبيض"></div>'+
+   '<button class="btn main" id="sadd">أضف إلى الطلب ✓</button>');
+  wireQty(U.step);
+  sheet.querySelectorAll('[data-size]').forEach(function(b){b.onclick=function(){sel=b.classList.contains('on')?'':b.dataset.size;sheet.querySelectorAll('[data-size]').forEach(function(x){x.classList.toggle('on',x.dataset.size===sel)});$('#szc').value=''}});
+  $('#sadd').onclick=function(){
+    var size=$('#szc').value.trim()||sel, qty=readQty();
+    if(qty<=0){toast('اكتب الكمية');return}
+    if(it.sizes.length>1&&!size){toast('اختر المقاس أولاً');return}
+    addLine({it:it.it,ar:it.ar,cat:it.cat,unit:it.unit,size:size,qty:qty,note:$('#sn').value.trim()});
+    closeSheet(); toast('أُضيف: '+qty+' '+U.ar+' '+it.ar); render();
+  };
+}
+function customSheet(name){
+  var u='pz';
+  openSheet('<h2>➕ مادة غير موجودة</h2><div class="it">تُكتب في الطلب كما هي</div>'+
+   '<div class="field"><label>الاسم (بالإيطالي أفضل للمدير)</label><input id="cn" value="'+esc(name||'')+'" placeholder="es. Scatola Gewiss GW48004"></div>'+
+   '<div class="field"><label>الوحدة</label><div class="chips" id="cu">'+Object.keys(UNITS).map(function(k){return '<button class="chip'+(k===u?' on':'')+'" data-u="'+k+'">'+UNITS[k].ar+' · '+UNITS[k].it+'</button>'}).join('')+'</div></div>'+
+   qtyBlock(u,1)+'<div class="field"><label>ملاحظة</label><input id="sn"></div><button class="btn main" id="sadd">أضف إلى الطلب ✓</button>');
+  wireQty(1);
+  sheet.querySelectorAll('[data-u]').forEach(function(b){b.onclick=function(){u=b.dataset.u;sheet.querySelectorAll('[data-u]').forEach(function(x){x.classList.toggle('on',x.dataset.u===u)})}});
+  $('#sadd').onclick=function(){
+    var n=$('#cn').value.trim(), qty=readQty();
+    if(!n){toast('اكتب اسم المادة');return} if(qty<=0){toast('اكتب الكمية');return}
+    addLine({it:n,ar:'',cat:'x',unit:u,qty:qty,note:$('#sn').value.trim()});
+    closeSheet();toast('أُضيف: '+n);render();
+  };
+}
+function kitSheet(k){
+  var n=1;
+  function partsHtml(){
+    return k.parts.map(function(p,j){var it=BYNAME[p[0]]||{it:p[0],ar:p[0],unit:'pz'};
+      return '<div class="kitpart"><div class="t">'+esc(it.ar)+(p[1]?' · <span class="ltr" style="display:inline">'+esc(p[1])+'</span>':'')+'<span class="ltr">'+esc(it.it)+'</span></div>'+
+       '<div class="stepper"><input inputmode="decimal" data-kq="'+j+'" value="'+fmt(p[2]*n)+'"><span class="u">'+unit(it.unit).ar+'</span></div></div>'}).join('');
+  }
+  openSheet('<h2>'+k.ic+' '+esc(k.ar)+'</h2><div class="it ltr">'+esc(k.it)+'</div>'+
+   '<h3>كم نقطة؟ / Quanti punti?</h3><div class="qty-big"><button data-n="-">−</button><input id="kn" inputmode="numeric" value="1"><button data-n="+">+</button></div>'+
+   (k.note?'<div class="note">'+esc(k.note)+'</div>':'')+
+   '<h3>القطع (تستطيع تعديل أي كمية)</h3><div id="kp">'+partsHtml()+'</div>'+
+   '<div class="field"><label>ملاحظة للكيت (مثلاً الغرفة أو السلسلة)</label><input id="sn" placeholder="مثلاً: المطبخ"></div>'+
+   '<button class="btn main" id="kadd">أضف الكيت إلى الطلب ✓</button>');
+  function setN(v){n=Math.max(1,Math.round(v)||1);$('#kn').value=n;$('#kp').innerHTML=partsHtml()}
+  sheet.querySelectorAll('[data-n]').forEach(function(b){b.onclick=function(){setN(n+(b.dataset.n==='+'?1:-1))}});
+  $('#kn').oninput=function(){var v=parseInt(this.value,10);if(v>0){n=v;$('#kp').innerHTML=partsHtml()}};
+  $('#kadd').onclick=function(){
+    var note=$('#sn').value.trim();
+    k.parts.forEach(function(p,j){var it=BYNAME[p[0]]||{it:p[0],ar:'',unit:'pz',cat:'x'};
+      var q=parseFloat(String(sheet.querySelector('[data-kq="'+j+'"]').value).replace(',','.'))||0;
+      addLine({it:it.it,ar:it.ar,cat:it.cat,unit:it.unit,size:p[1],qty:q,note:note})});
+    closeSheet();toast('أُضيف الكيت: '+k.ar+' × '+n);render();
+  };
+}
+function settingsSheet(){
+  openSheet('<h2>⚙️ الإعدادات</h2>'+
+   '<div class="field"><label>اسمك (الفني) / Tecnico</label><input id="st" value="'+esc(settings.tecnico)+'"></div>'+
+   '<div class="field"><label>اسم الشركة / Ditta (يظهر في PDF)</label><input id="sd" value="'+esc(settings.ditta)+'" placeholder="مثلاً: Elettrica Roma System"></div>'+
+   '<div class="field"><label>رقم واتساب المدير (اختياري)</label><input id="sw" class="ltr" inputmode="tel" value="'+esc(settings.waNum)+'" placeholder="+39 333 1234567"></div>'+
+   '<div class="mini">إذا كتبت الرقم، زر واتساب يفتح محادثة المدير مباشرة. وإذا تركته فارغاً تختار الشخص بنفسك.</div>'+
+   '<button class="btn main" id="ssave">حفظ</button>');
+  $('#ssave').onclick=function(){settings.tecnico=$('#st').value.trim();settings.ditta=$('#sd').value.trim();settings.waNum=$('#sw').value.trim();save();closeSheet();toast('تم الحفظ')};
+}
+function confirmSheet(msg,okText,fn){
+  openSheet('<h2>'+msg+'</h2><div class="row2" style="margin-top:18px"><button class="btn ghost" id="cno">إلغاء</button><button class="btn" style="background:var(--danger);color:#fff" id="cok">'+okText+'</button></div>');
+  $('#cno').onclick=closeSheet; $('#cok').onclick=function(){closeSheet();fn()};
+}
+
+/* ---------- output ---------- */
+function placeTxt(){var p=PLACES.find(function(x){return x[0]===state.site.luogo});return p?(p[0].charAt(0).toUpperCase()+p[0].slice(1)+' / '+p[1]):''}
+function dateTxt(){var d=new Date();function z(n){return (n<10?'0':'')+n}return z(d.getDate())+'/'+z(d.getMonth()+1)+'/'+d.getFullYear()}
+function sortedLines(){return state.lines.slice().sort(function(a,b){return catIndex(a.cat)-catIndex(b.cat)})}
+function buildText(wa){
+  var B=wa?'*':'', s=state.site, out=[];
+  out.push(B+'📋 RICHIESTA MATERIALE / طلب مواد'+B);
+  if(s.cliente) out.push('👤 Cliente / الزبون: '+s.cliente);
+  if(s.indirizzo) out.push('📍 Indirizzo / العنوان: '+s.indirizzo);
+  if(s.luogo) out.push('🏠 Luogo / المكان: '+placeTxt());
+  out.push('📅 Data / التاريخ: '+dateTxt());
+  if(settings.tecnico) out.push('👷 Tecnico / الفني: '+settings.tecnico);
+  var last=null, n=0;
+  sortedLines().forEach(function(l){
+    if(l.cat!==last){last=l.cat;var c=CATBY[l.cat];out.push('');out.push(B+'— '+(c?c.it+' / '+c.ar:'Altro / مواد أخرى')+' —'+B)}
+    n++;
+    var U=unit(l.unit);
+    out.push(n+'. '+fmt(l.qty)+' '+U.it+' — '+l.it+(l.size?' '+l.size:'')+(l.ar?'\n    ('+l.ar+')':''));
+    if(l.note) out.push('    📝 '+l.note);
+  });
+  if(s.note){out.push('');out.push('📝 Note / ملاحظات: '+s.note)}
+  out.push('');
+  out.push('Totale voci / عدد المواد: '+n);
+  return out.join('\n');
+}
+function buildReport(){
+  var s=state.site, rows='', last=null, n=0;
+  sortedLines().forEach(function(l){
+    if(l.cat!==last){last=l.cat;var c=CATBY[l.cat];rows+='<div class="blk cat">'+(c?esc(c.it)+' <span dir="rtl">'+esc(c.ar)+'</span>':'Altro <span dir="rtl">مواد أخرى</span>')+'</div>'}
+    n++;
+    rows+='<div class="blk r'+(n%2?'':' alt')+'"><div class="n">'+n+'</div><div class="d"><b>'+esc(l.it)+'</b>'+(l.ar?'<div class="ar" dir="rtl">'+esc(l.ar)+'</div>':'')+(l.note?'<div class="nt">📝 <span dir="auto">'+esc(l.note)+'</span></div>':'')+'</div><div class="s">'+esc(l.size||'—')+'</div><div class="q">'+fmt(l.qty)+' <small>'+unit(l.unit).it+'</small></div></div>';
+  });
+  var info=[['Cliente','الزبون',s.cliente],['Indirizzo','العنوان',s.indirizzo],['Luogo','المكان',placeTxt()],['Data','التاريخ',dateTxt()],['Tecnico','الفني',settings.tecnico]]
+    .filter(function(x){return x[2]}).map(function(x){return '<div><span>'+x[0]+' / <span dir="rtl">'+x[1]+'</span></span><b dir="auto">'+esc(x[2])+'</b></div>'}).join('');
+  return '<!doctype html><html dir="ltr"><head><meta charset="utf-8"><meta name="viewport" content="width=794"><style>'+
+   '*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans","Noto Sans Arabic",sans-serif;color:#16192B;font-size:14px;background:#fff}'+
+   '.wrap{padding:0 40px}.pad{height:36px}'+
+   '.hd{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #1F4FD8;padding-bottom:12px}'+
+   '.hd h1{margin:0;font-size:24px;color:#1F4FD8}.hd h1 small{display:block;text-align:left;font-size:16px;color:#646A80;font-weight:600}.hd .co{text-align:right;font-weight:700;font-size:15px}'+
+   '.info{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin:14px 0 6px}.info div{display:flex;flex-direction:column;border-bottom:1px solid #E3E5EC;padding-bottom:4px}.info span{font-size:11px;color:#646A80}.info b{font-size:14px}'+
+   '.th,.r{display:grid;grid-template-columns:34px 1fr 150px 80px;gap:10px;align-items:center;padding:8px 8px}'+
+   '.th{background:#1F4FD8;color:#fff;font-size:12px;font-weight:700;border-radius:6px;margin-top:14px}.th .q,.r .q{text-align:right}'+
+   '.r{border-bottom:1px solid #EEF0F4}.r.alt{background:#F7F8FB}.r .n{color:#646A80}.r .ar{color:#4A5068;font-size:13px;text-align:left}.r .nt{color:#B35C00;font-size:12px}.r .q{font-weight:800;font-size:15px}.r .q small{font-weight:400;color:#646A80}.r .s{font-size:13px}'+
+   '.cat{margin-top:12px;padding:6px 8px;font-weight:800;color:#1F4FD8;font-size:13px;border-bottom:2px solid #E4EBFF}.cat span{margin-left:8px;color:#646A80;font-weight:600}'+
+   '.foot{margin-top:16px;display:flex;justify-content:space-between;font-size:13px;color:#646A80}.notes{margin-top:14px;padding:10px 12px;background:#FFF6E8;border-radius:8px;font-size:13px}'+
+   '.sp{height:0}'+
+   '</style></head><body><div class="wrap"><div class="pad"></div>'+
+   '<div class="blk hd"><h1>Richiesta materiale<small dir="rtl">طلب مواد</small></h1><div class="co">'+esc(settings.ditta)+'</div></div>'+
+   '<div class="blk info">'+info+'</div>'+
+   '<div class="blk th"><div>#</div><div>Materiale / <span dir="rtl">المادة</span></div><div>Misura / <span dir="rtl">المقاس</span></div><div class="q">Q.tà</div></div>'+
+   rows+
+   (s.note?'<div class="blk notes"><b>Note / <span dir="rtl">ملاحظات</span>:</b> <span dir="auto">'+esc(s.note)+'</span></div>':'')+
+   '<div class="blk foot"><span>Totale voci / <span dir="rtl">عدد المواد</span>: <b>'+n+'</b></span><span>'+dateTxt()+'</span></div><div class="pad"></div></div>'+
+   '<script>'+PAGINATE+'<\/script></body></html>';
+}
+// script di impaginazione eseguito dentro il report: evita righe tagliate tra due pagine
+var PAGINATE="(function(){function go(){var W=document.documentElement.clientWidth||794,P=W*297/210,M=36,b=document.querySelectorAll('.blk');for(var i=0;i<b.length;i++){var e=b[i],r=e.getBoundingClientRect(),t=r.top+window.scrollY,h=r.height,pg=Math.floor(t/P),end=(pg+1)*P-M;if(t+h>end&&h<P-2*M){var sp=document.createElement('div');sp.className='sp';sp.style.height=((pg+1)*P+M-t)+'px';e.parentNode.insertBefore(sp,e)}}var H=document.body.scrollHeight;if(window.Report)Report.ready(H,W);}if(document.readyState==='complete')setTimeout(go,60);else window.addEventListener('load',function(){setTimeout(go,60)})})();";
+
+function fileName(){var c=(state.site.cliente||'materiale').replace(/[^\w؀-ۿ -]+/g,'').trim().replace(/\s+/g,'_')||'materiale';var d=new Date();return 'Richiesta_'+c+'_'+d.getFullYear()+(d.getMonth()+1)+d.getDate()+'.pdf'}
+var A=window.Android;
+function doWa(){
+  var t=buildText(true), num=settings.waNum.replace(/[^\d]/g,'');
+  if(A&&A.whatsapp) A.whatsapp(t,num);
+  else location.href='https://wa.me/'+num+'?text='+encodeURIComponent(t);
+}
+function doCopy(){
+  var t=buildText(false);
+  if(A&&A.copy){A.copy(t);toast('تم نسخ الطلب ✓')}
+  else if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){toast('تم نسخ الطلب ✓')})}
+}
+function doPdf(){
+  if(A&&A.pdf){toast('جاري تجهيز PDF…');A.pdf(buildReport(),fileName())}
+  else{var w=window.open('','_blank');w.document.write(buildReport().replace(/<script>[\s\S]*?<\/script>/,''));w.document.close();setTimeout(function(){w.print()},300)}
+}
+window.onPdfDone=function(ok){toast(ok?'PDF جاهز ✓':'تعذّر إنشاء PDF')};
+
+/* ---------- eventi ---------- */
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-act],[data-tab]'); if(!b) return;
+  if(b.dataset.tab){view.tab=b.dataset.tab;view.cat=null;clearSearch();render();window.scrollTo(0,0);return}
+  var a=b.dataset.act, v=b.dataset.v;
+  if(a==='cat'){view.cat=v;render();window.scrollTo(0,0)}
+  else if(a==='back'){view.cat=null;render()}
+  else if(a==='item') itemSheet(ITEMS[+v]);
+  else if(a==='kit') kitSheet(KITS[+v]);
+  else if(a==='custom') customSheet(v||'');
+  else if(a==='siteopen'){state.site.open=true;save();render()}
+  else if(a==='siteclose'){state.site.open=false;save();render()}
+  else if(a==='place'){state.site.luogo=state.site.luogo===v?'':v;save();render()}
+  else if(a==='inc'||a==='dec'){var l=state.lines[+v],st=unit(l.unit).step;l.qty=Math.max(0,Math.round((l.qty+(a==='inc'?st:-st))*100)/100);if(l.qty===0)state.lines.splice(+v,1);save();render()}
+  else if(a==='del'){state.lines.splice(+v,1);save();render()}
+  else if(a==='clear') confirmSheet('مسح كل المواد من الطلب؟','مسح',function(){state.lines=[];save();render()});
+  else if(a==='preview') openSheet('<h2>معاينة الرسالة</h2><pre style="white-space:pre-wrap;font-family:inherit;font-size:14px;background:#F3F4F8;padding:12px;border-radius:12px;direction:ltr;text-align:left">'+esc(buildText(false))+'</pre>');
+});
+main.addEventListener('input',function(e){
+  var t=e.target;
+  if(t.dataset.f){state.site[t.dataset.f]=t.value;save()}
+});
+main.addEventListener('change',function(e){
+  var t=e.target;
+  if(t.dataset.q!=null){var i=+t.dataset.q,v=parseFloat(String(t.value).replace(',','.'))||0;if(v<=0)state.lines.splice(i,1);else state.lines[i].qty=v;save();render()}
+});
+var qi=$('#q');
+qi.addEventListener('input',function(){view.q=qi.value.trim();$('#qx').style.display=view.q?'block':'none';render()});
+function clearSearch(){qi.value='';view.q='';$('#qx').style.display='none'}
+$('#qx').onclick=function(){clearSearch();render()};
+$('#btnSettings').onclick=settingsSheet;
+$('#btnNew').onclick=function(){
+  if(!state.lines.length&&!state.site.cliente){toast('الطلب فارغ أصلاً');return}
+  confirmSheet('بدء طلب جديد؟ سيُمسح الطلب الحالي.','طلب جديد',function(){state=blank();save();view={tab:'mat',cat:null,q:''};clearSearch();render()});
+};
+$('#btnWa').onclick=doWa; $('#btnCopy').onclick=doCopy; $('#btnPdf').onclick=doPdf;
+
+// زر الرجوع في أندرويد
+window.appBack=function(){
+  if(sheetOpen){closeSheet();return true}
+  if(view.q){clearSearch();render();return true}
+  if(view.cat){view.cat=null;render();return true}
+  if(view.tab!=='mat'){view.tab='mat';render();return true}
+  return false;
+};
+window.__test={state:function(){return state},addLine:addLine,buildText:buildText,buildReport:buildReport,ITEMS:ITEMS,BYNAME:BYNAME};
+render();
+})();
+</script>
+</body>
+</html>
