@@ -316,3 +316,69 @@ window.KITS = [
   { id: 'cam', ic: '📹', it: 'Punto telecamera IP', ar: 'نقطة كاميرا IP', parts: [
     ['Telecamera IP', 'bullet', 1], ['Cavo LAN', 'Cat 6 FTP', 30], ['Staffa / scatola per telecamera', '', 1], ['Tubo corrugato', 'Ø20', 10] ] }
 ];
+
+// Listino manodopera (solo lavoro, IVA esclusa) — valori INDICATIVI di partenza per Roma,
+// da adattare dall'amministrazione. Fonti: businessonline.it (2025), cronoshare.it (2026), areasosta.com, listino fornito dall'utente.
+// Formato: [id, nome italiano, nome arabo, unità, prezzo €]
+window.SERVICE_GROUPS = [
+  { id: 'punti', ic: '🔌', it: 'Punti impianto', ar: 'نقاط التمديد', list: [
+    ['s_luce1', 'Punto luce interrotto', 'نقطة إنارة بمفتاح', 'pz', 30],
+    ['s_luce2', 'Punto luce deviato (2 comandi)', 'نقطة إنارة من مكانين', 'pz', 40],
+    ['s_luce3', 'Punto luce invertito (3 comandi)', 'نقطة إنارة من 3 أماكن', 'pz', 50],
+    ['s_presa', 'Punto presa', 'نقطة مقبس', 'pz', 30],
+    ['s_presa16', 'Punto presa dedicata (forno, lavatrice…)', 'نقطة مقبس مخصص (فرن، غسالة…)', 'pz', 40],
+    ['s_tv', 'Punto TV / SAT', 'نقطة تلفاز', 'pz', 30],
+    ['s_dati', 'Punto rete dati RJ45', 'نقطة شبكة RJ45', 'pz', 30],
+    ['s_lan', 'Passaggio cavo LAN', 'تمرير كابل شبكة', 'pz', 55],
+    ['s_tel', 'Punto telefonico', 'نقطة هاتف', 'pz', 25],
+    ['s_esterno', 'Punto luce esterno stagno', 'نقطة إنارة خارجية محكمة', 'pz', 45],
+    ['s_campanello', 'Punto campanello', 'نقطة جرس', 'pz', 30],
+    ['s_mq', 'Rifacimento impianto completo (al m²)', 'تجديد التمديد كاملاً (للمتر المربع)', 'mq', 25]
+  ]},
+  { id: 'quadri', ic: '🗄️', it: 'Quadri e linee', ar: 'لوحات وخطوط', list: [
+    ['s_quadro', 'Cablaggio quadro appartamento', 'تركيب وتوصيل لوحة شقة', 'pz', 200],
+    ['s_quadro3f', 'Cablaggio quadro trifase', 'تركيب لوحة ثلاثية الطور', 'pz', 400],
+    ['s_diff', 'Sostituzione differenziale / magnetotermico', 'تبديل قاطع تفاضلي أو حراري', 'pz', 50],
+    ['s_linea', 'Linea dorsale / montante (al metro)', 'خط رئيسي (للمتر)', 'm', 6],
+    ['s_terra', 'Impianto di terra (picchetto + collegamenti)', 'تأريض (وتد + توصيلات)', 'pz', 80],
+    ['s_wallbox', 'Installazione wallbox auto', 'تركيب شاحن سيارة', 'pz', 250]
+  ]},
+  { id: 'luci', ic: '💡', it: 'Illuminazione', ar: 'إنارة', list: [
+    ['s_lampadario', 'Montaggio lampadario / plafoniera', 'تركيب ثريا أو بلافونيرا', 'pz', 25],
+    ['s_faretto', 'Montaggio faretto da incasso', 'تركيب سبوت', 'pz', 15],
+    ['s_pannello', 'Montaggio pannello LED', 'تركيب بانل LED', 'pz', 25],
+    ['s_led', 'Posa striscia LED con profilo (al metro)', 'تركيب شريط LED مع بروفيل (للمتر)', 'm', 12],
+    ['s_proiettore', 'Montaggio proiettore / applique esterna', 'تركيب كشاف أو إنارة خارجية', 'pz', 40],
+    ['s_emergenza', 'Montaggio lampada di emergenza', 'تركيب إنارة طوارئ', 'pz', 30]
+  ]},
+  { id: 'sicurezza', ic: '📹', it: 'Citofonia e sicurezza', ar: 'إنترفون وأمان', list: [
+    ['s_video', 'Installazione videocitofono monofamiliare', 'تركيب فيديو إنترفون لبيت واحد', 'pz', 140],
+    ['s_citofono', 'Installazione citofono', 'تركيب إنترفون عادي', 'pz', 65],
+    ['s_cam', 'Installazione telecamera (per punto)', 'تركيب كاميرا (لكل نقطة)', 'pz', 60],
+    ['s_nvr', 'Configurazione NVR / app', 'إعداد المسجل والتطبيق', 'pz', 80],
+    ['s_allarme', 'Installazione centrale allarme', 'تركيب لوحة إنذار', 'pz', 150],
+    ['s_sensore', 'Installazione sensore allarme', 'تركيب حساس إنذار', 'pz', 25]
+  ]},
+  { id: 'varie', ic: '🧰', it: 'Interventi vari', ar: 'أعمال متفرقة', list: [
+    ['s_ora', 'Ora di lavoro', 'ساعة عمل', 'h', 30],
+    ['s_giorno', 'Giornata di lavoro (8 ore)', 'يوم عمل (8 ساعات)', 'gg', 220],
+    ['s_frutto', 'Sostituzione frutto (interruttore / presa)', 'تبديل مفتاح أو مقبس', 'pz', 18],
+    ['s_guasto', 'Ricerca guasto / corto circuito', 'البحث عن عطل أو تماس', 'pz', 80],
+    ['s_tracce', 'Tracce a muro (al metro)', 'تكسير مجاري في الجدار (للمتر)', 'm', 10],
+    ['s_smontaggio', 'Smontaggio vecchio impianto (per punto)', 'فك التمديد القديم (لكل نقطة)', 'pz', 8],
+    ['s_dico', 'Dichiarazione di conformità (DiCo)', 'شهادة المطابقة (DiCo)', 'pz', 200],
+    ['s_diri', 'Dichiarazione di rispondenza (DiRi)', 'شهادة ملاءمة النظام القديم (DiRi)', 'pz', 250],
+    ['s_verifica', 'Verifica e collaudo impianto', 'فحص واختبار التمديد', 'pz', 120]
+  ]},
+  { id: 'supplementi', ic: '➕', it: 'Supplementi', ar: 'إضافات', list: [
+    ['s_uscita', 'Diritto di chiamata / uscita', 'أجرة الحضور والتنقل', 'pz', 30],
+    ['s_urgenza', 'Pronto intervento (urgenza)', 'تدخل مستعجل', 'pz', 75],
+    ['s_notte', 'Intervento notturno', 'عمل ليلي', 'pz', 100],
+    ['s_festivo', 'Festivo / fuori orario', 'عطلة أو خارج الدوام', 'pz', 110],
+    ['s_smaltimento', 'Smaltimento materiale', 'التخلص من المخلفات', 'pz', 30]
+  ]}
+];
+window.SERVICE_UNITS = {
+  pz: { it: 'pz', ar: 'قطعة' }, m: { it: 'm', ar: 'متر' }, mq: { it: 'm²', ar: 'م²' },
+  h: { it: 'h', ar: 'ساعة' }, gg: { it: 'gg', ar: 'يوم' }
+};

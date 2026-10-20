@@ -144,6 +144,10 @@ main{padding:12px 12px 0}
 .toggle input{width:22px;height:22px}
 .pick{max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:6px}
 .pick button{display:block;width:100%;text-align:start;padding:9px 12px;border-bottom:1px solid var(--line);font-size:14px}
+.trow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line)}
+.trow input{width:110px;text-align:end;border:1px solid var(--line);border-radius:9px;padding:7px 9px;background:#FAFBFD}
+.trow.big{border:0;background:var(--brand);color:#fff;border-radius:12px;padding:12px 14px;margin-top:10px;font-size:18px}
+.tabs .tab{font-size:13px;padding:9px 2px}
 .warn{background:#FFECEC;color:#9B1C1C;border-radius:10px;padding:8px 10px;font-size:13px;margin-top:10px}
 </style>
 </head>
@@ -165,6 +169,7 @@ main{padding:12px 12px 0}
     <button class="tab on" data-tab="mat" id="tMat"></button>
     <button class="tab" data-tab="kit" id="tKit"></button>
     <button class="tab" data-tab="cart"><span id="tCart"></span><span class="badge" id="badge">0</span></button>
+    <button class="tab" data-tab="price" id="tPrice"></button>
   </div>
 </header>
 
