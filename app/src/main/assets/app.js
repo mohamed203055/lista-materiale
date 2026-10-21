@@ -317,14 +317,19 @@ function clientsSheet(){
       var t=norm([p.site.cliente,p.name,p.site.indirizzo].join(' '));return words.every(function(w){return t.indexOf(w)>=0})});
     $('#clList').innerHTML=list.length?list.map(function(p){
       var isCur=p.id===P.cur, n=p.lines.length, qn=(p.quote&&p.quote.lines.length)||0;
-      return '<button class="contact" data-cl="'+p.id+'" style="'+(isCur?'border-color:var(--brand);border-width:2px':'')+'"><span class="ci" style="background:'+(isCur?'var(--brand)':'#8A8F99')+'">'+esc(((p.site.cliente||p.name||'?').trim()[0]||'?').toUpperCase())+'</span><div style="min-width:0"><b>'+esc(p.site.cliente||projTitle(p))+(isCur?' <span class="tag">'+T('current')+'</span>':'')+'</b><span>'+esc(p.site.indirizzo||'')+(p.site.indirizzo?' · ':'')+n+' '+T('lines')+(qn?' · 💶 '+qn:'')+' · '+dstr(p.updated).split(' ')[0]+'</span></div></button>'}).join(''):'<div class="mini" style="padding:12px">'+L4(XT.noClients)+'</div>';
+      return '<div class="clrow"><button class="contact" data-cl="'+p.id+'" style="'+(isCur?'border-color:var(--brand);border-width:2px':'')+'"><span class="ci" style="background:'+(isCur?'var(--brand)':'#8A8F99')+'">'+esc(((p.site.cliente||p.name||'?').trim()[0]||'?').toUpperCase())+'</span><div style="min-width:0"><b>'+esc(p.name||p.site.cliente||projTitle(p))+(isCur?' <span class="tag">'+T('current')+'</span>':'')+'</b><span>'+esc(p.site.indirizzo||'')+(p.site.indirizzo?' · ':'')+n+' '+T('lines')+(qn?' · 💶 '+qn:'')+' · '+dstr(p.updated).split(' ')[0]+'</span></div></button><button class="cldup" data-cldup="'+p.id+'" title="'+T('dup')+'" aria-label="'+T('dup')+'">⧉</button></div>'}).join(''):'<div class="mini" style="padding:12px">'+L4(XT.noClients)+'</div>';
     $('#clList').querySelectorAll('[data-cl]').forEach(function(b){b.onclick=function(){closeSheet();if(b.dataset.cl!==P.cur)openProject(b.dataset.cl)}});
+    $('#clList').querySelectorAll('[data-cldup]').forEach(function(b){b.onclick=function(){if(dupProj(b.dataset.cldup))draw()}});
   }
   openSheet('<h2>'+L4(XT.clients)+'</h2><div class="field"><input id="clQ" placeholder="'+L4(XT.searchCl)+'"></div>'+
    '<button class="btn main" id="clNew" style="margin-top:10px">'+L4(XT.newClient)+'</button><div id="clList" style="margin-top:6px"></div>');
   $('#clQ').oninput=function(){q=this.value;draw()};
   $('#clNew').onclick=function(){closeSheet();startNew()};
   draw();
+}
+function dupProj(v){
+  var src=P.list.find(function(p){return p.id===v});if(!src)return false;
+  var cp=JSON.parse(JSON.stringify(src));cp.id=uid('p');cp.name=(projTitle(src))+' (2)';cp.created=cp.updated=Date.now();P.list.unshift(cp);save();toast(T('dupDone'));return true;
 }
 function quickRow(){
   return '<div class="row2" style="margin-bottom:12px"><button class="btn main" style="margin:0;flex:1.3" data-act="newproj">'+L4(XT.newP)+'</button><button class="btn ghost" style="flex:1;background:var(--card);box-shadow:0 1px 2px rgba(20,25,60,.06)" data-act="clients">'+L4(XT.myCl)+'</button></div>';
@@ -1382,8 +1387,7 @@ document.addEventListener('click',function(e){
    case 'projnew': newProject();break;
    case 'projopen': openProject(v);break;
    case 'projdup':
-    var src=P.list.find(function(p){return p.id===v});if(!src)break;
-    var cp=JSON.parse(JSON.stringify(src));cp.id=uid('p');cp.name=(projTitle(src))+' (2)';cp.created=cp.updated=Date.now();P.list.unshift(cp);save();render();toast(T('dupDone'));break;
+    if(dupProj(v))render();break;
    case 'projdel':
     confirmSheet(T('delProjQ'),T('del'),function(){P.list=P.list.filter(function(p){return p.id!==v});if(P.cur===v){P.cur=null;cur()}save();render()});break;
    // admin
