@@ -74,6 +74,7 @@ a{color:var(--brand)}
     <textarea id="nAr" dir="rtl"></textarea>
     <label>Novità (in italiano)</label>
     <textarea id="nIt" class="ltr"></textarea>
+    <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:12px;color:var(--ink);font-size:15px"><span>🔒 تحديث إجباري (بدون زر «لاحقاً»)</span><input type="checkbox" id="force" style="width:22px;height:22px"></label>
     <button class="b-ok" id="btnSend">🚀 إرسال التحديث للجميع</button>
     <button class="b-ghost" id="btnStop">⏸️ إيقاف الإرسال</button>
     <button class="b-ghost" id="btnNotes">💾 حفظ النص فقط</button>
@@ -104,6 +105,28 @@ a{color:var(--brand)}
     <button class="b-main" id="btnMsg">📢 إرسال الرسالة</button>
     <button class="b-danger" id="btnMsgDel">حذف الرسالة الحالية</button>
     <div class="mini" id="mCur" style="margin-top:8px"></div>
+  </div>
+
+  <!-- المستخدمون -->
+  <div class="card">
+    <h2>👥 المستخدمون المسجّلون</h2>
+    <div id="uSetup">
+      <div class="mini">مرة واحدة فقط: الصق رابط السكربت (ينتهي بـ /exec) والمفتاح السري.</div>
+      <label>رابط السكربت</label><input id="sUrl" class="ltr" placeholder="https://script.google.com/macros/s/…/exec">
+      <label>المفتاح السري</label><input id="sKey" class="ltr" type="password">
+      <button class="b-main" id="btnLink">🔗 ربط التطبيق بالجدول</button>
+    </div>
+    <div id="uView" class="hide">
+      <div class="row" style="margin-bottom:6px">
+        <div class="status st-on" style="justify-content:center;flex-direction:column;gap:2px"><span id="uTot" style="font-size:24px">0</span><span class="mini">مسجّل</span></div>
+        <div class="status st-off" style="justify-content:center;flex-direction:column;gap:2px"><span id="uAct" style="font-size:24px">0</span><span class="mini">نشط آخر 7 أيام</span></div>
+      </div>
+      <div id="uCountries" class="mini" style="line-height:1.9;margin:8px 0"></div>
+      <input id="uQ" placeholder="🔍 ابحث بالاسم أو البلد أو المدينة…">
+      <div id="uList" style="margin-top:8px"></div>
+      <button class="b-ghost" id="btnUsers">🔄 تحديث القائمة</button>
+      <button class="b-ghost" id="btnUnlink" style="font-size:13px">تغيير رابط السكربت أو المفتاح</button>
+    </div>
   </div>
 
   <!-- روابط -->
@@ -160,14 +183,15 @@ function show(){
   var m=data.message||{};
   $('mCur').textContent=m.id?('الرسالة الحالية (رقم '+m.id+'): '+(m.ar||m.it)):'لا توجد رسالة حالياً.';
   $('btnSend').disabled=on;$('btnStop').disabled=!on;
+  $('force').checked=!!data.force;
 }
 function notes(){data.notes_ar=$('nAr').value.trim();data.notes_it=$('nIt').value.trim()}
 $('btnLogin').onclick=function(){
   var t=$('tok').value.trim(); if(!t){toast('الصق المفتاح أولاً');return}
   try{localStorage.setItem(TK,t)}catch(e){}
-  load().catch(function(e){toast(e.message==='auth'?'المفتاح غير صالح':'خطأ في الاتصال: '+e.message)});
+  load().then(usersLoad).catch(function(e){toast(e.message==='auth'?'المفتاح غير صالح':'خطأ في الاتصال: '+e.message)});
 };
-$('btnSend').onclick=function(){if(!confirm('إرسال التحديث '+data.versionName+' لكل المستخدمين؟'))return;notes();data.send=true;save('Invia aggiornamento '+data.versionName)};
+$('btnSend').onclick=function(){if(!confirm('إرسال التحديث '+data.versionName+' لكل المستخدمين؟'))return;notes();data.send=true;data.force=$('force').checked;save('Invia aggiornamento '+data.versionName)};
 $('btnStop').onclick=function(){data.send=false;save('Sospendi aggiornamento')};
 $('btnNotes').onclick=function(){notes();save('Note aggiornamento')};
 $('btnCustom').onclick=function(){
@@ -186,8 +210,52 @@ $('btnMsg').onclick=function(){
 };
 $('btnMsgDel').onclick=function(){data.message={id:'',ar:'',it:'',link:''};save('Rimuovi messaggio')};
 $('btnReload').onclick=function(){load().then(function(){toast('✓')})};
+$('force').onchange=function(){data.force=this.checked;save(this.checked?'Aggiornamento obbligatorio':'Aggiornamento facoltativo')};
+
+// ----- utenti registrati (foglio Google tramite Apps Script) -----
+var SU='lm_admin_script', SK='lm_admin_key', USERS=[];
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k)||'';if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return ''}}
+function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function d(x){if(!x)return '—';var t=new Date(x);if(isNaN(t))return esc(x);function z(n){return (n<10?'0':'')+n}return z(t.getDate())+'/'+z(t.getMonth()+1)+'/'+t.getFullYear()}
+var JOB={dipendente:'يعمل عند شركة',proprio:'يعمل لحسابه',ditta:'صاحب شركة',altro:'عمل آخر'};
+function usersShow(){
+  var q=$('uQ').value.trim().toLowerCase(), wk=Date.now()-7*864e5;
+  $('uTot').textContent=USERS.length;
+  $('uAct').textContent=USERS.filter(function(u){return new Date(u.ultimo).getTime()>wk}).length;
+  var by={};USERS.forEach(function(u){var c=u.paese||'?';by[c]=(by[c]||0)+1});
+  $('uCountries').innerHTML='🌍 '+Object.keys(by).sort(function(a,b){return by[b]-by[a]}).map(function(c){return '<b>'+esc(c)+'</b> '+by[c]}).join(' · ');
+  var list=USERS.filter(function(u){return !q||[u.nome,u.paese,u.citta,u.codice].join(' ').toLowerCase().indexOf(q)>=0})
+    .sort(function(a,b){return new Date(b.ultimo)-new Date(a.ultimo)});
+  $('uList').innerHTML=list.map(function(u){
+    return '<div style="border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px">'+
+     '<div style="display:flex;justify-content:space-between;gap:8px"><b>'+esc(u.nome)+'</b><span class="mini" dir="ltr">'+esc(u.codice)+'</span></div>'+
+     '<div class="mini">📍 '+esc(u.paese)+(u.citta?' – '+esc(u.citta):'')+' · 👷 '+esc(JOB[u.lavoro]||u.lavoro)+'</div>'+
+     '<div class="mini">📅 سجّل: '+d(u.reg)+' · 👁 آخر دخول: '+d(u.ultimo)+' · 📆 أيام الاستعمال: <b>'+esc(u.giorni||1)+'</b></div>'+
+     '<div class="mini" dir="ltr" style="text-align:right">'+esc(u.dispositivo)+' · v'+esc(u.versione)+' · '+esc(u.lingua)+'</div></div>'}).join('')||'<div class="mini">لا يوجد مسجّلون بعد.</div>';
+}
+function usersLoad(){
+  var u=ls(SU),k=ls(SK); if(!u||!k) return Promise.resolve();
+  $('uSetup').classList.add('hide');$('uView').classList.remove('hide');
+  $('uList').innerHTML='<div class="mini">…</div>';
+  return fetch(u+'?key='+encodeURIComponent(k)+'&t='+Date.now()).then(function(r){return r.json()}).then(function(j){
+    if(j.error){toast('المفتاح السري غير صحيح');$('uSetup').classList.remove('hide');$('uView').classList.add('hide');return}
+    USERS=j.users||[];usersShow();
+  }).catch(function(){$('uList').innerHTML='<div class="mini">تعذّر الاتصال بالجدول. تحقق من الرابط.</div>'});
+}
+$('uQ').oninput=usersShow;
+$('btnUsers').onclick=usersLoad;
+$('btnUnlink').onclick=function(){$('sUrl').value=ls(SU);$('sKey').value='';$('uSetup').classList.remove('hide');$('uView').classList.add('hide')};
+$('btnLink').onclick=function(){
+  var u=$('sUrl').value.trim(),k=$('sKey').value.trim();
+  if(!/^https:\/\/script\.google\.com\/.+\/exec$/.test(u)){toast('الرابط يجب أن ينتهي بـ /exec');return}
+  if(!k){toast('اكتب المفتاح السري');return}
+  ls(SU,u);ls(SK,k);
+  // l'app degli utenti legge l'indirizzo da version.json
+  if(data&&data.reg_url!==u){data.reg_url=u;save('Collega registro utenti')}
+  usersLoad();
+};
 $('btnLogout').onclick=function(){try{localStorage.removeItem(TK)}catch(e){};location.reload()};
-if(token()) load().catch(function(){$('login').classList.remove('hide')});
+if(token()) load().then(usersLoad).catch(function(){$('login').classList.remove('hide')});
 })();
 </script>
 </body>

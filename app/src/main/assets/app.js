@@ -423,7 +423,8 @@ function saveSheet(){
 var sheet=$('#sheet'), bg=$('#sheetBg'), sheetOpen=false;
 function openSheet(html){sheet.innerHTML='<div class="grab"></div>'+html;sheet.scrollTop=0;bg.style.display='block';requestAnimationFrame(function(){sheet.classList.add('open')});sheetOpen=true}
 function closeSheet(){sheet.classList.remove('open');bg.style.display='none';sheetOpen=false;if(document.activeElement)document.activeElement.blur()}
-bg.onclick=closeSheet;
+var sheetLocked=false;
+bg.onclick=function(){if(!sheetLocked)closeSheet()};
 function confirmSheet(msg,okText,fn){
   openSheet('<h2>'+msg+'</h2><div class="row2" style="margin-top:18px"><button class="btn ghost" id="cno">'+T('cancel')+'</button><button class="btn" style="background:var(--danger);color:#fff" id="cok">'+okText+'</button></div>');
   $('#cno').onclick=closeSheet; $('#cok').onclick=function(){closeSheet();fn()};
@@ -545,7 +546,7 @@ function settingsSheet(){
    '<button class="btn main" id="ssave">'+T('save')+'</button>'+
    '<h3 style="margin-top:22px">'+T('stats')+'</h3><div class="mini">'+T('statsHint')+'</div>'+
    '<label class="toggle"><span>'+T('statsOn')+'</span><input type="checkbox" id="sstat"'+(settings.statsOff?'':' checked')+'></label>'+
-   '<div class="mini" style="margin-top:6px">'+T('yourId')+': <b dir="ltr">'+esc(anonId())+'</b></div>'+
+   '<div class="mini" style="margin-top:6px">'+T('yourId')+': <b dir="ltr">'+esc(anonId())+'</b>'+(settings.reg?' · '+esc(settings.reg.nome)+' ('+esc(settings.reg.paese)+')':'')+'</div>'+
    '<button class="contact" style="margin-top:16px" id="goAdmin"><span class="ci" style="background:#16192B">🔒</span><div><b>'+T('admin').replace('🔒 ','')+'</b><span>'+T('adminSub')+'</span></div></button>'+
    '<h3 style="margin-top:24px">'+T('contact')+'</h3><div class="mini">'+T('contactHint')+'</div>'+
    '<button class="contact" data-link="wa"><span class="ci" style="background:#1DA851">✉</span><div><b>'+T('report')+'</b><span class="ltr" style="display:block;text-align:start">'+CONTACT.phone+'</span></div></button>'+
@@ -1152,7 +1153,8 @@ $('#btnProj').onclick=function(){save();view.tab='projects';projQ='';render();wi
 $('#btnWa').onclick=doWa; $('#btnCopy').onclick=doCopy; $('#btnPdf').onclick=doPdf;
 
 window.appBack=function(){
-  if(sheetOpen){closeSheet();return true}
+  if(document.getElementById('regOv'))return true;
+  if(sheetOpen){if(!sheetLocked)closeSheet();return true}
   if(view.tab==='admin'){
     var a=view.adm||{};
     if(a.page==='items'){view.adm={page:'cats'};render();return true}
@@ -1213,6 +1215,76 @@ document.addEventListener('visibilitychange',function(){if(document.hidden)sessE
 window.addEventListener('pagehide',sessEnd);
 
 /* =====================================================================
+   REGISTRAZIONE OBBLIGATORIA (nome + Paese) → foglio Google del proprietario
+   Indirizzo dello script (Google Apps Script /exec): da version.json "reg_url" (impostato dall'app admin).
+   Se non c'è rete, la registrazione resta in coda e si invia al prossimo avvio.
+   ===================================================================== */
+var COUNTRIES=[['Italia','إيطاليا'],['Marocco','المغرب'],['Tunisia','تونس'],['Algeria','الجزائر'],['Egitto','مصر'],['Libia','ليبيا'],['Mauritania','موريتانيا'],['Sudan','السودان'],['Siria','سوريا'],['Libano','لبنان'],['Giordania','الأردن'],['Palestina','فلسطين'],['Iraq','العراق'],['Arabia Saudita','السعودية'],['Emirati Arabi','الإمارات'],['Qatar','قطر'],['Kuwait','الكويت'],['Oman','عُمان'],['Bahrein','البحرين'],['Yemen','اليمن'],['Francia','فرنسا'],['Spagna','إسبانيا'],['Germania','ألمانيا'],['Belgio','بلجيكا'],['Paesi Bassi','هولندا'],['Svizzera','سويسرا'],['Regno Unito','بريطانيا'],['Senegal','السنغال'],['Bangladesh','بنغلاديش'],['Pakistan','باكستان'],['Albania','ألبانيا'],['Romania','رومانيا'],['Altro','بلد آخر']];
+var JOBS=[['dipendente','كهربائي أعمل عند شركة','Elettricista dipendente'],['proprio','كهربائي أعمل لحسابي','Elettricista in proprio'],['ditta','صاحب شركة','Titolare di ditta'],['altro','عمل آخر','Altro lavoro']];
+function regTxt(k){var ar=settings.ui==='ar';return ({
+  title:ar?'👋 أهلاً بك في «طلب مواد»':'👋 Benvenuto in «Richiesta materiale»',
+  sub:ar?'سجّل مرة واحدة فقط لتبدأ استعمال التطبيق.':'Registrati una sola volta per iniziare a usare l\'app.',
+  name:ar?'الاسم واللقب':'Nome e cognome',country:ar?'البلد الذي تعمل فيه':'Paese in cui lavori',city:ar?'المدينة (اختياري)':'Città (facoltativo)',
+  job:ar?'عملك':'Il tuo lavoro',go:ar?'ابدأ ✓':'Inizia ✓',need:ar?'اكتب اسمك واختر البلد':'Scrivi il nome e scegli il Paese',
+  priv:ar?'نستعمل اسمك وبلدك فقط لمعرفة من يستعمل التطبيق وتحسينه. لا نبيعها ولا نعطيها لأحد.':'Usiamo nome e Paese solo per sapere chi usa l\'app e migliorarla. Non li vendiamo né li cediamo a nessuno.',
+  other:ar?'اكتب اسم البلد':'Scrivi il Paese'
+ })[k]}
+function regPending(){return settings.reg&&!settings.reg.sent}
+function regUrl(){return settings.regUrl||window.LM_REG||''}
+function plat(){return A?'android':(/iPad|iPhone|Macintosh/.test(navigator.userAgent)&&'ontouchend' in document?'ios':'web')}
+function postReg(fields){
+  var u=regUrl(); if(!u) return Promise.reject();
+  var fd=new URLSearchParams(); Object.keys(fields).forEach(function(k){if(fields[k]!=null)fd.append(k,fields[k])});
+  return fetch(u,{method:'POST',mode:'no-cors',body:fd});
+}
+function sendReg(){
+  if(!settings.reg||settings.reg.sent||!regUrl()) return;
+  var r=settings.reg;
+  postReg({tipo:'iscrizione',nome:r.nome,paese:r.paese,citta:r.citta,lavoro:r.lavoro,codice:anonId(),versione:appVersion(),dispositivo:plat(),lingua:settings.ui,giorni:settings.days||1})
+   .then(function(){r.sent=Date.now();settings.seenSent=new Date().toISOString().slice(0,10);saveSettings()},function(){});
+}
+// accesso giornaliero: aggiorna "ultimo accesso" e "giorni di uso" nel foglio
+function sendSeen(){
+  if(!settings.reg||!settings.reg.sent||!regUrl()) return;
+  var today=new Date().toISOString().slice(0,10); if(settings.seenSent===today) return;
+  postReg({tipo:'visto',codice:anonId(),versione:appVersion(),giorni:settings.days||1})
+   .then(function(){settings.seenSent=today;saveSettings()},function(){});
+}
+function regScreen(){
+  if(settings.reg) return false;
+  var ov=document.createElement('div');
+  ov.id='regOv';
+  ov.setAttribute('style','position:fixed;inset:0;z-index:90;background:var(--bg);overflow:auto;padding:24px 16px calc(24px + env(safe-area-inset-bottom))');
+  var cOpts='<option value="">—</option>'+COUNTRIES.map(function(c){return '<option value="'+c[0]+'">'+(settings.ui==='ar'?c[1]+' · '+c[0]:c[0])+'</option>'}).join('');
+  ov.innerHTML='<div style="max-width:520px;margin:0 auto">'+
+   '<div style="text-align:center;margin:10px 0 18px"><img src="'+(window.LM_ICON||'')+'" onerror="this.remove()" style="width:72px;height:72px;border-radius:18px"><h2 style="margin:10px 0 4px;font-size:21px">'+regTxt('title')+'</h2><div class="mini">'+regTxt('sub')+'</div></div>'+
+   '<div class="seg" style="margin-bottom:6px"><button class="chip'+(settings.ui==='ar'?' on':'')+'" data-rl="ar">العربية</button><button class="chip'+(settings.ui==='it'?' on':'')+'" data-rl="it">Italiano</button></div>'+
+   '<div class="card"><div class="field"><label>'+regTxt('name')+' *</label><input id="rgN" autocomplete="name"></div>'+
+   '<div class="field"><label>'+regTxt('country')+' *</label><select id="rgC" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#FAFBFD;font:inherit">'+cOpts+'</select></div>'+
+   '<div class="field" id="rgOW" style="display:none"><label>'+regTxt('other')+'</label><input id="rgO"></div>'+
+   '<div class="field"><label>'+regTxt('city')+'</label><input id="rgCi"></div>'+
+   '<div class="field"><label>'+regTxt('job')+'</label><div class="chips">'+JOBS.map(function(j,i){return '<button class="chip'+(i===0?' on':'')+'" data-rj="'+j[0]+'">'+(settings.ui==='ar'?j[1]:j[2])+'</button>'}).join('')+'</div></div>'+
+   '<div class="mini" style="margin-top:12px">🔒 '+regTxt('priv')+'</div>'+
+   '<button class="btn main" id="rgGo">'+regTxt('go')+'</button></div></div>';
+  document.body.appendChild(ov);
+  var job='dipendente';
+  ov.querySelectorAll('[data-rl]').forEach(function(b){b.onclick=function(){settings.ui=b.dataset.rl;saveSettings();applyLang();render();ov.remove();regScreen()}});
+  ov.querySelectorAll('[data-rj]').forEach(function(b){b.onclick=function(){job=b.dataset.rj;ov.querySelectorAll('[data-rj]').forEach(function(x){x.classList.toggle('on',x===b)})}});
+  ov.querySelector('#rgC').onchange=function(){ov.querySelector('#rgOW').style.display=this.value==='Altro'?'block':'none'};
+  ov.querySelector('#rgGo').onclick=function(){
+    var n=ov.querySelector('#rgN').value.trim(), c=ov.querySelector('#rgC').value;
+    if(c==='Altro') c=ov.querySelector('#rgO').value.trim();
+    if(n.length<2||!c){toast(regTxt('need'));return}
+    settings.reg={nome:n,paese:c,citta:ov.querySelector('#rgCi').value.trim(),lavoro:job,at:Date.now(),sent:0};
+    if(!settings.tecnico) settings.tecnico=n;
+    saveSettings(); ov.remove();
+    ping('/iscritto/'+c.replace(/[\/?#]/g,' '),'Nuovo iscritto (Paese)');
+    sendReg(); render();
+  };
+  return true;
+}
+
+/* =====================================================================
    AGGIORNAMENTI / التحديثات
    version.json pubblico su GitHub Pages: {versionCode, versionName, apk, notes_ar, notes_it}
    ===================================================================== */
@@ -1221,13 +1293,15 @@ function verNum(v){var m=String(v||'').match(/(\d+)\.(\d+)\.(\d+)/);return m?(+m
 function checkUpdate(manual){
   if(!window.fetch) return;
   fetch(UPD_BASE+'version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){
+    if(v.reg_url&&v.reg_url!==settings.regUrl){settings.regUrl=v.reg_url;saveSettings()}
+    sendReg();sendSeen();
     showBroadcast(v.message);
     var newer;
     if(v.send===false) newer=false;
     else if(A&&A.versionCode) newer=(+v.versionCode||0)>(+A.versionCode()||0);
     else newer=verNum(v.versionName)>verNum(appVersion());
     if(!newer){if(manual)toast(T('updNone'));return}
-    if(!manual&&settings.updSkip===v.versionName&&settings.updSkipDay===new Date().toISOString().slice(0,10)) return;
+    if(!manual&&!v.force&&settings.updSkip===v.versionName&&settings.updSkipDay===new Date().toISOString().slice(0,10)) return;
     updSheet(v);
   }).catch(function(){if(manual)toast(T('updErr'))});
 }
@@ -1251,8 +1325,9 @@ function updSheet(v){
    '<div id="updMsg" class="mini" style="margin-top:10px"></div>'+
    '<div style="height:10px;background:#EEF0F4;border-radius:6px;margin-top:8px;overflow:hidden;display:none" id="updBarW"><div id="updBar" style="height:100%;width:0;background:var(--brand)"></div></div>'+
    '<button class="btn main" id="updGo">'+T('updNow')+'</button>'+
-   '<button class="btn ghost" style="width:100%;margin-top:10px" id="updNo">'+T('updLater')+'</button>');
-  $('#updNo').onclick=function(){settings.updSkip=v.versionName;settings.updSkipDay=new Date().toISOString().slice(0,10);saveSettings();closeSheet()};
+   (v.force?'':'<button class="btn ghost" style="width:100%;margin-top:10px" id="updNo">'+T('updLater')+'</button>'));
+  if(v.force){sheetLocked=true}
+  if(!v.force)$('#updNo').onclick=function(){settings.updSkip=v.versionName;settings.updSkipDay=new Date().toISOString().slice(0,10);saveSettings();closeSheet()};
   $('#updGo').onclick=function(){
     ping('/aggiornamento/'+v.versionName,'Aggiornamento');
     if(A&&A.update){
@@ -1271,4 +1346,5 @@ window.onUpdInstalling=function(){var m=$('#updMsg');if(m)m.textContent=T('updIn
 window.onUpdError=function(){var m=$('#updMsg');if(m)m.textContent=T('updErr');var g=$('#updGo');if(g)g.disabled=false};
 
 reindex(); cur(); save(); applyLang(); render(); setTimeout(statsStart,1500); setTimeout(function(){checkUpdate(false)},3000);
+if(!regScreen()) setTimeout(function(){sendReg();sendSeen()},2500);
 })();
