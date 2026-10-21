@@ -292,7 +292,7 @@ function render(){
   else if(inCalc) h=renderCalc();
   else if(inPrice) h=renderPrice();
   else if(view.q) h=renderSearch();
-  else if(view.tab==='mat') h=renderSite()+(view.cat&&CBY[view.cat]?renderCat(view.cat):renderCats());
+  else if(view.tab==='mat') h=quickRow()+renderSite()+(view.cat&&CBY[view.cat]?renderCat(view.cat):renderCats());
   else if(view.tab==='kit') h=renderKits();
   else h=renderCart();
   main.innerHTML=h; refreshCounts();
@@ -301,6 +301,9 @@ function placeOf(id){return PLACES.find(function(p){return p.id===id})}
 var XT={
   clients:{ar:'👥 الزبائن',it:'👥 Clienti',en:'👥 Clients',fr:'👥 Clients'},
   newClient:{ar:'➕ زبون جديد',it:'➕ Nuovo cliente',en:'➕ New client',fr:'➕ Nouveau client'},
+  newP:{ar:'➕ مشروع جديد',it:'➕ Nuovo progetto',en:'➕ New project',fr:'➕ Nouveau projet'},
+  myCl:{ar:'👥 زبائني',it:'👥 I miei clienti',en:'👥 My clients',fr:'👥 Mes clients'},
+  savedNew:{ar:'✓ حُفظ المشروع السابق — صفحة جديدة',it:'✓ Progetto salvato — nuova pagina',en:'✓ Project saved — new page',fr:'✓ Projet enregistré — nouvelle page'},
   noClients:{ar:'لا يوجد زبائن محفوظون بعد.',it:'Nessun cliente salvato.',en:'No saved clients yet.',fr:'Aucun client enregistré.'},
   searchCl:{ar:'ابحث عن زبون…',it:'Cerca un cliente…',en:'Search a client…',fr:'Rechercher un client…'}
 };
@@ -320,8 +323,18 @@ function clientsSheet(){
   openSheet('<h2>'+L4(XT.clients)+'</h2><div class="field"><input id="clQ" placeholder="'+L4(XT.searchCl)+'"></div>'+
    '<button class="btn main" id="clNew" style="margin-top:10px">'+L4(XT.newClient)+'</button><div id="clList" style="margin-top:6px"></div>');
   $('#clQ').oninput=function(){q=this.value;draw()};
-  $('#clNew').onclick=function(){closeSheet();newProject();setTimeout(function(){var i=document.querySelector('[data-f=cliente]');if(i)i.focus()},300)};
+  $('#clNew').onclick=function(){closeSheet();startNew()};
   draw();
+}
+function quickRow(){
+  return '<div class="row2" style="margin-bottom:12px"><button class="btn main" style="margin:0;flex:1.3" data-act="newproj">'+L4(XT.newP)+'</button><button class="btn ghost" style="flex:1;background:var(--card);box-shadow:0 1px 2px rgba(20,25,60,.06)" data-act="clients">'+L4(XT.myCl)+'</button></div>';
+}
+function startNew(){
+  var p=cur(), had=!isEmpty(p);
+  newProject();
+  var s=cur().site; s.open=true; save(); render();
+  if(had) toast(L4(XT.savedNew));
+  setTimeout(function(){var i=document.querySelector('[data-f=cliente]');if(i)i.focus()},250);
 }
 function renderSite(){
   var p=cur(), s=p.site, pl=placeOf(s.luogo);
@@ -1392,6 +1405,7 @@ document.addEventListener('click',function(e){
    case 'kitedit': kitEditSheet(DB.kits.find(function(k){return k.id===v}));break;
    case 'export': exportBackup();break;
    case 'clients': clientsSheet();break;
+   case 'newproj': startNew();break;
    case 'sitesave': var pp=cur(); if(!pp.name&&pp.site.cliente) pp.name=''; save(); toast(T('projSaved')); break;
    case 'calcopen': view.calc=v;render();window.scrollTo(0,0);break;
    case 'calcback': view.calc=null;render();break;
@@ -1434,7 +1448,6 @@ $('#btnLang').onclick=function(){
   openSheet('<h2>🌐 '+T('uiLang')+'</h2>'+LANGS.map(function(l){return '<button class="contact" data-pl="'+l[0]+'" style="'+(l[0]===settings.ui?'border-color:var(--brand);border-width:2px':'')+'"><span class="ci" style="background:var(--brand);font-size:13px">'+l[0].toUpperCase()+'</span><div><b>'+l[1]+'</b></div></button>'}).join(''));
   sheet.querySelectorAll('[data-pl]').forEach(function(b){b.onclick=function(){settings.ui=b.dataset.pl;saveSettings();closeSheet();applyLang();render()}});
 };
-$('#btnSave').onclick=saveSheet;
 $('#btnProj').onclick=function(){save();view.tab='projects';projQ='';render();window.scrollTo(0,0)};
 $('#btnWa').onclick=doWa; $('#btnCopy').onclick=doCopy; $('#btnPdf').onclick=doPdf;
 
