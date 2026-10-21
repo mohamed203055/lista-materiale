@@ -794,9 +794,6 @@ function settingsSheet(){
    '<button class="contact" style="margin-top:16px" id="goAdmin"><span class="ci" style="background:#16192B">🔒</span><div><b>'+T('admin').replace('🔒 ','')+'</b><span>'+T('adminSub')+'</span></div></button>'+
    '<h3 style="margin-top:24px">'+T('contact')+'</h3><div class="mini">'+T('contactHint')+'</div>'+
    '<button class="contact" data-link="wa"><span class="ci" style="background:#1DA851">✉</span><div><b>'+T('report')+'</b><span class="ltr" style="display:block;text-align:start">'+CONTACT.phone+'</span></div></button>'+
-   '<button class="contact" data-link="tel"><span class="ci" style="background:#1F4FD8">☎</span><div><b>'+T('call')+'</b><span class="ltr" style="display:block;text-align:start">'+CONTACT.phone+'</span></div></button>'+
-   '<button class="contact" data-link="ig"><span class="ci" style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)">IG</span><div><b>Instagram</b><span class="ltr" style="display:block;text-align:start">@'+CONTACT.ig+'</span></div></button>'+
-   '<button class="contact" data-link="tt"><span class="ci" style="background:#111">♪</span><div><b>TikTok</b><span class="ltr" style="display:block;text-align:start">@'+CONTACT.tt+'</span></div></button>'+
    '<button class="btn ghost" style="width:100%;margin-top:16px" id="updChk">'+T('updCheck')+'</button>'+
    '<div class="mini" style="text-align:center;margin-top:14px" dir="ltr">v'+appVersion()+'<br>© 2026 Richiesta materiale – tutti i diritti riservati</div>');
   sheet.querySelectorAll('[data-link]').forEach(function(b){b.onclick=function(){openContact(b.dataset.link)}});
