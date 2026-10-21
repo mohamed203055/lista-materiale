@@ -298,16 +298,42 @@ function render(){
   main.innerHTML=h; refreshCounts();
 }
 function placeOf(id){return PLACES.find(function(p){return p.id===id})}
+var XT={
+  clients:{ar:'👥 الزبائن',it:'👥 Clienti',en:'👥 Clients',fr:'👥 Clients'},
+  newClient:{ar:'➕ زبون جديد',it:'➕ Nuovo cliente',en:'➕ New client',fr:'➕ Nouveau client'},
+  noClients:{ar:'لا يوجد زبائن محفوظون بعد.',it:'Nessun cliente salvato.',en:'No saved clients yet.',fr:'Aucun client enregistré.'},
+  searchCl:{ar:'ابحث عن زبون…',it:'Cerca un cliente…',en:'Search a client…',fr:'Rechercher un client…'}
+};
+function L4(o){return o[settings.ui]||o.it}
+function clientsSheet(){
+  save(); prune();
+  var q='';
+  function draw(){
+    var words=norm(q).split(' ').filter(Boolean);
+    var list=P.list.slice().filter(function(p){return !isEmpty(p)||p.id===P.cur}).sort(function(a,b){return b.updated-a.updated}).filter(function(p){
+      var t=norm([p.site.cliente,p.name,p.site.indirizzo].join(' '));return words.every(function(w){return t.indexOf(w)>=0})});
+    $('#clList').innerHTML=list.length?list.map(function(p){
+      var isCur=p.id===P.cur, n=p.lines.length, qn=(p.quote&&p.quote.lines.length)||0;
+      return '<button class="contact" data-cl="'+p.id+'" style="'+(isCur?'border-color:var(--brand);border-width:2px':'')+'"><span class="ci" style="background:'+(isCur?'var(--brand)':'#8A8F99')+'">'+esc(((p.site.cliente||p.name||'?').trim()[0]||'?').toUpperCase())+'</span><div style="min-width:0"><b>'+esc(p.site.cliente||projTitle(p))+(isCur?' <span class="tag">'+T('current')+'</span>':'')+'</b><span>'+esc(p.site.indirizzo||'')+(p.site.indirizzo?' · ':'')+n+' '+T('lines')+(qn?' · 💶 '+qn:'')+' · '+dstr(p.updated).split(' ')[0]+'</span></div></button>'}).join(''):'<div class="mini" style="padding:12px">'+L4(XT.noClients)+'</div>';
+    $('#clList').querySelectorAll('[data-cl]').forEach(function(b){b.onclick=function(){closeSheet();if(b.dataset.cl!==P.cur)openProject(b.dataset.cl)}});
+  }
+  openSheet('<h2>'+L4(XT.clients)+'</h2><div class="field"><input id="clQ" placeholder="'+L4(XT.searchCl)+'"></div>'+
+   '<button class="btn main" id="clNew" style="margin-top:10px">'+L4(XT.newClient)+'</button><div id="clList" style="margin-top:6px"></div>');
+  $('#clQ').oninput=function(){q=this.value;draw()};
+  $('#clNew').onclick=function(){closeSheet();newProject();setTimeout(function(){var i=document.querySelector('[data-f=cliente]');if(i)i.focus()},300)};
+  draw();
+}
 function renderSite(){
   var p=cur(), s=p.site, pl=placeOf(s.luogo);
   var sum=[p.name,s.cliente,s.indirizzo,pl?N(pl):''].filter(Boolean).join(' · ')||T('siteHint');
   if(!s.open) return '<div class="card"><button class="site-head" style="width:100%;text-align:start" data-act="siteopen"><b>'+T('site')+'</b><span class="mini">'+T('edit')+'</span></button><div class="site-sum">'+esc(sum)+'</div></div>';
   var chips=PLACES.map(function(x){return '<button class="chip'+(s.luogo===x.id?' on':'')+'" data-act="place" data-v="'+x.id+'">'+esc(N(x))+'</button>'}).join('');
   return '<div class="card"><button class="site-head" style="width:100%;text-align:start" data-act="siteclose"><b>'+T('site')+'</b><span class="mini">'+T('hide')+'</span></button>'+
-   '<div class="field"><label>'+T('cliente')+'</label><input data-f="cliente" value="'+esc(s.cliente)+'" placeholder="'+T('clienteP')+'"></div>'+
+   '<div class="field"><label>'+T('cliente')+'</label><div class="combo"><input data-f="cliente" value="'+esc(s.cliente)+'" placeholder="'+T('clienteP')+'"><button class="combo-btn" data-act="clients" aria-label="'+L4(XT.clients)+'">▾</button></div></div>'+
    '<div class="field"><label>'+T('indirizzo')+'</label><input data-f="indirizzo" value="'+esc(s.indirizzo)+'" placeholder="'+((PACK_TXT[packId()]||{}).addrP||'Via …, Roma')+'"></div>'+
    '<div class="field"><label>'+T('luogo')+'</label><div class="chips">'+chips+'</div></div>'+
-   '<div class="field"><label>'+T('note')+'</label><textarea data-f="note" rows="2" placeholder="'+T('noteP')+'">'+esc(s.note)+'</textarea></div></div>';
+   '<div class="field"><label>'+T('note')+'</label><textarea data-f="note" rows="2" placeholder="'+T('noteP')+'">'+esc(s.note)+'</textarea></div>'+
+   '<button class="btn main" data-act="sitesave">💾 '+T('save')+'</button></div>';
 }
 function visibleItems(c){return c.items.filter(function(i){return !i.hidden})}
 function renderCats(){
@@ -1365,6 +1391,8 @@ document.addEventListener('click',function(e){
    case 'kitnew': kitEditSheet(null);break;
    case 'kitedit': kitEditSheet(DB.kits.find(function(k){return k.id===v}));break;
    case 'export': exportBackup();break;
+   case 'clients': clientsSheet();break;
+   case 'sitesave': var pp=cur(); if(!pp.name&&pp.site.cliente) pp.name=''; save(); toast(T('projSaved')); break;
    case 'calcopen': view.calc=v;render();window.scrollTo(0,0);break;
    case 'calcback': view.calc=null;render();break;
    case 'calcclose': view.tab='mat';view.calc=null;render();break;
