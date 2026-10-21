@@ -9,7 +9,7 @@ var A=window.Android;
    TESTI / النصوص
    ===================================================================== */
 var TXT={
- ar:{title:'طلب مواد',search:'ابحث… مثلاً 503 أو كابل أو cavo',mat:'المواد',kit:'الكيتات',cart:'الطلب',items:'مادة',copy:'نسخ',
+ ar:{title:'طلب مواد',search:'ابحث عن قطعة، كابل...',mat:'المواد',kit:'الكيتات',cart:'الطلب',items:'مادة',copy:'نسخ',
   site:'📍 بيانات الموقع',edit:'تعديل ▾',hide:'إخفاء ▴',siteHint:'اضغط لإدخال اسم الزبون والعنوان',cliente:'الزبون',clienteP:'اسم الزبون أو الشركة',
   indirizzo:'العنوان',luogo:'نوع المكان',note:'ملاحظات عامة',noteP:'مثلاً: السلسلة BTicino Living بيضاء',
   custom:'مادة غير موجودة',allCats:'كل الفئات',kits:'الكيتات',materials:'المواد',notFound:'لم أجد',addNew:'أضف «%» كمادة جديدة',
@@ -48,7 +48,7 @@ var TXT={
   unitPrice:'سعر الوحدة €',lineTotal:'المجموع',labour:'مجموع العمل',discount:'خصم €',taxable:'المبلغ بدون ضريبة',withIva:'إضافة IVA (الضريبة)',iva:'IVA',total:'السعر النهائي',
   noIvaNote:'السعر بدون IVA',descr:'الوصف',needPrice:'اكتب السعر',addToQuote:'أضف إلى عرض السعر ✓',addedQ:'أُضيف إلى العرض:',clearQuoteQ:'مسح عرض السعر لهذا المشروع؟',
   admSvc:'أسعار العمل',admSvcSub:'تعديل سعر كل خدمة، إضافة وحذف',newSvc:'➕ خدمة جديدة',editSvc:'تعديل الخدمة',priceL:'السعر € (بدون IVA)',group:'المجموعة',delSvcQ:'حذف هذه الخدمة؟',resetSvc:'استرجاع الأسعار الأصلية',resetSvcQ:'استرجاع أسعار العمل الأصلية؟ ستُحذف تعديلاتك على الأسعار.',photoErr:'تعذّر قراءة الصورة',moved:'نُقلت',editsSaved:'تم الحفظ ✓'},
- it:{title:'Richiesta materiale',search:'Cerca… es. 503, cavo, scatola',mat:'Materiali',kit:'Kit',cart:'Richiesta',items:'voci',copy:'Copia',
+ it:{title:'Richiesta materiale',search:'Cerca pezzo, cavo...',mat:'Materiali',kit:'Kit',cart:'Richiesta',items:'voci',copy:'Copia',
   site:'📍 Dati del cantiere',edit:'Modifica ▾',hide:'Nascondi ▴',siteHint:'Tocca per inserire cliente e indirizzo',cliente:'Cliente',clienteP:'Nome cliente o azienda',
   indirizzo:'Indirizzo',luogo:'Tipo di luogo',note:'Note generali',noteP:'es. serie BTicino Living bianca',
   custom:'Articolo non in elenco',allCats:'Tutte le categorie',kits:'Kit',materials:'Materiali',notFound:'Nessun risultato per',addNew:'Aggiungi «%» come nuovo articolo',
@@ -271,8 +271,8 @@ function applyLang(){
   $('#btnLang').textContent='🌐 '+settings.ui.toUpperCase();
   $('#q').placeholder=T('search');
   $('#tMat').textContent=T('mat');$('#tPrice').textContent='💶 '+T('price'); $('#tKit').textContent=T('kit'); $('#tCart').textContent=T('cart');
-  $('#cntL').textContent=T('items'); $('#btnCopy').textContent=T('copy');
-  $('#btnWa').textContent=ar?'واتساب':'WhatsApp';
+  $('#cntL').textContent=T('items'); $('#btnCopyT').textContent=T('copy');
+  $('#btnWaT').textContent=ar?'واتساب':'WhatsApp';
   if($('#tCalc'))$('#tCalc').title=T('calc');
 }
 
@@ -344,7 +344,7 @@ function renderSite(){
   return '<div class="card"><button class="site-head" style="width:100%;text-align:start" data-act="siteclose"><b>'+T('site')+'</b><span class="mini">'+T('hide')+'</span></button>'+
    '<div class="field"><label>'+T('cliente')+'</label><div class="combo"><input data-f="cliente" value="'+esc(s.cliente)+'" placeholder="'+T('clienteP')+'"><button class="combo-btn" data-act="clients" aria-label="'+L4(XT.clients)+'">▾</button></div></div>'+
    '<div class="field"><label>'+T('indirizzo')+'</label><input data-f="indirizzo" value="'+esc(s.indirizzo)+'" placeholder="'+((PACK_TXT[packId()]||{}).addrP||'Via …, Roma')+'"></div>'+
-   '<div class="field"><label>'+T('luogo')+'</label><div class="chips">'+chips+'</div></div>'+
+   '<div class="field"><label>'+T('luogo')+'</label><div class="chips places">'+chips+'</div></div>'+
    '<div class="field"><label>'+T('note')+'</label><textarea data-f="note" rows="2" placeholder="'+T('noteP')+'">'+esc(s.note)+'</textarea></div>'+
    '<button class="btn main" data-act="sitesave">💾 '+T('save')+'</button></div>';
 }

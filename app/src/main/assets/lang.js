@@ -333,7 +333,7 @@ window.LM_NAMES = {
 
 // Testi interfaccia EN / FR
 window.LM_TXT = { en: {
-  title:'Material request',search:'Search… e.g. 503, cable, box',mat:'Materials',kit:'Kits',cart:'Request',items:'items',copy:'Copy',
+  title:'Material request',search:'Search part, cable...',mat:'Materials',kit:'Kits',cart:'Request',items:'items',copy:'Copy',
   site:'📍 Site details',edit:'Edit ▾',hide:'Hide ▴',siteHint:'Tap to enter client and address',cliente:'Client',clienteP:'Client or company name',
   indirizzo:'Address',luogo:'Type of place',note:'General notes',noteP:'e.g. BTicino Living series, white',
   custom:'Item not in the list',allCats:'All categories',kits:'Kits',materials:'Materials',notFound:'No results for',addNew:'Add «%» as a new item',
@@ -376,7 +376,7 @@ window.LM_TXT = { en: {
   share:'📤 Share / Send',download:'⬇️ Download / Open',newMsg:'New message',openLink:'Open link',ok:'OK ✓',back:'←'
  },
  fr: {
-  title:'Demande de matériel',search:'Rechercher… ex. 503, câble, boîte',mat:'Matériel',kit:'Kits',cart:'Demande',items:'articles',copy:'Copier',
+  title:'Demande de matériel',search:'Chercher pièce, câble...',mat:'Matériel',kit:'Kits',cart:'Demande',items:'articles',copy:'Copier',
   site:'📍 Infos du chantier',edit:'Modifier ▾',hide:'Masquer ▴',siteHint:'Touchez pour saisir le client et l\'adresse',cliente:'Client',clienteP:'Nom du client ou de l\'entreprise',
   indirizzo:'Adresse',luogo:'Type de lieu',note:'Notes générales',noteP:'ex. série BTicino Living blanche',
   custom:'Article absent de la liste',allCats:'Toutes les catégories',kits:'Kits',materials:'Matériel',notFound:'Aucun résultat pour',addNew:'Ajouter «%» comme nouvel article',
