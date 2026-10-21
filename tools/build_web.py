@@ -92,11 +92,13 @@ if len(sys.argv) > 3:
     old = {}
     try: old = json.load(open(vj))
     except Exception: pass
-    data = {
-        'send': False,
-        'versionCode': int(ver.split('.')[-1]), 'versionName': ver, 'apk': 'TalabMawad-%s.apk' % ver,
-        'notes_ar': rd('notes_ar.txt'), 'notes_it': rd('notes_it.txt'),
-        'message': old.get('message') or {'id': '', 'ar': '', 'it': '', 'link': ''},
-    }
+    new = {'versionCode': int(ver.split('.')[-1]), 'versionName': ver, 'apk': 'TalabMawad-%s.apk' % ver,
+           'notes_ar': rd('notes_ar.txt'), 'notes_it': rd('notes_it.txt')}
+    if old.get('send'):
+        # il proprietario ha già inviato una versione: non toccarla, la nuova resta "pronta" in next
+        data = dict(old); data['next'] = new
+    else:
+        data = dict(old); data.pop('next', None); data.update(new); data['send'] = False
+    data.setdefault('message', {'id': '', 'ar': '', 'it': '', 'link': ''})
     json.dump(data, open(vj, 'w'), ensure_ascii=False, indent=1)
 print('ok', dst, ver)

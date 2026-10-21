@@ -65,6 +65,11 @@ a{color:var(--brand)}
   <div class="card">
     <h2>📦 التحديث</h2>
     <div id="status" class="status"></div>
+    <div id="nextBox" class="hide" style="margin-top:10px;border:2px solid var(--ok);border-radius:12px;padding:12px">
+      <b>🆕 نسخة جديدة جاهزة: <span id="nxName" dir="ltr"></span></b>
+      <div class="mini">اكتب «ما الجديد» في الأسفل ثم اضغط إرسال.</div>
+      <button class="b-ok" id="btnNext">🚀 إرسال النسخة الجديدة للجميع</button>
+    </div>
     <div style="margin-top:10px">
       <div class="kv"><span>النسخة</span><b id="vName">—</b></div>
       <div class="kv"><span>رقم النسخة (versionCode)</span><b id="vCode">—</b></div>
@@ -178,20 +183,30 @@ function show(){
   $('status').className='status '+(on?'st-on':'st-off');
   $('status').textContent=on?'✅ التحديث مُرسَل — المستخدمون يرون رسالة التحديث':'⏸️ التحديث جاهز لكنه لم يُرسَل بعد';
   $('vName').textContent=data.versionName||'—';$('vCode').textContent=data.versionCode||'—';$('vApk').textContent=data.apk||'—';
-  if(document.activeElement!==$('nAr'))$('nAr').value=data.notes_ar||'';
-  if(document.activeElement!==$('nIt'))$('nIt').value=data.notes_it||'';
+  var src=data.next||data;
+  if(document.activeElement!==$('nAr'))$('nAr').value=src.notes_ar||'';
+  if(document.activeElement!==$('nIt'))$('nIt').value=src.notes_it||'';
+  $('nextBox').classList.toggle('hide',!data.next);
+  if(data.next)$('nxName').textContent='v'+data.next.versionName;
   var m=data.message||{};
   $('mCur').textContent=m.id?('الرسالة الحالية (رقم '+m.id+'): '+(m.ar||m.it)):'لا توجد رسالة حالياً.';
   $('btnSend').disabled=on;$('btnStop').disabled=!on;
   $('force').checked=!!data.force;
 }
-function notes(){data.notes_ar=$('nAr').value.trim();data.notes_it=$('nIt').value.trim()}
+function notes(){var t=data.next||data;t.notes_ar=$('nAr').value.trim();t.notes_it=$('nIt').value.trim()}
 $('btnLogin').onclick=function(){
   var t=$('tok').value.trim(); if(!t){toast('الصق المفتاح أولاً');return}
   try{localStorage.setItem(TK,t)}catch(e){}
   load().then(usersLoad).catch(function(e){toast(e.message==='auth'?'المفتاح غير صالح':'خطأ في الاتصال: '+e.message)});
 };
 $('btnSend').onclick=function(){if(!confirm('إرسال التحديث '+data.versionName+' لكل المستخدمين؟'))return;notes();data.send=true;data.force=$('force').checked;save('Invia aggiornamento '+data.versionName)};
+$('btnNext').onclick=function(){
+  if(!data.next)return;
+  if(!confirm('إرسال النسخة '+data.next.versionName+' لكل المستخدمين؟'))return;
+  notes(); var n=data.next; delete data.next;
+  data.versionCode=n.versionCode;data.versionName=n.versionName;data.apk=n.apk;data.notes_ar=n.notes_ar;data.notes_it=n.notes_it;
+  data.send=true;data.force=$('force').checked;save('Invia aggiornamento '+n.versionName);
+};
 $('btnStop').onclick=function(){data.send=false;save('Sospendi aggiornamento')};
 $('btnNotes').onclick=function(){notes();save('Note aggiornamento')};
 $('btnCustom').onclick=function(){
