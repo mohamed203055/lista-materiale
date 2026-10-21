@@ -270,7 +270,8 @@ function applyLang(){
   document.title=T('title'); $('#ttl').textContent=(packId()!=='IT'&&packData()?packData().flag+' ':'')+T('title');
   $('#btnLang').textContent='🌐 '+settings.ui.toUpperCase();
   $('#q').placeholder=T('search');
-  $('#tMat').textContent=T('mat');$('#tPrice').textContent='💶 '+T('price'); $('#tKit').textContent=T('kit'); $('#tCart').textContent=T('cart');
+  $('#btnCalc').innerHTML='🧮 <span>'+L4(XT.calcBtn)+'</span>';$('#btnCalc').title=CT('calc');
+  $('#tMat').textContent=T('mat');$('#tPrice').textContent='💶 '+T('price'); $('#tCart').textContent=T('cart');
   $('#cntL').textContent=T('items'); $('#btnCopyT').textContent=T('copy');
   $('#btnWaT').textContent=ar?'واتساب':'WhatsApp';
   if($('#tCalc'))$('#tCalc').title=T('calc');
@@ -293,7 +294,7 @@ function render(){
   else if(inPrice) h=renderPrice();
   else if(view.q) h=renderSearch();
   else if(view.tab==='mat') h=quickRow()+renderSite()+(view.cat==='__fav'?renderFavs():view.cat&&CBY[view.cat]?renderCat(view.cat):renderCats());
-  else if(view.tab==='kit') h=renderKits();
+  else if(view.tab==='kit'){view.tab='mat';h=quickRow()+renderSite()+renderCats()}
   else h=renderCart();
   main.innerHTML=h; refreshCounts();
 }
@@ -305,6 +306,7 @@ var XT={
   myCl:{ar:'👥 زبائني',it:'👥 I miei clienti',en:'👥 My clients',fr:'👥 Mes clients'},
   savedNew:{ar:'✓ حُفظ المشروع السابق — صفحة جديدة',it:'✓ Progetto salvato — nuova pagina',en:'✓ Project saved — new page',fr:'✓ Projet enregistré — nouvelle page'},
   noClients:{ar:'لا يوجد زبائن محفوظون بعد.',it:'Nessun cliente salvato.',en:'No saved clients yet.',fr:'Aucun client enregistré.'},
+  calcBtn:{ar:'حاسبة',it:'Calcoli',en:'Calc',fr:'Calculs'},
   searchCl:{ar:'ابحث عن زبون…',it:'Cerca un cliente…',en:'Search a client…',fr:'Rechercher un client…'},
   dupLine:{ar:'⧉ تكرار السطر',it:'⧉ Duplica riga',en:'⧉ Duplicate line',fr:'⧉ Dupliquer la ligne'},
   delLine:{ar:'🗑 حذف السطر',it:'🗑 Elimina riga',en:'🗑 Delete line',fr:'🗑 Supprimer la ligne'},
@@ -397,9 +399,8 @@ function renderSearch(){
   var res=ITEMS.filter(function(i){return !i.hidden&&!(CBY[i.cat]&&CBY[i.cat].hidden)&&words.every(function(w){return i._s.indexOf(w)>=0})});
   var kits=DB.kits.filter(function(k){var s=norm(k.it+' '+k.ar);return !k.hidden&&words.every(function(w){return s.indexOf(w)>=0})});
   var h='';
-  if(kits.length) h+='<div class="sec">'+T('kits')+'</div><div class="list">'+kits.map(kitRow).join('')+'</div>';
   if(res.length) h+='<div class="sec">'+T('materials')+' ('+res.length+')</div><div class="list">'+res.slice(0,80).map(itemRow).join('')+'</div>';
-  if(!res.length&&!kits.length) h+='<div class="empty"><div class="big">🔎</div>'+T('notFound')+' «'+esc(view.q)+'»</div>';
+  if(!res.length) h+='<div class="empty"><div class="big">🔎</div>'+T('notFound')+' «'+esc(view.q)+'»</div>';
   h+='<button class="btn main" data-act="custom" data-v="'+esc(view.q)+'">➕ '+esc(T('addNew').replace('%',view.q))+'</button>';
   return h;
 }
@@ -942,7 +943,7 @@ function renderAdmin(){
   if(a.page==='home') return admHead(T('admin'))+'<div class="menu">'+
     '<button data-act="adm" data-v="cats"><span class="ic">📦</span><div><b>'+T('admCats')+'</b><span>'+T('admCatsSub')+'</span></div></button>'+
     '<button data-act="adm" data-v="svc"><span class="ic">💶</span><div><b>'+T('admSvc')+'</b><span>'+T('admSvcSub')+'</span></div></button>'+
-    '<button data-act="adm" data-v="kits"><span class="ic">🧩</span><div><b>'+T('admKits')+'</b><span>'+T('admKitsSub')+'</span></div></button>'+
+
     '<button data-act="adm" data-v="backup"><span class="ic">💾</span><div><b>'+T('admBackup')+'</b><span>'+T('admBackupSub')+'</span></div></button>'+
     '<button data-act="admpw"><span class="ic">🔑</span><div><b>'+T('admPw')+'</b></div></button>'+
     '<button data-act="admreset"><span class="ic">↩️</span><div><b>'+T('admReset')+'</b></div></button></div>';

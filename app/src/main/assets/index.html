@@ -115,6 +115,7 @@ main{padding:12px 12px 0}
 .row2{display:flex;gap:8px}
 .row2 .btn{flex:1}
 .iconbtn.lang{font-size:14px;font-weight:800;width:auto;padding:0 10px}
+.iconbtn.calcbtn{font-size:13.5px;font-weight:700;gap:4px;display:flex;align-items:center;white-space:nowrap}
 .seg{display:flex;gap:6px}
 .seg .chip{flex:1;text-align:center}
 .contact{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;margin-top:8px;width:100%;text-align:start}
@@ -180,7 +181,7 @@ main{padding:12px 12px 0}
   <div class="top">
     <h1 id="ttl"></h1>
     <button class="iconbtn lang" id="btnLang"></button>
-    <button class="iconbtn" id="btnCalc">🧮</button>
+    <button class="iconbtn lang calcbtn" id="btnCalc">🧮</button>
     <button class="iconbtn" id="btnProj">📁</button>
     <button class="iconbtn" id="btnSettings">⚙️</button>
   </div>
@@ -191,7 +192,6 @@ main{padding:12px 12px 0}
   </div>
   <div class="tabs" id="tabs">
     <button class="tab on" data-tab="mat" id="tMat"></button>
-    <button class="tab" data-tab="kit" id="tKit"></button>
     <button class="tab" data-tab="cart"><span id="tCart"></span><span class="badge" id="badge">0</span></button>
     <button class="tab" data-tab="price" id="tPrice"></button>
   </div>
