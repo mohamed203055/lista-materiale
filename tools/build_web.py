@@ -60,7 +60,8 @@ self.addEventListener('fetch',function(e){
 });
 ''' % (ver, str(files).replace("'", '"')))
 open(os.path.join(dst, '.nojekyll'), 'w').write('')
-shutil.copy(os.path.join(os.path.dirname(__file__), 'admin.html'), os.path.join(dst, 'admin.html'))
+for _f in ('admin.html','admin.webmanifest','admin-icon-180.png','admin-icon-192.png','admin-icon-512.png'):
+    shutil.copy(os.path.join(os.path.dirname(__file__), _f), os.path.join(dst, _f))
 
 # icona (stessa dell'app Android)
 def icon(size):
