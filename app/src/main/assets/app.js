@@ -1257,7 +1257,7 @@ function updSheet(v){
     ping('/aggiornamento/'+v.versionName,'Aggiornamento');
     if(A&&A.update){
       $('#updGo').disabled=true;$('#updBarW').style.display='block';$('#updMsg').textContent=T('updDl');
-      A.update(UPD_BASE+(v.apk||'TalabMawad.apk')+'?v='+encodeURIComponent(v.versionName));
+      var apk=v.apk||'TalabMawad.apk';A.update((/^https?:\/\//.test(apk)?apk:UPD_BASE+apk+'?v='+encodeURIComponent(v.versionName)));
     }else{
       $('#updMsg').textContent=T('updWeb');
       var done=function(){location.reload()};
