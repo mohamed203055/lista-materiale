@@ -125,7 +125,7 @@ var COLBY={}; COLORS.forEach(function(c){COLBY[c.id]=c});
 /* =====================================================================
    ARCHIVIO LOCALE / التخزين
    ===================================================================== */
-var K={db:'lm_db_v2',img:'lm_img_v2',proj:'lm_proj_v2',set:'lm_settings_v1',old:'lm_state_v1'};
+var K={db:'lm_db_v2',img:'lm_img_v2',proj:'lm_proj_v2',set:'lm_settings_v1',old:'lm_state_v1',fav:'lm_fav_v1'};
 function load(k,d){try{var v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}}
 function put(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){toast(T('storageFull'));return false}}
 
@@ -292,7 +292,7 @@ function render(){
   else if(inCalc) h=renderCalc();
   else if(inPrice) h=renderPrice();
   else if(view.q) h=renderSearch();
-  else if(view.tab==='mat') h=quickRow()+renderSite()+(view.cat&&CBY[view.cat]?renderCat(view.cat):renderCats());
+  else if(view.tab==='mat') h=quickRow()+renderSite()+(view.cat==='__fav'?renderFavs():view.cat&&CBY[view.cat]?renderCat(view.cat):renderCats());
   else if(view.tab==='kit') h=renderKits();
   else h=renderCart();
   main.innerHTML=h; refreshCounts();
@@ -309,6 +309,11 @@ var XT={
   dupLine:{ar:'⧉ تكرار السطر',it:'⧉ Duplica riga',en:'⧉ Duplicate line',fr:'⧉ Dupliquer la ligne'},
   delLine:{ar:'🗑 حذف السطر',it:'🗑 Elimina riga',en:'🗑 Delete line',fr:'🗑 Supprimer la ligne'},
   lineDup:{ar:'✓ تم تكرار السطر',it:'✓ Riga duplicata',en:'✓ Line duplicated',fr:'✓ Ligne dupliquée'},
+  favs:{ar:'⭐ المفضلة',it:'⭐ Preferiti',en:'⭐ Favourites',fr:'⭐ Favoris'},
+  recent:{ar:'🕘 المستعملة مؤخراً',it:'🕘 Usati di recente',en:'🕘 Recently used',fr:'🕘 Utilisés récemment'},
+  favEmpty:{ar:'لا توجد مفضلة بعد. اضغط ☆ بجانب أي قطعة لإضافتها هنا.',it:'Nessun preferito. Tocca ☆ accanto a un articolo per aggiungerlo qui.',en:'No favourites yet. Tap ☆ next to an item to add it here.',fr:'Aucun favori. Touchez ☆ à côté d’un article pour l’ajouter ici.'},
+  favAdd:{ar:'⭐ أضيفت إلى المفضلة',it:'⭐ Aggiunto ai preferiti',en:'⭐ Added to favourites',fr:'⭐ Ajouté aux favoris'},
+  favDel:{ar:'أُزيلت من المفضلة',it:'Rimosso dai preferiti',en:'Removed from favourites',fr:'Retiré des favoris'},
   pressHint:{ar:'اضغط مطولاً على أي سطر لتكراره أو حذفه',it:'Tieni premuta una riga per duplicarla o eliminarla',en:'Long-press a line to duplicate or delete it',fr:'Appui long sur une ligne pour la dupliquer ou la supprimer'}
 };
 function L4(o){return o[settings.ui]||o.it}
@@ -358,8 +363,21 @@ function renderSite(){
    '<button class="btn main" data-act="sitesave">💾 '+T('save')+'</button></div>';
 }
 function visibleItems(c){return c.items.filter(function(i){return !i.hidden})}
+/* ---- preferiti e usati di recente (salvati a parte, per paese) ---- */
+var FAV=load(K.fav,{});
+function favBox(){var k=packId();if(!FAV[k])FAV[k]={fav:[],rec:[]};return FAV[k]}
+function isFav(id){return favBox().fav.indexOf(id)>=0}
+function toggleFav(id){var f=favBox().fav,i=f.indexOf(id);if(i>=0)f.splice(i,1);else f.unshift(id);put(K.fav,FAV);return i<0}
+function addRecent(id){if(!id)return;var r=favBox().rec,i=r.indexOf(id);if(i>=0)r.splice(i,1);r.unshift(id);if(r.length>8)r.length=8;put(K.fav,FAV)}
+function liveItems(ids){return ids.map(function(id){return IBY[id]}).filter(function(it){return it&&!it.hidden&&!(CBY[it.cat]&&CBY[it.cat].hidden)})}
+function renderRecent(){var r=liveItems(favBox().rec).slice(0,5);return r.length?'<div class="sec">'+L4(XT.recent)+'</div><div class="list" style="margin-bottom:12px">'+r.map(itemRow).join('')+'</div>':''}
+function renderFavs(){
+  var f=liveItems(favBox().fav);
+  return '<button class="back" data-act="back">'+(settings.ui==='ar'?'→ ':'← ')+T('allCats')+'</button><div class="sec">'+L4(XT.favs)+'</div>'+
+   (f.length?'<div class="list">'+f.map(itemRow).join('')+'</div>':'<div class="empty"><div class="big">☆</div>'+L4(XT.favEmpty)+'</div>');
+}
 function renderCats(){
-  return '<div class="grid">'+DB.cats.filter(function(c){return !c.hidden}).map(function(c){
+  return renderRecent()+'<div class="grid"><button class="cat" data-act="cat" data-v="__fav"><span class="ic">⭐</span><b>'+esc(L4(XT.favs).replace('⭐ ',''))+'</b><span>'+liveItems(favBox().fav).length+' '+T('items')+'</span></button>'+DB.cats.filter(function(c){return !c.hidden}).map(function(c){
     return '<button class="cat" data-act="cat" data-v="'+c.id+'"><span class="ic">'+esc(c.ic||'📦')+'</span><b>'+esc(N(c))+'</b><span>'+visibleItems(c).length+' '+T('items')+'</span></button>'}).join('')+
    '<button class="cat" data-act="custom"><span class="ic">➕</span><b>'+T('custom')+'</b></button></div>';
 }
@@ -368,7 +386,7 @@ function itemRow(it){
   var sub=it.sizes.length?it.sizes.slice(0,4).join(' · ')+(it.sizes.length>4?' …':''):'';
   if(it.colors) sub=(sub?sub+' · ':'')+'🎨';
   return '<button class="row" data-act="item" data-v="'+it.id+'">'+thumb(it.id)+'<div class="t"><b>'+esc(N(it))+'</b>'+(sub?'<span class="ltr" style="text-align:start">'+esc(sub)+'</span>':'')+'</div>'+
-    (h?'<span class="have">'+fmt(h)+' '+N(unit(it.unit))+'</span>':'')+'<span class="plus">+</span></button>';
+    (h?'<span class="have">'+fmt(h)+' '+N(unit(it.unit))+'</span>':'')+'<span class="fav'+(isFav(it.id)?' on':'')+'" role="button" data-act="fav" data-v="'+it.id+'" aria-label="'+esc(L4(XT.favs))+'">'+(isFav(it.id)?'★':'☆')+'</span><span class="plus">+</span></button>';
 }
 function renderCat(id){
   var c=CBY[id];
@@ -761,12 +779,12 @@ function itemSheet(it){
       var any=0;
       COLORS.forEach(function(c){var q=num(sheet.querySelector('[data-cq="'+c.id+'"]').value);if(q>0){any+=q;addLine(lineFromItem(it,size,q,c.id,note))}});
       if(!any){toast(T('needColor'));return}
-      closeSheet();toast(T('added')+' '+N(it)+(size?' '+size:''));render();return;
+      addRecent(it.id);closeSheet();toast(T('added')+' '+N(it)+(size?' '+size:''));render();return;
     }
     var qty=num($('#sq').value);
     if(qty<=0){toast(T('needQty'));return}
     addLine(lineFromItem(it,size,qty,'',note));
-    closeSheet(); toast(T('added')+' '+qty+' '+N(U)+' '+N(it)); render();
+    addRecent(it.id);closeSheet(); toast(T('added')+' '+qty+' '+N(U)+' '+N(it)); render();
   };
 }
 function customSheet(name){
@@ -1377,6 +1395,7 @@ document.addEventListener('click',function(e){
    case 'cat': view.cat=v;render();window.scrollTo(0,0);break;
    case 'back': view.cat=null;render();break;
    case 'item': itemSheet(IBY[v]);break;
+   case 'fav': var y=window.scrollY;toast(L4(toggleFav(v)?XT.favAdd:XT.favDel));render();window.scrollTo(0,y);break;
    case 'kit': kitSheet(DB.kits.find(function(k){return k.id===v}));break;
    case 'custom': customSheet(v||'');break;
    case 'siteopen': cur().site.open=true;save();render();break;
