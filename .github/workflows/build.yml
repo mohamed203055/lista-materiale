@@ -19,6 +19,25 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Protect JS (obfuscate)
+        run: |
+          cd app/src/main/assets
+          sed -i 's#<script src="catalog.js"></script>#<script>window.LM_RELEASE=1</script>\n<script src="catalog.js"></script>#' index.html
+          for f in catalog.js app.js; do
+            npx --yes javascript-obfuscator@4.1.1 "$f" --output "$f" \
+              --compact true --string-array true --string-array-encoding base64 \
+              --string-array-threshold 0.75 --rename-globals false --self-defending false \
+              --control-flow-flattening false --dead-code-injection false
+          done
+          mkdir -p "$GITHUB_WORKSPACE/out"
+          cp app.js "$GITHUB_WORKSPACE/out/web-app.js"
+          cp catalog.js "$GITHUB_WORKSPACE/out/web-catalog.js"
+          head -c 200 app.js
+
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
@@ -45,7 +64,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: apk
-          path: out/*.apk
+          path: out/*
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
@@ -53,4 +72,7 @@ jobs:
           tag_name: v1.0.${{ github.run_number }}
           name: طلب مواد 1.0.${{ github.run_number }}
           make_latest: true
-          files: out/*.apk
+          files: |
+            out/*.apk
+            out/web-app.js
+            out/web-catalog.js

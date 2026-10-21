@@ -549,7 +549,7 @@ function settingsSheet(){
    '<button class="contact" data-link="tel"><span class="ci" style="background:#1F4FD8">☎</span><div><b>'+T('call')+'</b><span class="ltr" style="display:block;text-align:start">'+CONTACT.phone+'</span></div></button>'+
    '<button class="contact" data-link="ig"><span class="ci" style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)">IG</span><div><b>Instagram</b><span class="ltr" style="display:block;text-align:start">@'+CONTACT.ig+'</span></div></button>'+
    '<button class="contact" data-link="tt"><span class="ci" style="background:#111">♪</span><div><b>TikTok</b><span class="ltr" style="display:block;text-align:start">@'+CONTACT.tt+'</span></div></button>'+
-   '<div class="mini" style="text-align:center;margin-top:14px" dir="ltr">v'+appVersion()+'</div>');
+   '<div class="mini" style="text-align:center;margin-top:14px" dir="ltr">v'+appVersion()+'<br>© 2026 Richiesta materiale – tutti i diritti riservati</div>');
   sheet.querySelectorAll('[data-link]').forEach(function(b){b.onclick=function(){openContact(b.dataset.link)}});
   sheet.querySelectorAll('[data-ui]').forEach(function(b){b.onclick=function(){ui=b.dataset.ui;sheet.querySelectorAll('[data-ui]').forEach(function(x){x.classList.toggle('on',x.dataset.ui===ui)})}});
   sheet.querySelectorAll('[data-out]').forEach(function(b){b.onclick=function(){out=b.dataset.out;sheet.querySelectorAll('[data-out]').forEach(function(x){x.classList.toggle('on',x.dataset.out===out)})}});
@@ -1006,7 +1006,7 @@ function doPdf(){
 }
 
 /* ---------- versione web (iPad / iPhone): PDF, condivisione file ---------- */
-var WEB_VERSION='web-1.0.3';
+var WEB_VERSION=window.LM_WEB_VERSION||'web';
 function loadScript(src,cb){if(window.html2canvas){cb();return}var sc=document.createElement('script');sc.src=src;sc.onload=cb;sc.onerror=function(){toast(T('pdfErr'))};document.head.appendChild(sc)}
 function webPdf(isQuote){
   toast(T('pdfWait'));
@@ -1160,7 +1160,7 @@ window.appBack=function(){
   if(view.tab!=='mat'){view.tab='mat';render();return true}
   return false;
 };
-window.__test={buildQuoteText:buildQuoteText,buildQuoteReport:buildQuoteReport,cur:cur,P:function(){return P},DB:function(){return DB},settings:function(){return settings},buildText:buildText,buildReport:buildReport,sha:pwHash};
+if(!window.LM_RELEASE)window.__test={buildQuoteText:buildQuoteText,buildQuoteReport:buildQuoteReport,cur:cur,P:function(){return P},DB:function(){return DB},settings:function(){return settings},buildText:buildText,buildReport:buildReport,sha:pwHash};
 
 reindex(); cur(); save(); applyLang(); render();
 })();

@@ -8,9 +8,10 @@ dst, ver = sys.argv[1], sys.argv[2]
 os.makedirs(dst, exist_ok=True)
 for f in ('catalog.js', 'app.js'):
     shutil.copy(os.path.join(src, f), os.path.join(dst, f))
-app = open(os.path.join(dst, 'app.js')).read()
-app = re.sub(r"var WEB_VERSION='[^']*';", "var WEB_VERSION='web-%s';" % ver, app)
-open(os.path.join(dst, 'app.js'), 'w').write(app)
+# file JS già offuscati (dalla release) se indicati come 3° argomento
+if len(sys.argv) > 3:
+    for f in ('catalog.js', 'app.js'):
+        shutil.copy(os.path.join(sys.argv[3], f), os.path.join(dst, f))
 
 html = open(os.path.join(src, 'index.html')).read()
 head = '''<meta name="theme-color" content="#1F4FD8">
@@ -23,6 +24,7 @@ head = '''<meta name="theme-color" content="#1F4FD8">
 <link rel="icon" href="icon-192.png">
 '''
 html = html.replace('<title>', head + '<title>', 1)
+html = html.replace('<script src="catalog.js"></script>', '<script>window.LM_WEB_VERSION="web-%s";window.LM_RELEASE=1</script>\n<script src="catalog.js"></script>' % ver)
 html = html.replace('<script src="app.js"></script>', '''<script src="app.js"></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){})}</script>''')
 open(os.path.join(dst, 'index.html'), 'w').write(html)
