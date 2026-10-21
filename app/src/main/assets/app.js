@@ -1221,13 +1221,28 @@ function verNum(v){var m=String(v||'').match(/(\d+)\.(\d+)\.(\d+)/);return m?(+m
 function checkUpdate(manual){
   if(!window.fetch) return;
   fetch(UPD_BASE+'version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){
+    showBroadcast(v.message);
     var newer;
-    if(A&&A.versionCode) newer=(+v.versionCode||0)>(+A.versionCode()||0);
+    if(v.send===false) newer=false;
+    else if(A&&A.versionCode) newer=(+v.versionCode||0)>(+A.versionCode()||0);
     else newer=verNum(v.versionName)>verNum(appVersion());
     if(!newer){if(manual)toast(T('updNone'));return}
     if(!manual&&settings.updSkip===v.versionName&&settings.updSkipDay===new Date().toISOString().slice(0,10)) return;
     updSheet(v);
   }).catch(function(){if(manual)toast(T('updErr'))});
+}
+// messaggio libero scritto dal proprietario in version.json → "message": {"id","ar","it","link"}
+function showBroadcast(m){
+  if(!m||!m.id||(settings.msgSeen||[]).indexOf(m.id)>=0) return;
+  var txt=(settings.ui==='ar'?(m.ar||m.it):(m.it||m.ar))||''; if(!txt) return;
+  if(sheetOpen){setTimeout(function(){showBroadcast(m)},4000);return}
+  openSheet('<h2>📢 '+(settings.ui==='ar'?'رسالة جديدة':'Nuovo messaggio')+'</h2><div class="note" style="white-space:pre-line;font-size:15px">'+esc(txt)+'</div>'+
+   (m.link?'<button class="btn ghost" style="width:100%;margin-top:10px" id="bmLink">🔗 '+(settings.ui==='ar'?'افتح الرابط':'Apri il link')+'</button>':'')+
+   '<button class="btn main" id="bmOk">'+(settings.ui==='ar'?'حسناً ✓':'OK ✓')+'</button>');
+  function seen(){settings.msgSeen=(settings.msgSeen||[]).concat([m.id]).slice(-30);saveSettings()}
+  if(m.link)$('#bmLink').onclick=function(){seen();openUrl(m.link)};
+  $('#bmOk').onclick=function(){seen();closeSheet()};
+  ping('/messaggio/'+m.id,'Messaggio letto');
 }
 function updSheet(v){
   var notes=(settings.ui==='ar'?v.notes_ar:v.notes_it)||'';

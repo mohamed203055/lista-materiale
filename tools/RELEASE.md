@@ -7,5 +7,6 @@
    e scrivi le novità in `REL/notes_ar.txt` e `REL/notes_it.txt`.
 3. `python3 tools/build_web.py <clone di lista-materiale-web> 1.0.N REL`
    (mantieni `html2canvas.min.js` nel repo web), poi commit e push del repo web.
-4. Da quel momento le app installate (Android e iPad) vedono il messaggio di aggiornamento,
-   perché leggono `https://mohamed203055.github.io/lista-materiale-web/version.json`.
+4. Il nuovo version.json ha `"send": false`: nessuno vede ancora l'aggiornamento.
+   Il proprietario lo invia quando vuole cambiando `false` in `true` su GitHub (version.json).
+   Il campo `message` (id, ar, it, link) mostra un messaggio libero una volta a ogni utente; cambiare `id` per un nuovo messaggio.
