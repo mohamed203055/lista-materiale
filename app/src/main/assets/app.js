@@ -305,7 +305,11 @@ var XT={
   myCl:{ar:'👥 زبائني',it:'👥 I miei clienti',en:'👥 My clients',fr:'👥 Mes clients'},
   savedNew:{ar:'✓ حُفظ المشروع السابق — صفحة جديدة',it:'✓ Progetto salvato — nuova pagina',en:'✓ Project saved — new page',fr:'✓ Projet enregistré — nouvelle page'},
   noClients:{ar:'لا يوجد زبائن محفوظون بعد.',it:'Nessun cliente salvato.',en:'No saved clients yet.',fr:'Aucun client enregistré.'},
-  searchCl:{ar:'ابحث عن زبون…',it:'Cerca un cliente…',en:'Search a client…',fr:'Rechercher un client…'}
+  searchCl:{ar:'ابحث عن زبون…',it:'Cerca un cliente…',en:'Search a client…',fr:'Rechercher un client…'},
+  dupLine:{ar:'⧉ تكرار السطر',it:'⧉ Duplica riga',en:'⧉ Duplicate line',fr:'⧉ Dupliquer la ligne'},
+  delLine:{ar:'🗑 حذف السطر',it:'🗑 Elimina riga',en:'🗑 Delete line',fr:'🗑 Supprimer la ligne'},
+  lineDup:{ar:'✓ تم تكرار السطر',it:'✓ Riga duplicata',en:'✓ Line duplicated',fr:'✓ Ligne dupliquée'},
+  pressHint:{ar:'اضغط مطولاً على أي سطر لتكراره أو حذفه',it:'Tieni premuta una riga per duplicarla o eliminarla',en:'Long-press a line to duplicate or delete it',fr:'Appui long sur une ligne pour la dupliquer ou la supprimer'}
 };
 function L4(o){return o[settings.ui]||o.it}
 function clientsSheet(){
@@ -405,12 +409,13 @@ function renderCart(){
     h+='<div class="sec">'+(c?esc(c.ic||'')+' '+esc(N(c)):'➕ '+T('other'))+'</div><div class="list">';
     groups[g].forEach(function(i){
       var l=L[i], sub=lineSub(l);
-      h+='<div class="line">'+(l.item?thumb(l.item):'')+'<div class="t"><b>'+esc(N(l))+'</b>'+(sub?'<span style="text-align:start">'+sub+'</span>':'')+(l.note?'<i>📝 '+esc(l.note)+'</i>':'')+'</div>'+
+      h+='<div class="line" data-li="'+i+'">'+(l.item?thumb(l.item):'')+'<div class="t"><b>'+esc(N(l))+'</b>'+(sub?'<span style="text-align:start">'+sub+'</span>':'')+(l.note?'<i>📝 '+esc(l.note)+'</i>':'')+'</div>'+
         '<div class="stepper"><button data-act="dec" data-v="'+i+'">−</button><input inputmode="decimal" data-q="'+i+'" value="'+fmt(l.qty)+'"><span class="u">'+N(unit(l.unit))+'</span><button data-act="inc" data-v="'+i+'">+</button></div>'+
         '<button class="del" data-act="del" data-v="'+i+'">🗑</button></div>';
     });
     h+='</div>';
   });
+  h+='<div class="mini" style="text-align:center;margin-top:8px">👆 '+L4(XT.pressHint)+'</div>';
   h+='<div class="row2" style="margin-top:14px"><button class="btn ghost" data-act="check">✅ '+CT('check')+' '+chkCount()+'</button><button class="btn ghost" data-act="hours">⏱️ '+CT('hours')+' '+hoursCount()+'</button></div>';
   h+='<div class="row2" style="margin-top:8px"><button class="btn ghost" data-act="preview">'+T('preview')+'</button><button class="btn ghost" data-act="clear" style="color:var(--danger)">'+T('clear')+'</button></div>';
   return h;
@@ -1429,6 +1434,29 @@ document.addEventListener('click',function(e){
    case 'import': importBackup();break;
   }
 });
+/* ---- pressione lunga su una riga della richiesta: duplica / elimina ---- */
+function lineMenu(i){
+  var L=cur().lines,l=L[i];if(!l)return;
+  openSheet('<h2>'+esc(N(l))+'</h2>'+(lineSub(l)?'<div class="it">'+lineSub(l)+' · '+fmt(l.qty)+' '+N(unit(l.unit))+'</div>':'')+
+   '<button class="btn main" id="lmDup">'+L4(XT.dupLine)+'</button>'+
+   '<button class="btn ghost" id="lmDel" style="width:100%;margin-top:8px;padding:14px;color:var(--danger)">'+L4(XT.delLine)+'</button>');
+  $('#lmDup').onclick=function(){L.splice(i+1,0,JSON.parse(JSON.stringify(l)));save();closeSheet();render();toast(L4(XT.lineDup))};
+  $('#lmDel').onclick=function(){L.splice(i,1);save();closeSheet();render()};
+}
+(function(){
+  var tm=null,x0=0,y0=0,fired=false;
+  function cancel(){if(tm){clearTimeout(tm);tm=null}}
+  main.addEventListener('pointerdown',function(e){
+    var ln=e.target.closest&&e.target.closest('.line[data-li]');fired=false;cancel();
+    if(!ln||e.target.closest('button,input'))return;
+    x0=e.clientX;y0=e.clientY;
+    tm=setTimeout(function(){tm=null;fired=true;try{if(navigator.vibrate)navigator.vibrate(15)}catch(x){}lineMenu(+ln.dataset.li)},550);
+  });
+  main.addEventListener('pointermove',function(e){if(tm&&(Math.abs(e.clientX-x0)>10||Math.abs(e.clientY-y0)>10))cancel()});
+  ['pointerup','pointercancel','pointerleave'].forEach(function(t){main.addEventListener(t,function(){cancel();if(fired)setTimeout(function(){fired=false},400)})});
+  main.addEventListener('contextmenu',function(e){if(e.target.closest&&e.target.closest('.line[data-li]'))e.preventDefault()});
+  main.addEventListener('click',function(e){if(fired){fired=false;e.stopPropagation();e.preventDefault()}},true);
+})();
 main.addEventListener('input',function(e){
   var t=e.target;
   if(t.dataset.cf){calcSet(t.dataset.cf,t.value);return}
