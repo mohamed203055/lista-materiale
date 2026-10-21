@@ -42,7 +42,7 @@ var TXT={
   importB:'📥 استيراد نسخة',importHint:'يستبدل القائمة الحالية بالملف المختار.',importQ:'استيراد هذا الملف؟ ستُستبدل القائمة الحالية.',imported:'تم الاستيراد ✓',badFile:'الملف غير صالح',
   resetQ:'استرجاع القائمة الأصلية؟ ستُحذف كل تعديلاتك على المواد والكيتات (المشاريع لا تُحذف).',resetDone:'تمت الاستعادة',
   pwOld:'كلمة السر الحالية',pwNew:'كلمة السر الجديدة',pwNew2:'أعد كتابة الجديدة',pwWeak:'8 أحرف على الأقل، فيها حرف ورقم',pwMismatch:'الكلمتان غير متطابقتين',pwChanged:'تم تغيير كلمة السر ✓',
-  storageFull:'الذاكرة ممتلئة! صغّر الصور أو احذف بعضها.',
+  storageFull:'الذاكرة ممتلئة! صغّر الصور أو احذف بعضها.',stats:'📊 إحصائيات مجهولة الهوية',statsHint:'يرسل التطبيق فقط: أنه فُتح، والدولة، ورقمك المجهول. لا اسم ولا رقم هاتف ولا موقع دقيق ولا محتوى طلباتك.',statsOn:'السماح بالإحصائيات',yourId:'رقمك المجهول',
   price:'الأسعار',priceInfo:'أسعار العمل اليدوي فقط (بدون المواد)، بدون IVA. الأسعار المكتوبة تقريبية لروما — عدّلها من 🔒 الإدارة ← أسعار العمل.',
   quote:'عرض السعر',quoteEmpty:'اختر الخدمات من القائمة في الأسفل لتبدأ الحساب.',services:'قائمة الخدمات',customExtra:'➕ إضافة خاصة (تكتبها بنفسك)',
   unitPrice:'سعر الوحدة €',lineTotal:'المجموع',labour:'مجموع العمل',discount:'خصم €',taxable:'المبلغ بدون ضريبة',withIva:'إضافة IVA (الضريبة)',iva:'IVA',total:'السعر النهائي',
@@ -79,7 +79,7 @@ var TXT={
   importB:'📥 Importa backup',importHint:'Sostituisce l\'elenco attuale con il file scelto.',importQ:'Importare questo file? L\'elenco attuale verrà sostituito.',imported:'Importato ✓',badFile:'File non valido',
   resetQ:'Ripristinare l\'elenco originale? Le modifiche a materiali e kit verranno perse (i progetti restano).',resetDone:'Ripristinato',
   pwOld:'Password attuale',pwNew:'Nuova password',pwNew2:'Ripeti la nuova password',pwWeak:'Almeno 8 caratteri, con lettere e numeri',pwMismatch:'Le password non coincidono',pwChanged:'Password cambiata ✓',
-  storageFull:'Memoria piena! Riduci o elimina alcune foto.',
+  storageFull:'Memoria piena! Riduci o elimina alcune foto.',stats:'📊 Statistiche anonime',statsHint:'L\'app invia solo: che è stata aperta, il Paese e il tuo codice anonimo. Nessun nome, telefono, posizione precisa o contenuto delle richieste.',statsOn:'Consenti statistiche',yourId:'Il tuo codice anonimo',
   price:'Prezzi',priceInfo:'Solo manodopera (materiali esclusi), IVA esclusa. I prezzi sono indicativi per Roma — modificali da 🔒 Amministrazione → Listino manodopera.',
   quote:'Preventivo',quoteEmpty:'Scegli i lavori dall\'elenco qui sotto per iniziare il calcolo.',services:'Elenco lavori',customExtra:'➕ Voce libera (la scrivi tu)',
   unitPrice:'Prezzo unitario €',lineTotal:'Totale',labour:'Totale manodopera',discount:'Sconto €',taxable:'Imponibile',withIva:'Aggiungi IVA',iva:'IVA',total:'Totale',
@@ -543,6 +543,9 @@ function settingsSheet(){
    '<div class="field"><label>'+T('waNum')+'</label><input id="sw" class="ltr" inputmode="tel" value="'+esc(settings.waNum)+'" placeholder="'+T('waNumP')+'"></div>'+
    '<div class="mini">'+T('waHint')+'</div>'+
    '<button class="btn main" id="ssave">'+T('save')+'</button>'+
+   '<h3 style="margin-top:22px">'+T('stats')+'</h3><div class="mini">'+T('statsHint')+'</div>'+
+   '<label class="toggle"><span>'+T('statsOn')+'</span><input type="checkbox" id="sstat"'+(settings.statsOff?'':' checked')+'></label>'+
+   '<div class="mini" style="margin-top:6px">'+T('yourId')+': <b dir="ltr">'+esc(anonId())+'</b></div>'+
    '<button class="contact" style="margin-top:16px" id="goAdmin"><span class="ci" style="background:#16192B">🔒</span><div><b>'+T('admin').replace('🔒 ','')+'</b><span>'+T('adminSub')+'</span></div></button>'+
    '<h3 style="margin-top:24px">'+T('contact')+'</h3><div class="mini">'+T('contactHint')+'</div>'+
    '<button class="contact" data-link="wa"><span class="ci" style="background:#1DA851">✉</span><div><b>'+T('report')+'</b><span class="ltr" style="display:block;text-align:start">'+CONTACT.phone+'</span></div></button>'+
@@ -553,7 +556,7 @@ function settingsSheet(){
   sheet.querySelectorAll('[data-link]').forEach(function(b){b.onclick=function(){openContact(b.dataset.link)}});
   sheet.querySelectorAll('[data-ui]').forEach(function(b){b.onclick=function(){ui=b.dataset.ui;sheet.querySelectorAll('[data-ui]').forEach(function(x){x.classList.toggle('on',x.dataset.ui===ui)})}});
   sheet.querySelectorAll('[data-out]').forEach(function(b){b.onclick=function(){out=b.dataset.out;sheet.querySelectorAll('[data-out]').forEach(function(x){x.classList.toggle('on',x.dataset.out===out)})}});
-  function store(){settings.tecnico=$('#st').value.trim();settings.ditta=$('#sd').value.trim();settings.waNum=$('#sw').value.trim();settings.ui=ui;settings.out=out;saveSettings()}
+  function store(){settings.statsOff=!$('#sstat').checked;settings.tecnico=$('#st').value.trim();settings.ditta=$('#sd').value.trim();settings.waNum=$('#sw').value.trim();settings.ui=ui;settings.out=out;saveSettings()}
   $('#ssave').onclick=function(){store();closeSheet();applyLang();render();toast(T('saved'))};
   $('#goAdmin').onclick=function(){store();applyLang();if(adminOK){closeSheet();enterAdmin()}else pwSheet()};
 }
@@ -992,14 +995,14 @@ function fileName(isQuote){
   var d=new Date(), base=isQuote?(settings.out==='ar'?'عرض_سعر':'Preventivo'):(settings.out==='ar'?'طلب_مواد':'Richiesta_materiale');
   return base+(c?'_'+c:'')+'_'+d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)+'.pdf';
 }
-function doWa(){if(view.tab==='price'){var tq=buildQuoteText(true);if(A&&A.whatsapp)A.whatsapp(tq,'');else openUrl('https://wa.me/?text='+encodeURIComponent(tq));return}var t=buildText(true),n=settings.waNum.replace(/[^\d]/g,'');if(A&&A.whatsapp)A.whatsapp(t,n);else openUrl('https://wa.me/'+n+'?text='+encodeURIComponent(t))}
-function doCopy(){
+function doWa(){ping('/usa/whatsapp'+(view.tab==='price'?'-preventivo':''),'Uso WhatsApp');if(view.tab==='price'){var tq=buildQuoteText(true);if(A&&A.whatsapp)A.whatsapp(tq,'');else openUrl('https://wa.me/?text='+encodeURIComponent(tq));return}var t=buildText(true),n=settings.waNum.replace(/[^\d]/g,'');if(A&&A.whatsapp)A.whatsapp(t,n);else openUrl('https://wa.me/'+n+'?text='+encodeURIComponent(t))}
+function doCopy(){ping('/usa/copia'+(view.tab==='price'?'-preventivo':''),'Uso copia');
   var t=view.tab==='price'?buildQuoteText(false):buildText(false);
   if(A&&A.copy){A.copy(t);toast(T('copied'));return}
   function legacy(){var ta=document.createElement('textarea');ta.value=t;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,t.length);var ok=false;try{ok=document.execCommand('copy')}catch(e){}document.body.removeChild(ta);toast(ok?T('copied'):'✗')}
   if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function(){toast(T('copied'))},legacy); else legacy();
 }
-function doPdf(){
+function doPdf(){ping('/usa/pdf'+(view.tab==='price'?'-preventivo':''),'Uso PDF');
   var q=view.tab==='price';
   if(A&&A.pdf){toast(T('pdfWait'));A.pdf(q?buildQuoteReport():buildReport(),fileName(q))}
   else webPdf(q);
@@ -1162,5 +1165,50 @@ window.appBack=function(){
 };
 if(!window.LM_RELEASE)window.__test={buildQuoteText:buildQuoteText,buildQuoteReport:buildQuoteReport,cur:cur,P:function(){return P},DB:function(){return DB},settings:function(){return settings},buildText:buildText,buildReport:buildReport,sha:pwHash};
 
-reindex(); cur(); save(); applyLang(); render();
+/* =====================================================================
+   STATISTICHE ANONIME (GoatCounter: niente cookie, niente dati personali)
+   Si invia solo un percorso, es. /open/android. Il Paese lo calcola GoatCounter dall'IP, senza salvarlo.
+   ===================================================================== */
+var STATS_CODE=window.LM_STATS||'';
+function anonId(){
+  if(!settings.anon){var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r='';for(var i=0;i<6;i++)r+=c[Math.floor(Math.random()*c.length)];settings.anon='U-'+r;settings.installed=Date.now();saveSettings()}
+  return settings.anon;
+}
+function ping(path,title){
+  if(!STATS_CODE||settings.statsOff) return;
+  try{
+    var u='https://'+STATS_CODE+'.goatcounter.com/count?p='+encodeURIComponent(path)+'&t='+encodeURIComponent(title||path)+'&e=true&rnd='+Math.random().toString(36).slice(2);
+    var im=new Image(); im.referrerPolicy='no-referrer'; im.src=u;
+  }catch(e){}
+}
+function statsStart(){
+  var plat=A?'android':(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)&&'ontouchend' in document?'ios':'web');
+  var first=!settings.anon; anonId();
+  if(first) ping('/install/'+plat,'Installazione '+plat);
+  ping('/open/'+plat,'Apertura '+plat);
+  var today=new Date().toISOString().slice(0,10);
+  if(settings.lastDay!==today){
+    settings.lastDay=today; settings.days=(settings.days||0)+1; saveSettings();
+    ping('/user/'+settings.anon,'Utente attivo (giorni)');
+    var d=settings.days, b=d>=30?'30+':d>=8?'8-29':d>=2?'2-7':'1';
+    ping('/fedelta/'+b+'-giorni','Utenti per giorni di uso');
+    ping('/lingua/'+settings.ui,'Lingua app');
+  }
+}
+window.lmPing=ping;
+// durata d'uso: si conta all'uscita dall'app, raggruppata in fasce
+var sessStart=Date.now();
+function sessEnd(){
+  if(!sessStart) return;
+  var min=(Date.now()-sessStart)/60000; sessStart=0;
+  if(min<0.2) return;
+  var b=min<1?'0-1':min<5?'1-5':min<15?'5-15':min<30?'15-30':'30+';
+  ping('/tempo/'+b+'-min','Durata uso (minuti)');
+}
+function sessResume(){if(!sessStart)sessStart=Date.now()}
+window.lmPause=sessEnd; window.lmResume=sessResume;
+document.addEventListener('visibilitychange',function(){if(document.hidden)sessEnd();else sessResume()});
+window.addEventListener('pagehide',sessEnd);
+
+reindex(); cur(); save(); applyLang(); render(); setTimeout(statsStart,1500);
 })();

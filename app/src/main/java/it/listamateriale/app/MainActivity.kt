@@ -113,6 +113,16 @@ class MainActivity : ComponentActivity() {
         })
     }
 
+    override fun onPause() {
+        super.onPause()
+        if (::web.isInitialized) web.evaluateJavascript("window.lmPause&&window.lmPause()", null)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (::web.isInitialized) web.evaluateJavascript("window.lmResume&&window.lmResume()", null)
+    }
+
     private fun openExternal(u: Uri) {
         val i = if (u.scheme == "tel") Intent(Intent.ACTION_DIAL, u) else Intent(Intent.ACTION_VIEW, u)
         try { startActivity(i) } catch (_: Exception) {}
