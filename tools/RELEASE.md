@@ -10,3 +10,5 @@
 4. Il nuovo version.json ha `"send": false`: nessuno vede ancora l'aggiornamento.
    Il proprietario lo invia quando vuole cambiando `false` in `true` su GitHub (version.json).
    Il campo `message` (id, ar, it, link) mostra un messaggio libero una volta a ogni utente; cambiare `id` per un nuovo messaggio.
+
+5. Non cancellare mai l'APK indicato in `version.json` (`apk`): è quello che gli utenti scaricano. Si può cancellare solo un APK non più citato né in `apk` né in `next.apk`.
