@@ -7,11 +7,11 @@ from PIL import Image, ImageDraw
 src = os.path.join(os.path.dirname(__file__), '..', 'app', 'src', 'main', 'assets')
 dst, ver = sys.argv[1], sys.argv[2]
 os.makedirs(dst, exist_ok=True)
-for f in ('catalog.js', 'app.js'):
+for f in ('catalog.js', 'lang.js', 'app.js'):
     shutil.copy(os.path.join(src, f), os.path.join(dst, f))
 # file JS già offuscati (dalla release) se indicati come 3° argomento
 if len(sys.argv) > 3:
-    for f in ('catalog.js', 'app.js'):
+    for f in ('catalog.js', 'lang.js', 'app.js'):
         shutil.copy(os.path.join(sys.argv[3], f), os.path.join(dst, f))
 
 html = open(os.path.join(src, 'index.html')).read()
@@ -44,7 +44,7 @@ open(os.path.join(dst, 'manifest.webmanifest'), 'w').write('''{
   ]
 }
 ''')
-files = ['./', 'index.html', 'catalog.js', 'app.js', 'html2canvas.min.js', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png']
+files = ['./', 'index.html', 'catalog.js', 'lang.js', 'app.js', 'html2canvas.min.js', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png']
 open(os.path.join(dst, 'sw.js'), 'w').write('''// Funziona anche senza internet: i file restano in cache, e si aggiornano in background
 var CACHE='lm-%s';
 var FILES=%s;

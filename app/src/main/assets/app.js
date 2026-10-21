@@ -90,6 +90,34 @@ var OUT={
  it:{title:'RICHIESTA MATERIALE',cliente:'Cliente',indirizzo:'Indirizzo',luogo:'Luogo',data:'Data',tecnico:'Tecnico',note:'Note',tot:'Totale voci',other:'Altro',mat:'Materiale',size:'Misura',qty:'Q.tà'},
  ar:{title:'طلب مواد',cliente:'الزبون',indirizzo:'العنوان',luogo:'المكان',data:'التاريخ',tecnico:'الفني',note:'ملاحظات',tot:'عدد المواد',other:'مواد أخرى',mat:'المادة',size:'المقاس',qty:'الكمية'}
 };
+// --- lingue aggiuntive (lang.js) ---
+var LANGS=[['ar','العربية'],['it','Italiano'],['en','English'],['fr','Français']];
+(function(){
+  var X=window.LM_TXT||{};
+  ['en','fr'].forEach(function(l){TXT[l]=Object.assign({},TXT.it,X[l]||{})});
+  ['ar','it'].forEach(function(l){Object.assign(TXT[l],X[l]||{})});
+  Object.assign(OUT,window.LM_OUT||{});
+  OUT.it.titleL='Richiesta materiale';OUT.ar.titleL='طلب مواد';
+  if(OUT.en)OUT.en.titleL='Material request'; if(OUT.fr)OUT.fr.titleL='Demande de matériel';
+  var U=window.LM_UNITS||{};
+  Object.keys(UNITS).forEach(function(k){if(U[k]){UNITS[k].en=U[k][0];UNITS[k].fr=U[k][1]}});
+  Object.keys(SERVICE_UNITS).forEach(function(k){if(U[k]){SERVICE_UNITS[k].en=U[k][0];SERVICE_UNITS[k].fr=U[k][1]}});
+})();
+function trSize(x,lang){
+  if(!x||lang==='it'||lang==='ar'||lang==='both') return x||'';
+  var M={en:{moduli:'modules',modulo:'module',poli:'poles',posti:'places',canali:'channels',porte:'ports',vie:'ways',fili:'wires',coppia:'pair',coppie:'pairs',tondo:'round',tonda:'round',quadrato:'square',orientabile:'adjustable',interno:'internal',esterno:'external',piano:'flat','a superficie':'surface','da incasso':'recessed',angolare:'corner','per cartongesso':'for drywall',monofase:'single phase',trifase:'three phase',giornaliero:'daily','settimanale digitale':'weekly digital',astronomico:'astronomical',nero:'black',blu:'blue',marrone:'brown',grigio:'grey',rosso:'red',bianco:'white',trasparente:'clear',maschio:'male',femmina:'female',filare:'wired',radio:'wireless','doppia tecnologia':'dual technology',ibrido:'hybrid',normale:'standard',campanello:'bell',luminoso:'illuminated',mammut:'strip'},
+         fr:{moduli:'modules',modulo:'module',poli:'pôles',posti:'postes',canali:'canaux',porte:'ports',vie:'voies',fili:'fils',coppia:'paire',coppie:'paires',tondo:'rond',tonda:'ronde',quadrato:'carré',orientabile:'orientable',interno:'intérieur',esterno:'extérieur',piano:'plat','a superficie':'en saillie','da incasso':'encastré',angolare:'d\'angle','per cartongesso':'pour placo',monofase:'monophasé',trifase:'triphasé',giornaliero:'journalier','settimanale digitale':'hebdo numérique',astronomico:'astronomique',nero:'noir',blu:'bleu',marrone:'marron',grigio:'gris',rosso:'rouge',bianco:'blanc',trasparente:'transparent',maschio:'mâle',femmina:'femelle',filare:'filaire',radio:'radio','doppia tecnologia':'double technologie',ibrido:'hybride',normale:'standard',campanello:'sonnette',luminoso:'lumineux'}}[lang]||{};
+  var keys=Object.keys(M).sort(function(a,b){return b.length-a.length});
+  keys.forEach(function(k){x=x.replace(new RegExp('(^|\\s)'+k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?=\\s|$)','g'),function(m,a){return a+M[k]})});
+  return x;
+}
+function trName(o,lang){
+  if(!o) return '';
+  if(lang==='it') return o.it||'';
+  if(lang==='ar') return o.ar||o.it||'';
+  if(o[lang]) return o[lang];
+  var t=(window.LM_NAMES||{})[o.it]; return (t&&t[lang==='en'?0:1])||o.it||'';
+}
 var PLACES=[{id:'appartamento',it:'Appartamento',ar:'شقة'},{id:'villa',it:'Villa / casa',ar:'فيلا / بيت'},{id:'ufficio',it:'Ufficio',ar:'مكتب'},{id:'negozio',it:'Negozio',ar:'محل'},{id:'azienda',it:'Azienda',ar:'شركة / مصنع'},{id:'condominio',it:'Condominio',ar:'عمارة'},{id:'cantiere',it:'Cantiere',ar:'ورشة بناء'}];
 var CONTACT={phone:'+39 329 558 6046',num:'393295586046',ig:'rage_simo',tt:'banbochagaming'};
 var COLBY={}; COLORS.forEach(function(c){COLBY[c.id]=c});
@@ -142,7 +170,7 @@ var ITEMS=[],IBY={},CBY={},SBY={},GBY={};
 function reindex(){
   ITEMS=[];IBY={};CBY={};SBY={};GBY={};
   (DB.svc||[]).forEach(function(g){GBY[g.id]=g;g.list.forEach(function(x){x.grp=g.id;SBY[x.id]=x})});
-  DB.cats.forEach(function(c){CBY[c.id]=c;c.items.forEach(function(i){i.cat=c.id;IBY[i.id]=i;ITEMS.push(i);i._s=norm(i.it+' '+i.ar+' '+i.sizes.join(' '))})});
+  DB.cats.forEach(function(c){CBY[c.id]=c;c.items.forEach(function(i){i.cat=c.id;IBY[i.id]=i;ITEMS.push(i);i._s=norm(i.it+' '+i.ar+' '+trName(i,'en')+' '+trName(i,'fr')+' '+i.sizes.join(' '))})});
 }
 
 // ---- progetti ----
@@ -165,7 +193,7 @@ var adminOK=false;
    UTIL
    ===================================================================== */
 function T(k){return TXT[settings.ui][k]!=null?TXT[settings.ui][k]:k}
-function N(o){return (settings.ui==='it'?o.it:(o.ar||o.it))||''}
+function N(o){return trName(o,settings.ui)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function norm(s){
   return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
@@ -177,7 +205,7 @@ function fmt(n){n=Math.round(n*100)/100;return String(n)}
 function num(v){return parseFloat(String(v).replace(',','.'))||0}
 function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(function(){t.classList.remove('show')},2200)}
 function dot(c){if(!c)return '';var C=COLBY[c];return '<span class="dot" style="background:'+(C?C.hex:'#ccc')+'"></span>'}
-function colName(c,lang){var C=COLBY[c];if(!C)return c||'';return lang==='ar'?C.ar:(lang==='both'?C.it+' / '+C.ar:C.it)}
+function colName(c,lang){var C=COLBY[c];if(!C)return c||'';return lang==='both'?C.it+' / '+C.ar:trName(C,lang)}
 function thumb(id,cls){return IMGS[id]?'<img class="thumb'+(cls?' '+cls:'')+'" src="'+IMGS[id]+'">':''}
 function haveQty(it){var s=0;cur().lines.forEach(function(l){if(l.item===it.id)s+=l.qty});return s}
 function catIndex(id){var i=DB.cats.findIndex(function(c){return c.id===id});return i<0?999:i}
@@ -204,26 +232,28 @@ function applyLang(){
   var ar=settings.ui==='ar';
   document.documentElement.lang=settings.ui; document.documentElement.dir=ar?'rtl':'ltr';
   document.title=T('title'); $('#ttl').textContent=T('title');
-  $('#btnLang').textContent=ar?'IT':'عربي';
+  $('#btnLang').textContent='🌐 '+settings.ui.toUpperCase();
   $('#q').placeholder=T('search');
   $('#tMat').textContent=T('mat');$('#tPrice').textContent='💶 '+T('price'); $('#tKit').textContent=T('kit'); $('#tCart').textContent=T('cart');
   $('#cntL').textContent=T('items'); $('#btnCopy').textContent=T('copy');
   $('#btnWa').textContent=ar?'واتساب':'WhatsApp';
+  if($('#tCalc'))$('#tCalc').title=T('calc');
 }
 
 /* =====================================================================
    RENDER PRINCIPALE
    ===================================================================== */
 function render(){
-  var inAdmin=view.tab==='admin', inProj=view.tab==='projects', inPrice=view.tab==='price';
-  $('#tabs').style.display=(inAdmin||inProj)?'none':'';
-  $('#searchBox').style.display=(inAdmin||inProj||inPrice)?'none':'';
-  $('#bar').style.display=inAdmin?'none':'';
-  document.body.style.paddingBottom=inAdmin?'24px':'';
+  var inAdmin=view.tab==='admin', inProj=view.tab==='projects', inPrice=view.tab==='price', inCalc=view.tab==='calc';
+  $('#tabs').style.display=(inAdmin||inProj||inCalc)?'none':'';
+  $('#searchBox').style.display=(inAdmin||inProj||inPrice||inCalc)?'none':'';
+  $('#bar').style.display=(inAdmin||inCalc)?'none':'';
+  document.body.style.paddingBottom=(inAdmin||inCalc)?'24px':'';
   document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.tab===view.tab&&!view.q)});
   var h='';
   if(inAdmin) h=renderAdmin();
   else if(inProj) h=renderProjects();
+  else if(inCalc) h=renderCalc();
   else if(inPrice) h=renderPrice();
   else if(view.q) h=renderSearch();
   else if(view.tab==='mat') h=renderSite()+(view.cat&&CBY[view.cat]?renderCat(view.cat):renderCats());
@@ -277,13 +307,15 @@ function renderKits(){
 }
 function lineSub(l){
   var a=[];
-  if(l.size) a.push('<span class="ltr">'+esc(l.size)+'</span>');
+  if(l.size) a.push('<span class="ltr">'+esc(trSize(l.size,settings.ui))+'</span>');
   if(l.color) a.push(dot(l.color)+esc(colName(l.color,settings.ui)));
   return a.join(' · ');
 }
+function chkCount(){var p=cur(),n=Object.keys(p.check||{}).filter(function(k){return p.check[k]}).length;return n?'('+n+'/'+(window.LM_CHECK||[]).length+')':''}
+function hoursCount(){var t=(cur().hours||[]).reduce(function(a,h){return a+(+h.h||0)},0);return t?'('+n2(t,1)+' h)':''}
 function renderCart(){
   var L=cur().lines;
-  if(!L.length) return '<div class="empty"><div class="big">🧺</div>'+T('emptyCart')+'</div>';
+  if(!L.length) return '<div class="empty"><div class="big">🧺</div>'+T('emptyCart')+'</div><div class="row2" style="margin-top:14px"><button class="btn ghost" data-act="check">✅ '+CT('check')+' '+chkCount()+'</button><button class="btn ghost" data-act="hours">⏱️ '+CT('hours')+' '+hoursCount()+'</button></div>';
   var groups={}, order=[];
   L.forEach(function(l,i){var g=l.cat||'x';if(!groups[g]){groups[g]=[];order.push(g)}groups[g].push(i)});
   order.sort(function(a,b){return catIndex(a)-catIndex(b)});
@@ -299,7 +331,8 @@ function renderCart(){
     });
     h+='</div>';
   });
-  h+='<div class="row2" style="margin-top:14px"><button class="btn ghost" data-act="preview">'+T('preview')+'</button><button class="btn ghost" data-act="clear" style="color:var(--danger)">'+T('clear')+'</button></div>';
+  h+='<div class="row2" style="margin-top:14px"><button class="btn ghost" data-act="check">✅ '+CT('check')+' '+chkCount()+'</button><button class="btn ghost" data-act="hours">⏱️ '+CT('hours')+' '+hoursCount()+'</button></div>';
+  h+='<div class="row2" style="margin-top:8px"><button class="btn ghost" data-act="preview">'+T('preview')+'</button><button class="btn ghost" data-act="clear" style="color:var(--danger)">'+T('clear')+'</button></div>';
   return h;
 }
 
@@ -307,7 +340,7 @@ function renderCart(){
    PREZZI / الأسعار (preventivo manodopera, separato dalla richiesta materiale)
    ===================================================================== */
 function eur(n){n=Math.round((+n||0)*100)/100;var s=n.toFixed(2).split('.');s[0]=s[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.');return s.join(',')+' €'}
-function sunit(u,lang){var U=SERVICE_UNITS[u]||{it:u,ar:u};return (lang||settings.ui)==='ar'?U.ar:U.it}
+function sunit(u,lang){var U=SERVICE_UNITS[u]||{it:u,ar:u};var l=lang||settings.ui;return U[l]||U.it}
 function qTotals(q){
   var lab=0;q.lines.forEach(function(l){lab+=l.qty*l.price});
   lab=Math.round(lab*100)/100;
@@ -378,6 +411,180 @@ function quoteLineSheet(o,idx){
     }
     save();closeSheet();if(!editing)toast(T('addedQ')+' '+N(line));render();
   };
+}
+
+/* =====================================================================
+   CALCOLI ELETTRICI / الحسابات
+   Valori indicativi (rame, PVC 70°C, 30°C ambiente). Verificare sempre con CEI 64-8.
+   ===================================================================== */
+function CT(k){var C=window.LM_CALC||{};return (C[settings.ui]||C.it||{})[k]||k}
+function n2(x,d){if(!isFinite(x))return '—';var p=Math.pow(10,d==null?2:d);var v=Math.round(x*p)/p;return String(v).replace('.',settings.ui==='en'?'.':',')}
+var SECTIONS=[1.5,2.5,4,6,10,16,25,35,50,70,95];
+var IZ2={1.5:17.5,2.5:24,4:32,6:41,10:57,16:76,25:101,35:125,50:151,70:192,95:232};   // 2 conduttori carichi, posa B
+var IZ3={1.5:15.5,2.5:21,4:28,6:36,10:50,16:68,25:89,35:110,50:134,70:171,95:207};   // 3 conduttori carichi, posa B
+var POSA_K={b:1,c:1.12,d:0.95};
+var BREAKERS=[6,10,13,16,20,25,32,40,50,63,80,100,125];
+var RHO=0.0225; // ohm·mm²/m rame a 70°C
+function dropPct(sys,I,L,S,V,cos){var k=sys==='tri'?Math.sqrt(3):2;return k*L*I*RHO*(cos||1)/S/V*100}
+function loadCurrent(sys,P,V,cos){ // P in W
+  if(sys==='tri') return P/(Math.sqrt(3)*V*(cos||1));
+  if(sys==='dc') return P/V;
+  return P/(V*(cos||1));
+}
+var CALCS=[
+ {id:'ohm',ic:'Ω',f:[['V','voltage'],['I','current'],['R','resist'],['P','powerW']],run:function(v){
+   var V=v.V,I=v.I,R=v.R,P=v.P,n=[V,I,R,P].filter(function(x){return x>0}).length;
+   if(n<2) return '<div class="mini">'+CT('needTwo')+'</div>';
+   for(var k=0;k<3;k++){
+     if(!(V>0)){if(I>0&&R>0)V=I*R;else if(P>0&&I>0)V=P/I;else if(P>0&&R>0)V=Math.sqrt(P*R)}
+     if(!(I>0)){if(V>0&&R>0)I=V/R;else if(P>0&&V>0)I=P/V;else if(P>0&&R>0)I=Math.sqrt(P/R)}
+     if(!(R>0)){if(V>0&&I>0)R=V/I;else if(V>0&&P>0)R=V*V/P;else if(P>0&&I>0)R=P/(I*I)}
+     if(!(P>0)){if(V>0&&I>0)P=V*I}
+   }
+   return res([[CT('voltage'),n2(V)+' V'],[CT('current'),n2(I,3)+' A'],[CT('resist'),n2(R,3)+' Ω'],[CT('powerW'),n2(P)+' W']]);
+ }},
+ {id:'power',ic:'⚡',f:[['sys','sys','sel',[['mono','mono'],['tri','tri'],['dc','dc']]],['P','powerKW'],['I','current'],['cos','cosphi','num',null,0.9]],run:function(v){
+   var V=v.sys==='tri'?400:v.sys==='dc'?(v.V||24):230, cos=v.sys==='dc'?1:(v.cos||1);
+   if(v.P>0){var I=loadCurrent(v.sys,v.P*1000,V,cos);return res([[CT('current'),n2(I)+' A'],['kVA',n2(v.P/cos)],[CT('voltage'),V+' V']])+'<div class="mini">'+CT('cosHint')+'</div>'}
+   if(v.I>0){var P=v.sys==='tri'?Math.sqrt(3)*V*v.I*cos:V*v.I*cos;return res([[CT('powerKW'),n2(P/1000)+' kW'],['kVA',n2(P/1000/cos)],[CT('voltage'),V+' V']])+'<div class="mini">'+CT('cosHint')+'</div>'}
+   return '<div class="mini">'+CT('needLoad')+'</div>';
+ }},
+ {id:'cable',ic:'〰️',f:[['sys','sys','sel',[['mono','mono'],['tri','tri']]],['P','powerKW'],['I','current'],['L','length','num',null,20],['cos','cosphi','num',null,0.9],['max','maxDrop','num',null,4],['posa','posa','sel',[['b','posa1'],['c','posa2'],['d','posa3']]]],run:function(v){
+   var V=v.sys==='tri'?400:230, cos=v.cos||1, Ib=v.I>0?v.I:(v.P>0?loadCurrent(v.sys,v.P*1000,V,cos):0);
+   if(!(Ib>0)) return '<div class="mini">'+CT('needLoad')+'</div>';
+   var tab=v.sys==='tri'?IZ3:IZ2, k=POSA_K[v.posa||'b']||1, L=v.L||0, max=v.max||4;
+   var In=BREAKERS.filter(function(b){return b>=Ib})[0];
+   if(!In) return '<div class="warn">'+CT('tooBig')+'</div>';
+   var pick=null, rows='';
+   SECTIONS.forEach(function(S){
+     var Iz=tab[S]*k, d=dropPct(v.sys,Ib,L,S,V,cos), good=Iz>=In&&d<=max;
+     if(good&&!pick) pick={S:S,Iz:Iz,d:d};
+     if(S<=50) rows+='<tr'+(pick&&pick.S===S?' style="background:#E5F7EC;font-weight:700"':'')+'><td>'+S+' mm²</td><td>'+n2(Iz,0)+' A</td><td>'+n2(d)+' %</td><td>'+(good?'✓':'✗')+'</td></tr>';
+   });
+   if(!pick) return '<div class="warn">'+CT('tooBig')+'</div>';
+   return res([[CT('loadI'),n2(Ib)+' A'],[CT('recSection'),'<b style="font-size:20px">'+pick.S+' mm²</b>'],[CT('breaker'),In+' A'+(v.sys==='tri'?' 4P':' 1P+N')],[CT('capacity'),n2(pick.Iz,0)+' A'],[CT('drop'),n2(pick.d)+' %'],[CT('rcd'),'30 mA · '+CT('rcdTip')]])+
+    '<table class="ctab"><tr><th>mm²</th><th>Iz</th><th>ΔV</th><th></th></tr>'+rows+'</table>';
+ }},
+ {id:'vdrop',ic:'📉',f:[['sys','sys','sel',[['mono','mono'],['tri','tri'],['dc','dc']]],['I','current'],['L','length','num',null,20],['S','section','sel',[[1.5,'1.5'],[2.5,'2.5'],[4,'4'],[6,'6'],[10,'10'],[16,'16'],[25,'25']]],['V','voltage','num',null,230],['cos','cosphi','num',null,0.9]],run:function(v){
+   if(!(v.I>0)) return '<div class="mini">'+CT('needLoad')+'</div>';
+   var V=v.V||(v.sys==='tri'?400:230), d=dropPct(v.sys==='dc'?'mono':v.sys,v.I,v.L||0,+v.S||1.5,V,v.sys==='dc'?1:(v.cos||1));
+   return res([[CT('drop'),n2(d*V/100)+' V'],[CT('drop'),'<b style="font-size:20px">'+n2(d)+' %</b>'],[CT('result'),d<=4?CT('ok'):CT('ko')]]);
+ }},
+ {id:'led',ic:'🌈',f:[['L','stripLen','num',null,5],['W','wpm','num',null,14.4],['V','ledV','sel',[[24,'24 V'],[12,'12 V'],[48,'48 V']]],['d','psuDist','num',null,2],['S','feedSec','sel',[[0.5,'0.5'],[0.75,'0.75'],[1,'1'],[1.5,'1.5'],[2.5,'2.5'],[4,'4']]]],run:function(v){
+   var L=v.L||0,W=L*(v.W||0),V=+v.V||24; if(!(W>0)) return '<div class="mini">'+CT('needLoad')+'</div>';
+   var need=W*1.2, PSU=[15,30,36,60,75,100,120,150,185,200,240,320,480,600], psu=PSU.filter(function(x){return x>=need})[0];
+   var I=W/V, run={12:5,24:10,48:20}[V]||10, feeds=Math.max(1,Math.ceil(L/run));
+   var d=v.d||0, S=+v.S||1, drop=2*d*I*0.0178/S/V*100;
+   var minS=[0.5,0.75,1,1.5,2.5,4,6,10].filter(function(s){return 2*d*I*0.0178/s/V*100<=3})[0];
+   return res([[CT('totW'),n2(W,1)+' W'],[CT('current'),n2(I)+' A'],[CT('psu'),psu?'<b style="font-size:20px">'+psu+' W · '+V+' V</b>':CT('manyPsu')],[CT('maxRun'),run+' m'],[CT('feeds'),feeds],[CT('drop')+' ('+S+' mm²)',n2(drop)+' % '+(drop<=3?'✓':'✗')],[CT('minFeedSec'),minS?minS+' mm²':'> 10 mm²']])+
+    (feeds>1?'<div class="note">'+CT('feedTip')+'</div>':'');
+ }},
+ {id:'lux',ic:'💡',f:[['A','area','num',null,20],['room','room','sel',[[100,'Corridoio / Corridor · 100 lx'],[150,'Camera / Bedroom · 150 lx'],[200,'Soggiorno, bagno / Living, bath · 200 lx'],[300,'Cucina / Kitchen · 300 lx'],[500,'Ufficio, negozio / Office, shop · 500 lx'],[750,'Laboratorio / Workshop · 750 lx'],[200.1,'Magazzino / Warehouse · 200 lx']]],['lm','lmFix','num',null,800]],run:function(v){
+   var lx=Math.round(+v.room||200), need=lx*(v.A||0)/0.6; if(!(need>0)) return '';
+   var n=Math.ceil(need/(v.lm||800));
+   return res([[CT('lmNeed'),n2(need,0)+' lm'],[CT('fixtures'),'<b style="font-size:20px">'+n+'</b>'],[CT('estW'),'≈ '+n2(need/100,0)+' W']]);
+ }},
+ {id:'tube',ic:'⭕',f:[['D','tubeD','sel',[[16,'Ø16'],[20,'Ø20'],[25,'Ø25'],[32,'Ø32'],[40,'Ø40'],[50,'Ø50']]],['S','section','sel',[[1,'1'],[1.5,'1.5'],[2.5,'2.5'],[4,'4'],[6,'6'],[10,'10'],[16,'16']]],['n','wires','num',null,0]],run:function(v){
+   var DI={16:10.7,20:14.1,25:18.3,32:24.3,40:31.2,50:39.6}[+v.D||20], DC={1:2.6,1.5:3,2.5:3.6,4:4.2,6:4.8,10:6.2,16:7.4}[+v.S||1.5];
+   var max=Math.floor(0.4*DI*DI/(DC*DC)), out=[[CT('maxWires'),'<b style="font-size:20px">'+max+'</b>']];
+   if(v.n>0){var f=v.n*DC*DC/(DI*DI)*100;out.push([CT('fill'),n2(f,0)+' % '+(f<=40?'✓':'✗')])}
+   return res(out)+'<div class="mini">'+CT('tubeTip')+'</div>';
+ }},
+ {id:'energy',ic:'🔋',f:[['W','powerW','num',null,2000],['h','hoursDay','num',null,2],['g','daysMonth','num',null,30],['p','priceKwh','num',null,0.25]],run:function(v){
+   var d=(v.W||0)*(v.h||0)/1000, m=d*(v.g||30), pr=v.p||0;
+   return res([[CT('perDay'),n2(d)+' kWh · '+eur(d*pr)],[CT('perMonth'),n2(m,1)+' kWh · <b>'+eur(m*pr)+'</b>'],[CT('perYear'),n2(d*365,0)+' kWh · '+eur(d*365*pr)]]);
+ }},
+ {id:'conv',ic:'🔁',f:[['kw','powerKW','num',null,1],['cv','CV / HP','num',null,0],['cos','cosphi','num',null,0.9]],run:function(v){
+   var o=[];
+   if(v.kw>0) o.push(['kW → CV',n2(v.kw*1.35962)+' CV'],['kW → HP',n2(v.kw*1.34102)+' HP'],['kW → kVA',n2(v.kw/(v.cos||1))+' kVA']);
+   if(v.cv>0) o.push(['CV → kW',n2(v.cv*0.7355)+' kW']);
+   var awg=[['0.5','20'],['0.75','18'],['1','17'],['1.5','16'],['2.5','14'],['4','12'],['6','10'],['10','8'],['16','6'],['25','4'],['35','2'],['50','1/0']];
+   return res(o)+'<table class="ctab"><tr><th>mm²</th><th>AWG</th></tr>'+awg.map(function(a){return '<tr><td>'+a[0]+'</td><td>'+a[1]+'</td></tr>'}).join('')+'</table>';
+ }},
+ {id:'ref',ic:'📘',f:[],run:function(){
+   function dot2(c){return '<span class="dot" style="background:'+c+'"></span>'}
+   return '<h3>'+CT('colorsRef')+'</h3>'+res([[CT('phase')+' L1 / L2 / L3',dot2('#7A4A21')+dot2('#111')+dot2('#8A8F99')],[CT('neutral')+' N',dot2('#1E5BD6')],[CT('earth'),dot2('linear-gradient(135deg,#F2D200 50%,#1F9D3A 50%)')]])+
+    '<h3>'+CT('ipRef')+'</h3><table class="ctab"><tr><th>IP</th><th>⛏️ / 💧</th></tr>'+[['IP20','dita / fingers · —'],['IP44','> 1 mm · spruzzi / splashes'],['IP55','polvere / dust · getti / jets'],['IP65','stagno polvere / dust-tight · getti / jets'],['IP66','stagno / dust-tight · getti forti / strong jets'],['IP67','stagno / dust-tight · immersione 1 m'],['IP68','stagno / dust-tight · immersione continua']].map(function(r){return '<tr><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td></tr>'}).join('')+'</table>'+
+    '<h3>'+CT('brRef')+'</h3><div class="mini" dir="ltr">'+BREAKERS.join(' · ')+' A — curve B (luce/lighting), C (prese, motori / sockets, motors), D (motori pesanti / heavy motors)</div>'+
+    '<h3>'+CT('rcdRef')+'</h3><table class="ctab">'+[['AC','corrente alternata / AC only'],['A','+ pulsante (lavatrici, piani induzione) / pulsating DC'],['F','+ inverter monofase (climatizzatori) / single-phase inverters'],['B','+ DC continua (wallbox, FV, inverter trifase) / smooth DC']].map(function(r){return '<tr><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td></tr>'}).join('')+'</table>';
+ }}
+];
+function res(rows){return '<div class="card cres">'+rows.map(function(r){return '<div class="trow"><span>'+r[0]+'</span><b dir="ltr">'+r[1]+'</b></div>'}).join('')+'</div>'}
+var CBYID={};CALCS.forEach(function(c){CBYID[c.id]=c});
+function calcVals(c){
+  var saved=(settings.calcVals||{})[c.id]||{}, v={};
+  c.f.forEach(function(f){var k=f[0];v[k]=saved[k]!=null?saved[k]:(f[2]==='sel'?f[3][0][0]:(f[4]!=null?f[4]:''))});
+  return v;
+}
+function renderCalc(){
+  var h='<div class="adm-head"><b>🧮 '+CT('calc')+'</b>'+(view.calc?'<button data-act="calcback">'+(settings.ui==='ar'?'→':'←')+' '+CT('allCalc')+'</button>':'')+'<button data-act="calcclose">✕</button></div>';
+  if(!view.calc){
+    return h+'<div class="note" style="margin:0 0 12px">'+CT('calcSub')+'</div><div class="menu">'+CALCS.map(function(c){
+      return '<button data-act="calcopen" data-v="'+c.id+'"><span class="ic" style="min-width:32px;text-align:center">'+c.ic+'</span><div><b>'+CT(c.id)+'</b><span>'+CT(c.id+'Sub')+'</span></div></button>'}).join('')+'</div>';
+  }
+  var c=CBYID[view.calc], v=calcVals(c);
+  h+='<div class="sec" style="font-size:16px">'+c.ic+' '+CT(c.id)+'</div>';
+  if(c.f.length){
+    h+='<div class="card">'+c.f.map(function(f){
+      var k=f[0],lab=CT(f[1]);
+      if(f[2]==='sel') return '<div class="field"><label>'+lab+'</label><div class="chips">'+f[3].map(function(o){return '<button class="chip'+(String(v[k])===String(o[0])?' on':'')+'" data-cs-k="'+k+'" data-cs-v="'+o[0]+'">'+esc(CT(o[1]))+'</button>'}).join('')+'</div></div>';
+      return '<div class="field"><label>'+lab+'</label><input data-cf="'+k+'" inputmode="decimal" dir="ltr" value="'+(v[k]===''||v[k]==null?'':esc(v[k]))+'"></div>';
+    }).join('')+'</div>';
+  }
+  h+='<div id="cres">'+calcRun(c,v)+'</div>';
+  return h;
+}
+function calcRun(c,v){
+  var x={};Object.keys(v).forEach(function(k){var s=String(v[k]).replace(',','.');x[k]=s===''?0:(isNaN(+s)?v[k]:+s)});
+  try{return c.run(x)}catch(e){return ''}
+}
+function calcSet(k,val){
+  var c=CBYID[view.calc]; if(!c) return;
+  settings.calcVals=settings.calcVals||{}; var v=calcVals(c); v[k]=val; settings.calcVals[c.id]=v; saveSettings();
+  var r=$('#cres'); if(r) r.innerHTML=calcRun(c,v);
+}
+
+/* =====================================================================
+   COLLAUDO E ORE DI LAVORO (per progetto)
+   ===================================================================== */
+function chkName(i){var r=(window.LM_CHECK||[])[i]||[];return r[{ar:0,it:1,en:2,fr:3}[settings.ui]]||r[1]||''}
+function checkSheet(){
+  var p=cur(); p.check=p.check||{}; var L=window.LM_CHECK||[];
+  function draw(){
+    var done=L.filter(function(_,i){return p.check[i]}).length;
+    openSheet('<h2>✅ '+CT('check')+' <span class="mini">'+done+'/'+L.length+'</span></h2>'+L.map(function(_,i){
+      return '<label class="toggle" style="margin-top:6px"><span>'+esc(chkName(i))+'</span><input type="checkbox" data-ck="'+i+'"'+(p.check[i]?' checked':'')+'></label>'}).join('')+
+     '<button class="btn main" id="ckShare">'+CT('shareCheck')+'</button>');
+    sheet.querySelectorAll('[data-ck]').forEach(function(b){b.onchange=function(){p.check[b.dataset.ck]=b.checked;save();var s=sheet.scrollTop;draw();sheet.scrollTop=s}});
+    $('#ckShare').onclick=function(){
+      var t='✅ '+CT('check')+(p.site.cliente?' — '+p.site.cliente:'')+'\n'+dateTxt()+'\n\n'+L.map(function(_,i){return (p.check[i]?'✅ ':'⬜ ')+chkName(i)}).join('\n');
+      if(A&&A.shareText)A.shareText(t);else if(navigator.share)navigator.share({text:t}).catch(function(){});else{try{navigator.clipboard.writeText(t);toast(T('copied'))}catch(e){}}
+    };
+  }
+  draw();
+}
+function hoursSheet(){
+  var p=cur(); p.hours=p.hours||[];
+  function tot(){return p.hours.reduce(function(a,h){return a+(+h.h||0)},0)}
+  function draw(){
+    openSheet('<h2>⏱️ '+CT('hours')+'</h2>'+
+     '<div class="row2"><div class="field" style="flex:1.2"><label>'+CT('date')+'</label><input type="date" id="hD" value="'+new Date().toISOString().slice(0,10)+'"></div><div class="field" style="flex:.8"><label>'+CT('nHours')+'</label><input id="hH" inputmode="decimal" dir="ltr" placeholder="8"></div></div>'+
+     '<div class="field"><label>'+CT('who')+'</label><input id="hW"></div>'+
+     '<button class="btn main" id="hAdd">'+CT('addHours')+'</button>'+
+     '<div class="list" style="margin-top:14px">'+(p.hours.length?p.hours.slice().reverse().map(function(h,ri){var i=p.hours.length-1-ri;
+        return '<div class="line"><div class="t"><b dir="ltr" style="text-align:start">'+esc(h.d.split('-').reverse().join('/'))+' · '+n2(+h.h,2)+' h</b>'+(h.w?'<span>'+esc(h.w)+'</span>':'')+'</div><button class="del" data-hdel="'+i+'">🗑</button></div>'}).join(''):'<div class="mini" style="padding:12px">'+CT('noHours')+'</div>')+'</div>'+
+     '<div class="trow big"><span>'+CT('totHours')+'</span><b dir="ltr">'+n2(tot(),2)+' h</b></div>'+
+     (tot()>0?'<button class="btn ghost" style="width:100%;margin-top:10px" id="hQuote">'+CT('toQuote')+'</button>':''));
+    $('#hAdd').onclick=function(){var h=num($('#hH').value);if(!(h>0)){toast(T('needQty'));return}p.hours.push({d:$('#hD').value||new Date().toISOString().slice(0,10),h:h,w:$('#hW').value.trim()});save();draw()};
+    sheet.querySelectorAll('[data-hdel]').forEach(function(b){b.onclick=function(){p.hours.splice(+b.dataset.hdel,1);save();draw()}});
+    var q=$('#hQuote'); if(q) q.onclick=function(){
+      var s=SBY.s_ora||{id:'s_ora',it:'Ora di lavoro',ar:'ساعة عمل',unit:'h',price:30};
+      var Q=cur().quote, ex=Q.lines.find(function(l){return l.sid==='s_ora'&&l.fromHours});
+      if(ex) ex.qty=tot(); else Q.lines.push({sid:'s_ora',it:s.it,ar:s.ar,unit:'h',price:s.price,qty:tot(),fromHours:1});
+      save();closeSheet();view.tab='price';render();toast(T('addedQ')+' '+n2(tot(),2)+' h');
+    };
+  }
+  draw();
 }
 
 /* =====================================================================
@@ -501,7 +708,7 @@ function kitSheet(k){
       return '<div class="kitpart">'+(it.id?thumb(it.id):'')+'<div class="t">'+esc(N(it))+(sub?'<span style="text-align:start">'+sub+'</span>':'')+'</div>'+
        '<div class="stepper"><input inputmode="decimal" data-kq="'+j+'" value="'+fmt(p.qty*n)+'"><span class="u">'+N(unit(it.unit))+'</span></div></div>'}).join('');
   }
-  var note=settings.ui==='it'?k.noteIt:k.note;
+  var note=settings.ui==='ar'?k.note:(k.noteIt?trName({it:k.noteIt},settings.ui):'');
   openSheet('<h2>'+esc(k.ic||'')+' '+esc(N(k))+'</h2>'+
    '<h3>'+T('howMany')+'</h3><div class="qty-big"><button data-n="-">−</button><input id="kn" inputmode="numeric" value="1"><button data-n="+">+</button></div>'+
    (note?'<div class="note">'+esc(note)+'</div>':'')+
@@ -537,8 +744,8 @@ function openContact(k){
 function settingsSheet(){
   var ui=settings.ui, out=settings.out;
   openSheet('<h2>'+T('settings')+'</h2>'+
-   '<h3>'+T('uiLang')+'</h3>'+segChips('ui',ui,[['ar','العربية'],['it','Italiano']])+
-   '<h3>'+T('outLang')+'</h3>'+segChips('out',out,[['it',T('langIt')],['ar',T('langAr')],['both',T('langBoth')]])+
+   '<h3>'+T('uiLang')+'</h3>'+segChips('ui',ui,LANGS)+
+   '<h3>'+T('outLang')+'</h3>'+segChips('out',out,[['it',T('langIt')],['ar',T('langAr')],['en',T('langEn')],['fr',T('langFr')],['both',T('langBoth')]])+
    '<div class="field"><label>'+T('tecnico')+'</label><input id="st" value="'+esc(settings.tecnico)+'"></div>'+
    '<div class="field"><label>'+T('ditta')+'</label><input id="sd" value="'+esc(settings.ditta)+'" placeholder="'+T('dittaP')+'"></div>'+
    '<div class="field"><label>'+T('waNum')+'</label><input id="sw" class="ltr" inputmode="tel" value="'+esc(settings.waNum)+'" placeholder="'+T('waNumP')+'"></div>'+
@@ -862,8 +1069,8 @@ function importBackup(){
    OUTPUT (messaggio + PDF)
    ===================================================================== */
 function O(lang,k){return lang==='both'?OUT.it[k]+' / '+OUT.ar[k]:OUT[lang][k]}
-function nameOut(lang,o){if(lang==='it')return o.it;if(lang==='ar')return o.ar||o.it;return o.it+(o.ar&&o.ar!==o.it?' / '+o.ar:'')}
-function unitOut(lang,u){var U=unit(u);return lang==='ar'?U.ar:U.it}
+function nameOut(lang,o){if(lang==='both')return o.it+(o.ar&&o.ar!==o.it?' / '+o.ar:'');return trName(o,lang)}
+function unitOut(lang,u){var U=unit(u);return U[lang]||U.it}
 function placeOut(lang){var p=placeOf(cur().site.luogo);return p?nameOut(lang,p):''}
 function dateTxt(){var d=new Date();function z(n){return (n<10?'0':'')+n}return z(d.getDate())+'/'+z(d.getMonth()+1)+'/'+d.getFullYear()}
 function sortedLines(){
@@ -871,7 +1078,7 @@ function sortedLines(){
   L.sort(function(a,b){return (catIndex(a.l.cat)-catIndex(b.l.cat))||(a.i-b.i)});
   return L.map(function(x){return x.l});
 }
-function specOut(lang,l){return [l.size,l.color?colName(l.color,lang==='both'?'it':lang):''].filter(Boolean).join(' ')}
+function specOut(lang,l){return [trSize(l.size,lang),l.color?colName(l.color,lang==='both'?'it':lang):''].filter(Boolean).join(' ')}
 function buildText(wa,lang){
   lang=lang||settings.out;
   var B=wa?'*':'', p=cur(), s=p.site, out=[];
@@ -905,12 +1112,12 @@ function buildReport(lang){
     if(l.cat!==last){last=l.cat;var c=CBY[l.cat];rows+='<div class="blk cat">'+(c?(lang==='both'?esc(c.it)+' <span dir="rtl">'+esc(c.ar)+'</span>':esc(nameOut(lang,c))):lab('other'))+'</div>'}
     n++;
     var nm=lang==='both'?'<b>'+esc(l.it)+'</b>'+(l.ar&&l.ar!==l.it?'<div class="ar" dir="rtl">'+esc(l.ar)+'</div>':''):'<b>'+esc(nameOut(lang,l))+'</b>';
-    var spec=(l.size?'<span dir="ltr">'+esc(l.size)+'</span>':'')+(l.color?' <span class="cd" style="background:'+(COLBY[l.color]?COLBY[l.color].hex:'#ccc')+'"></span>'+esc(colName(l.color,lang==='both'?'it':lang)):'');
+    var spec=(l.size?'<span dir="ltr">'+esc(trSize(l.size,lang))+'</span>':'')+(l.color?' <span class="cd" style="background:'+(COLBY[l.color]?COLBY[l.color].hex:'#ccc')+'"></span>'+esc(colName(l.color,lang==='both'?'it':lang)):'');
     rows+='<div class="blk r'+(n%2?'':' alt')+'"><div class="n">'+n+'</div><div class="d">'+nm+(l.note?'<div class="nt">📝 <span dir="auto">'+esc(l.note)+'</span></div>':'')+'</div><div class="s">'+(spec||'—')+'</div><div class="q"><span dir="ltr">'+fmt(l.qty)+'</span> <small>'+unitOut(lang==='both'?'it':lang,l.unit)+'</small></div></div>';
   });
   var info=[['cliente',s.cliente],['indirizzo',s.indirizzo],['luogo',placeOut(lang)],['data',dateTxt()],['tecnico',settings.tecnico]]
     .filter(function(x){return x[1]}).map(function(x){return '<div><span>'+lab(x[0])+'</span><b dir="auto">'+esc(x[1])+'</b></div>'}).join('');
-  var title=lang==='both'?'Richiesta materiale<small dir="rtl">'+OUT.ar.title+'</small>':(lang==='it'?'Richiesta materiale':OUT.ar.title);
+  var title=lang==='both'?'Richiesta materiale<small dir="rtl">'+OUT.ar.title+'</small>':OUT[lang].titleL;
   return '<!doctype html><html dir="'+(rtl?'rtl':'ltr')+'"><head><meta charset="utf-8"><meta name="viewport" content="width=794"><style>'+
    '*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans","Noto Sans Arabic",sans-serif;color:#16192B;font-size:14px;background:#fff}'+
    '.wrap{padding:0 40px}.pad{height:36px}'+
@@ -936,6 +1143,7 @@ var QOUT={
  it:{title:'PREVENTIVO',titleL:'Preventivo',descr:'Descrizione lavori',qty:'Q.tà',price:'Prezzo',tot:'Totale',labour:'Totale manodopera',sconto:'Sconto',imp:'Imponibile',iva:'IVA',total:'TOTALE',noIva:'Prezzi IVA esclusa',matEx:'Solo manodopera, materiali esclusi.'},
  ar:{title:'عرض سعر',titleL:'عرض سعر',descr:'وصف الأعمال',qty:'الكمية',price:'السعر',tot:'المجموع',labour:'مجموع العمل',sconto:'خصم',imp:'المبلغ بدون ضريبة',iva:'IVA',total:'السعر النهائي',noIva:'الأسعار بدون IVA',matEx:'العمل اليدوي فقط، بدون المواد.'}
 };
+Object.assign(QOUT,window.LM_QOUT||{});
 function QO(lang,k){return lang==='both'?QOUT.it[k]+' / '+QOUT.ar[k]:QOUT[lang][k]}
 function buildQuoteText(wa,lang){
   lang=lang||settings.out;
@@ -1061,8 +1269,8 @@ function pdfFromJpegs(pages){
 function fileReadySheet(file){
   var canShare=!!(navigator.canShare&&navigator.canShare({files:[file]}));
   openSheet('<h2>✓ '+esc(file.name)+'</h2><div class="mini" dir="ltr">'+(file.size/1024).toFixed(0)+' KB</div>'+
-   (canShare?'<button class="btn main" id="fshare">'+(settings.ui==='ar'?'📤 مشاركة / إرسال':'📤 Condividi / Invia')+'</button>':'')+
-   '<button class="btn ghost" style="width:100%;margin-top:10px" id="fdl">'+(settings.ui==='ar'?'⬇️ تنزيل / فتح':'⬇️ Scarica / Apri')+'</button>');
+   (canShare?'<button class="btn main" id="fshare">'+T('share')+'</button>':'')+
+   '<button class="btn ghost" style="width:100%;margin-top:10px" id="fdl">'+T('download')+'</button>');
   if(canShare)$('#fshare').onclick=function(){navigator.share({files:[file],title:file.name}).then(closeSheet,function(){})};
   $('#fdl').onclick=function(){var u=URL.createObjectURL(file),a=document.createElement('a');a.href=u;a.download=file.name;a.target='_blank';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},60000)};
   if(!A) toast(T('pdfOk'));
@@ -1073,6 +1281,8 @@ window.onPdfDone=function(ok){toast(ok?T('pdfOk'):T('pdfErr'))};
    EVENTI
    ===================================================================== */
 document.addEventListener('click',function(e){
+  var cs=e.target.closest('[data-cs-k]');
+  if(cs){var k=cs.dataset.csK;cs.parentNode.querySelectorAll('[data-cs-k]').forEach(function(x){x.classList.toggle('on',x===cs)});calcSet(k,cs.dataset.csV);return}
   var b=e.target.closest('[data-act],[data-tab]'); if(!b||b.disabled) return;
   if(b.dataset.tab){view.tab=b.dataset.tab;view.cat=null;clearSearch();render();window.scrollTo(0,0);return}
   var a=b.dataset.act, v=b.dataset.v, L=cur().lines;
@@ -1117,6 +1327,11 @@ document.addEventListener('click',function(e){
    case 'kitnew': kitEditSheet(null);break;
    case 'kitedit': kitEditSheet(DB.kits.find(function(k){return k.id===v}));break;
    case 'export': exportBackup();break;
+   case 'calcopen': view.calc=v;render();window.scrollTo(0,0);break;
+   case 'calcback': view.calc=null;render();break;
+   case 'calcclose': view.tab='mat';view.calc=null;render();break;
+   case 'check': checkSheet();break;
+   case 'hours': hoursSheet();break;
    case 'svc': quoteLineSheet(SBY[v]);break;
    case 'qcustom': quoteLineSheet({sid:null,unit:'pz',price:null});break;
    case 'qedit': var ql=cur().quote.lines[+v];quoteLineSheet(Object.assign({},ql,{id:ql.sid}),+v);break;
@@ -1132,6 +1347,7 @@ document.addEventListener('click',function(e){
 });
 main.addEventListener('input',function(e){
   var t=e.target;
+  if(t.dataset.cf){calcSet(t.dataset.cf,t.value);return}
   if(t.dataset.f){cur().site[t.dataset.f]=t.value;save()}
   if(t.id==='pq'){projQ=t.value;var pos=t.selectionStart;render();var n=$('#pq');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(x){}}}
 });
@@ -1147,7 +1363,11 @@ qi.addEventListener('input',function(){view.q=qi.value.trim();$('#qx').style.dis
 function clearSearch(){qi.value='';view.q='';$('#qx').style.display='none'}
 $('#qx').onclick=function(){clearSearch();render()};
 $('#btnSettings').onclick=settingsSheet;
-$('#btnLang').onclick=function(){settings.ui=settings.ui==='ar'?'it':'ar';saveSettings();applyLang();render()};
+$('#btnCalc').onclick=function(){view.tab='calc';view.calc=null;clearSearch();render();window.scrollTo(0,0)};
+$('#btnLang').onclick=function(){
+  openSheet('<h2>🌐 '+T('uiLang')+'</h2>'+LANGS.map(function(l){return '<button class="contact" data-pl="'+l[0]+'" style="'+(l[0]===settings.ui?'border-color:var(--brand);border-width:2px':'')+'"><span class="ci" style="background:var(--brand);font-size:13px">'+l[0].toUpperCase()+'</span><div><b>'+l[1]+'</b></div></button>'}).join(''));
+  sheet.querySelectorAll('[data-pl]').forEach(function(b){b.onclick=function(){settings.ui=b.dataset.pl;saveSettings();closeSheet();applyLang();render()}});
+};
 $('#btnSave').onclick=saveSheet;
 $('#btnProj').onclick=function(){save();view.tab='projects';projQ='';render();window.scrollTo(0,0)};
 $('#btnWa').onclick=doWa; $('#btnCopy').onclick=doCopy; $('#btnPdf').onclick=doPdf;
@@ -1162,6 +1382,7 @@ window.appBack=function(){
     view.tab='mat';view.adm=null;render();return true;
   }
   if(view.tab==='projects'){view.tab='mat';render();return true}
+  if(view.tab==='calc'){if(view.calc)view.calc=null;else view.tab='mat';render();return true}
   if(view.q){clearSearch();render();return true}
   if(view.cat){view.cat=null;render();return true}
   if(view.tab!=='mat'){view.tab='mat';render();return true}
@@ -1220,15 +1441,15 @@ window.addEventListener('pagehide',sessEnd);
    Se non c'è rete, la registrazione resta in coda e si invia al prossimo avvio.
    ===================================================================== */
 var COUNTRIES=[['Italia','إيطاليا'],['Marocco','المغرب'],['Tunisia','تونس'],['Algeria','الجزائر'],['Egitto','مصر'],['Libia','ليبيا'],['Mauritania','موريتانيا'],['Sudan','السودان'],['Siria','سوريا'],['Libano','لبنان'],['Giordania','الأردن'],['Palestina','فلسطين'],['Iraq','العراق'],['Arabia Saudita','السعودية'],['Emirati Arabi','الإمارات'],['Qatar','قطر'],['Kuwait','الكويت'],['Oman','عُمان'],['Bahrein','البحرين'],['Yemen','اليمن'],['Francia','فرنسا'],['Spagna','إسبانيا'],['Germania','ألمانيا'],['Belgio','بلجيكا'],['Paesi Bassi','هولندا'],['Svizzera','سويسرا'],['Regno Unito','بريطانيا'],['Senegal','السنغال'],['Bangladesh','بنغلاديش'],['Pakistan','باكستان'],['Albania','ألبانيا'],['Romania','رومانيا'],['Altro','بلد آخر']];
-var JOBS=[['dipendente','كهربائي أعمل عند شركة','Elettricista dipendente'],['proprio','كهربائي أعمل لحسابي','Elettricista in proprio'],['ditta','صاحب شركة','Titolare di ditta'],['altro','عمل آخر','Altro lavoro']];
-function regTxt(k){var ar=settings.ui==='ar';return ({
-  title:ar?'👋 أهلاً بك في «طلب مواد»':'👋 Benvenuto in «Richiesta materiale»',
-  sub:ar?'سجّل مرة واحدة فقط لتبدأ استعمال التطبيق.':'Registrati una sola volta per iniziare a usare l\'app.',
-  name:ar?'الاسم واللقب':'Nome e cognome',country:ar?'البلد الذي تعمل فيه':'Paese in cui lavori',city:ar?'المدينة (اختياري)':'Città (facoltativo)',
-  job:ar?'عملك':'Il tuo lavoro',go:ar?'ابدأ ✓':'Inizia ✓',need:ar?'اكتب اسمك واختر البلد':'Scrivi il nome e scegli il Paese',
-  priv:ar?'نستعمل اسمك وبلدك فقط لمعرفة من يستعمل التطبيق وتحسينه. لا نبيعها ولا نعطيها لأحد.':'Usiamo nome e Paese solo per sapere chi usa l\'app e migliorarla. Non li vendiamo né li cediamo a nessuno.',
-  other:ar?'اكتب اسم البلد':'Scrivi il Paese'
- })[k]}
+var JOBS=[['dipendente','كهربائي أعمل عند شركة','Elettricista dipendente','Employed electrician','Électricien salarié'],['proprio','كهربائي أعمل لحسابي','Elettricista in proprio','Self-employed electrician','Électricien indépendant'],['ditta','صاحب شركة','Titolare di ditta','Company owner','Chef d\'entreprise'],['altro','عمل آخر','Altro lavoro','Other job','Autre métier']];
+function jobName(j){return j[{ar:1,it:2,en:3,fr:4}[settings.ui]||2]}
+var REG_T={
+ ar:{title:'👋 أهلاً بك في «طلب مواد»',sub:'سجّل مرة واحدة فقط لتبدأ استعمال التطبيق.',name:'الاسم واللقب',country:'البلد الذي تعمل فيه',city:'المدينة (اختياري)',job:'عملك',go:'ابدأ ✓',need:'اكتب اسمك واختر البلد',priv:'نستعمل اسمك وبلدك فقط لمعرفة من يستعمل التطبيق وتحسينه. لا نبيعها ولا نعطيها لأحد.',other:'اكتب اسم البلد'},
+ it:{title:'👋 Benvenuto in «Richiesta materiale»',sub:'Registrati una sola volta per iniziare a usare l\'app.',name:'Nome e cognome',country:'Paese in cui lavori',city:'Città (facoltativo)',job:'Il tuo lavoro',go:'Inizia ✓',need:'Scrivi il nome e scegli il Paese',priv:'Usiamo nome e Paese solo per sapere chi usa l\'app e migliorarla. Non li vendiamo né li cediamo a nessuno.',other:'Scrivi il Paese'},
+ en:{title:'👋 Welcome to «Material request»',sub:'Register just once to start using the app.',name:'Full name',country:'Country where you work',city:'City (optional)',job:'Your job',go:'Start ✓',need:'Write your name and choose the country',priv:'We use your name and country only to know who uses the app and to improve it. We never sell or share them.',other:'Write the country'},
+ fr:{title:'👋 Bienvenue dans «Demande de matériel»',sub:'Inscrivez-vous une seule fois pour utiliser l\'appli.',name:'Nom et prénom',country:'Pays où vous travaillez',city:'Ville (facultatif)',job:'Votre métier',go:'Commencer ✓',need:'Écrivez votre nom et choisissez le pays',priv:'Nous utilisons votre nom et votre pays uniquement pour savoir qui utilise l\'appli et l\'améliorer. Nous ne les vendons ni ne les cédons.',other:'Écrivez le pays'}
+};
+function regTxt(k){return (REG_T[settings.ui]||REG_T.it)[k]}
 function regPending(){return settings.reg&&!settings.reg.sent}
 function regUrl(){return settings.regUrl||window.LM_REG||''}
 function plat(){return A?'android':(/iPad|iPhone|Macintosh/.test(navigator.userAgent)&&'ontouchend' in document?'ios':'web')}
@@ -1258,12 +1479,12 @@ function regScreen(){
   var cOpts='<option value="">—</option>'+COUNTRIES.map(function(c){return '<option value="'+c[0]+'">'+(settings.ui==='ar'?c[1]+' · '+c[0]:c[0])+'</option>'}).join('');
   ov.innerHTML='<div style="max-width:520px;margin:0 auto">'+
    '<div style="text-align:center;margin:10px 0 18px"><img src="'+(window.LM_ICON||'')+'" onerror="this.remove()" style="width:72px;height:72px;border-radius:18px"><h2 style="margin:10px 0 4px;font-size:21px">'+regTxt('title')+'</h2><div class="mini">'+regTxt('sub')+'</div></div>'+
-   '<div class="seg" style="margin-bottom:6px"><button class="chip'+(settings.ui==='ar'?' on':'')+'" data-rl="ar">العربية</button><button class="chip'+(settings.ui==='it'?' on':'')+'" data-rl="it">Italiano</button></div>'+
+   '<div class="seg" style="margin-bottom:6px;flex-wrap:wrap">'+LANGS.map(function(l){return '<button class="chip'+(settings.ui===l[0]?' on':'')+'" data-rl="'+l[0]+'">'+l[1]+'</button>'}).join('')+'</div>'+
    '<div class="card"><div class="field"><label>'+regTxt('name')+' *</label><input id="rgN" autocomplete="name"></div>'+
    '<div class="field"><label>'+regTxt('country')+' *</label><select id="rgC" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#FAFBFD;font:inherit">'+cOpts+'</select></div>'+
    '<div class="field" id="rgOW" style="display:none"><label>'+regTxt('other')+'</label><input id="rgO"></div>'+
    '<div class="field"><label>'+regTxt('city')+'</label><input id="rgCi"></div>'+
-   '<div class="field"><label>'+regTxt('job')+'</label><div class="chips">'+JOBS.map(function(j,i){return '<button class="chip'+(i===0?' on':'')+'" data-rj="'+j[0]+'">'+(settings.ui==='ar'?j[1]:j[2])+'</button>'}).join('')+'</div></div>'+
+   '<div class="field"><label>'+regTxt('job')+'</label><div class="chips">'+JOBS.map(function(j,i){return '<button class="chip'+(i===0?' on':'')+'" data-rj="'+j[0]+'">'+jobName(j)+'</button>'}).join('')+'</div></div>'+
    '<div class="mini" style="margin-top:12px">🔒 '+regTxt('priv')+'</div>'+
    '<button class="btn main" id="rgGo">'+regTxt('go')+'</button></div></div>';
   document.body.appendChild(ov);
@@ -1308,18 +1529,18 @@ function checkUpdate(manual){
 // messaggio libero scritto dal proprietario in version.json → "message": {"id","ar","it","link"}
 function showBroadcast(m){
   if(!m||!m.id||(settings.msgSeen||[]).indexOf(m.id)>=0) return;
-  var txt=(settings.ui==='ar'?(m.ar||m.it):(m.it||m.ar))||''; if(!txt) return;
+  var txt=(m[settings.ui]||(settings.ui==='ar'?m.ar:m.it)||m.it||m.ar)||''; if(!txt) return;
   if(sheetOpen){setTimeout(function(){showBroadcast(m)},4000);return}
-  openSheet('<h2>📢 '+(settings.ui==='ar'?'رسالة جديدة':'Nuovo messaggio')+'</h2><div class="note" style="white-space:pre-line;font-size:15px">'+esc(txt)+'</div>'+
-   (m.link?'<button class="btn ghost" style="width:100%;margin-top:10px" id="bmLink">🔗 '+(settings.ui==='ar'?'افتح الرابط':'Apri il link')+'</button>':'')+
-   '<button class="btn main" id="bmOk">'+(settings.ui==='ar'?'حسناً ✓':'OK ✓')+'</button>');
+  openSheet('<h2>📢 '+T('newMsg')+'</h2><div class="note" style="white-space:pre-line;font-size:15px">'+esc(txt)+'</div>'+
+   (m.link?'<button class="btn ghost" style="width:100%;margin-top:10px" id="bmLink">🔗 '+T('openLink')+'</button>':'')+
+   '<button class="btn main" id="bmOk">'+T('ok')+'</button>');
   function seen(){settings.msgSeen=(settings.msgSeen||[]).concat([m.id]).slice(-30);saveSettings()}
   if(m.link)$('#bmLink').onclick=function(){seen();openUrl(m.link)};
   $('#bmOk').onclick=function(){seen();closeSheet()};
   ping('/messaggio/'+m.id,'Messaggio letto');
 }
 function updSheet(v){
-  var notes=(settings.ui==='ar'?v.notes_ar:v.notes_it)||'';
+  var notes=(v['notes_'+settings.ui]||(settings.ui==='ar'?v.notes_ar:v.notes_it))||'';
   openSheet('<h2>'+T('updTitle')+'</h2><div class="mini" dir="ltr">v'+esc(v.versionName)+'</div>'+
    (notes?'<div class="note" style="white-space:pre-line">'+esc(notes)+'</div>':'')+
    '<div id="updMsg" class="mini" style="margin-top:10px"></div>'+
