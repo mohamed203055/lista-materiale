@@ -1,5 +1,6 @@
 """Genera la versione web (iPad/iPhone) nella cartella indicata.
-Uso: python3 tools/build_web.py <cartella-repo-web> <versione>"""
+Uso: python3 tools/build_web.py <cartella-repo-web> <versione> [cartella-release]
+La cartella-release contiene app.js, catalog.js offuscati, app.apk e (facoltativo) notes_ar.txt / notes_it.txt."""
 import sys, os, shutil, re
 from PIL import Image, ImageDraw
 
@@ -50,7 +51,8 @@ var FILES=%s;
 self.addEventListener('install',function(e){e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(FILES)}).then(function(){return self.skipWaiting()}))});
 self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==CACHE}).map(function(x){return caches.delete(x)}))}).then(function(){return self.clients.claim()}))});
 self.addEventListener('fetch',function(e){
-  if(e.request.method!=='GET'||new URL(e.request.url).origin!==location.origin)return;
+  var u=new URL(e.request.url);
+  if(e.request.method!=='GET'||u.origin!==location.origin||/version\\.json|\\.apk$/.test(u.pathname))return;
   e.respondWith(caches.open(CACHE).then(function(c){return c.match(e.request,{ignoreSearch:true}).then(function(hit){
     var net=fetch(e.request).then(function(r){if(r&&r.ok)c.put(e.request,r.clone());return r}).catch(function(){return hit});
     return hit||net;
@@ -72,4 +74,16 @@ def icon(size):
     return im.resize((size, size), Image.LANCZOS)
 for s in (180, 192, 512):
     icon(s).save(os.path.join(dst, 'icon-%d.png' % s))
+# aggiornamenti: APK pubblico + version.json
+if len(sys.argv) > 3:
+    import json
+    rel = sys.argv[3]
+    if os.path.exists(os.path.join(rel, 'app.apk')):
+        shutil.copy(os.path.join(rel, 'app.apk'), os.path.join(dst, 'TalabMawad.apk'))
+    def rd(n):
+        f = os.path.join(rel, n)
+        return open(f).read().strip() if os.path.exists(f) else ''
+    json.dump({'versionCode': int(ver.split('.')[-1]), 'versionName': ver, 'apk': 'TalabMawad.apk',
+               'notes_ar': rd('notes_ar.txt'), 'notes_it': rd('notes_it.txt')},
+              open(os.path.join(dst, 'version.json'), 'w'), ensure_ascii=False, indent=1)
 print('ok', dst, ver)

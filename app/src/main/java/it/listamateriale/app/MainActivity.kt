@@ -27,6 +27,10 @@ import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.math.ceil
+import android.os.Build
+import android.provider.Settings
+import java.net.HttpURLConnection
+import java.net.URL
 
 class MainActivity : ComponentActivity() {
 
@@ -121,6 +125,76 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         if (::web.isInitialized) web.evaluateJavascript("window.lmResume&&window.lmResume()", null)
+        // tornato dalle impostazioni dopo aver dato il permesso: riprende l'installazione
+        if (updWaitingPermission && Build.VERSION.SDK_INT >= 26 && packageManager.canRequestPackageInstalls()) {
+            updWaitingPermission = false
+            installUpdate()
+        }
+    }
+
+    // ---------- aggiornamento in-app ----------
+    private var updFile: File? = null
+    private var updDownloading = false
+    private var updWaitingPermission = false
+
+    private fun js(code: String) = ui.post { web.evaluateJavascript(code, null) }
+
+    private fun downloadUpdate(url: String) {
+        if (updDownloading) return
+        updDownloading = true
+        Thread {
+            try {
+                val dir = File(cacheDir, "update").apply { mkdirs() }
+                dir.listFiles()?.forEach { it.delete() }
+                val f = File(dir, "update.apk")
+                var u = URL(url)
+                var c = u.openConnection() as HttpURLConnection
+                c.instanceFollowRedirects = true
+                c.connectTimeout = 15000; c.readTimeout = 30000
+                val total = c.contentLengthLong
+                c.inputStream.use { inp ->
+                    FileOutputStream(f).use { out ->
+                        val buf = ByteArray(32 * 1024)
+                        var done = 0L; var last = -1
+                        while (true) {
+                            val n = inp.read(buf); if (n < 0) break
+                            out.write(buf, 0, n); done += n
+                            if (total > 0) { val p = (done * 100 / total).toInt(); if (p != last) { last = p; js("window.onUpdProgress&&window.onUpdProgress($p)") } }
+                        }
+                    }
+                }
+                c.disconnect()
+                updFile = f
+                updDownloading = false
+                ui.post { installUpdate() }
+            } catch (e: Exception) {
+                updDownloading = false
+                js("window.onUpdError&&window.onUpdError()")
+            }
+        }.start()
+    }
+
+    private fun installUpdate() {
+        val f = updFile ?: return
+        if (Build.VERSION.SDK_INT >= 26 && !packageManager.canRequestPackageInstalls()) {
+            // l'utente deve permettere a questa app di installare aggiornamenti (una sola volta)
+            updWaitingPermission = true
+            js("window.onUpdNeedPermission&&window.onUpdNeedPermission()")
+            try {
+                startActivity(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:$packageName")))
+            } catch (_: Exception) { }
+            return
+        }
+        try {
+            val uri = FileProvider.getUriForFile(this, "$packageName.files", f)
+            val i = Intent(Intent.ACTION_VIEW)
+                .setDataAndType(uri, "application/vnd.android.package-archive")
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(i)
+            js("window.onUpdInstalling&&window.onUpdInstalling()")
+        } catch (e: Exception) {
+            js("window.onUpdError&&window.onUpdError()")
+        }
     }
 
     private fun openExternal(u: Uri) {
@@ -169,6 +243,15 @@ class MainActivity : ComponentActivity() {
         fun open(url: String) {
             ui.post { openExternal(Uri.parse(url)) }
         }
+
+        @JavascriptInterface
+        fun versionCode(): Long = try {
+            val pi = packageManager.getPackageInfo(packageName, 0)
+            if (Build.VERSION.SDK_INT >= 28) pi.longVersionCode else @Suppress("DEPRECATION") pi.versionCode.toLong()
+        } catch (_: Exception) { 0L }
+
+        @JavascriptInterface
+        fun update(url: String) { downloadUpdate(url) }
 
         @JavascriptInterface
         fun version(): String = try {

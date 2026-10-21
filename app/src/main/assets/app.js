@@ -42,7 +42,7 @@ var TXT={
   importB:'📥 استيراد نسخة',importHint:'يستبدل القائمة الحالية بالملف المختار.',importQ:'استيراد هذا الملف؟ ستُستبدل القائمة الحالية.',imported:'تم الاستيراد ✓',badFile:'الملف غير صالح',
   resetQ:'استرجاع القائمة الأصلية؟ ستُحذف كل تعديلاتك على المواد والكيتات (المشاريع لا تُحذف).',resetDone:'تمت الاستعادة',
   pwOld:'كلمة السر الحالية',pwNew:'كلمة السر الجديدة',pwNew2:'أعد كتابة الجديدة',pwWeak:'8 أحرف على الأقل، فيها حرف ورقم',pwMismatch:'الكلمتان غير متطابقتين',pwChanged:'تم تغيير كلمة السر ✓',
-  storageFull:'الذاكرة ممتلئة! صغّر الصور أو احذف بعضها.',stats:'📊 إحصائيات مجهولة الهوية',statsHint:'يرسل التطبيق فقط: أنه فُتح، والدولة، ورقمك المجهول. لا اسم ولا رقم هاتف ولا موقع دقيق ولا محتوى طلباتك.',statsOn:'السماح بالإحصائيات',yourId:'رقمك المجهول',
+  storageFull:'الذاكرة ممتلئة! صغّر الصور أو احذف بعضها.',updTitle:'🔔 يوجد تحديث جديد',updNow:'⬇️ تحديث الآن',updLater:'لاحقاً',updDl:'جاري التنزيل…',updPerm:'اسمح للتطبيق بتثبيت التحديثات (مرة واحدة فقط)، ثم ارجع إلى التطبيق.',updInst:'اضغط «تثبيت» في النافذة التي ظهرت. بياناتك ومشاريعك تبقى كما هي.',updErr:'تعذّر التحديث. تأكد من الإنترنت وحاول مرة أخرى.',updCheck:'🔄 البحث عن تحديث',updNone:'عندك آخر نسخة ✓',updWeb:'النسخة الجديدة جاهزة، سيُعاد فتح التطبيق.',stats:'📊 إحصائيات مجهولة الهوية',statsHint:'يرسل التطبيق فقط: أنه فُتح، والدولة، ورقمك المجهول. لا اسم ولا رقم هاتف ولا موقع دقيق ولا محتوى طلباتك.',statsOn:'السماح بالإحصائيات',yourId:'رقمك المجهول',
   price:'الأسعار',priceInfo:'أسعار العمل اليدوي فقط (بدون المواد)، بدون IVA. الأسعار المكتوبة تقريبية لروما — عدّلها من 🔒 الإدارة ← أسعار العمل.',
   quote:'عرض السعر',quoteEmpty:'اختر الخدمات من القائمة في الأسفل لتبدأ الحساب.',services:'قائمة الخدمات',customExtra:'➕ إضافة خاصة (تكتبها بنفسك)',
   unitPrice:'سعر الوحدة €',lineTotal:'المجموع',labour:'مجموع العمل',discount:'خصم €',taxable:'المبلغ بدون ضريبة',withIva:'إضافة IVA (الضريبة)',iva:'IVA',total:'السعر النهائي',
@@ -79,7 +79,7 @@ var TXT={
   importB:'📥 Importa backup',importHint:'Sostituisce l\'elenco attuale con il file scelto.',importQ:'Importare questo file? L\'elenco attuale verrà sostituito.',imported:'Importato ✓',badFile:'File non valido',
   resetQ:'Ripristinare l\'elenco originale? Le modifiche a materiali e kit verranno perse (i progetti restano).',resetDone:'Ripristinato',
   pwOld:'Password attuale',pwNew:'Nuova password',pwNew2:'Ripeti la nuova password',pwWeak:'Almeno 8 caratteri, con lettere e numeri',pwMismatch:'Le password non coincidono',pwChanged:'Password cambiata ✓',
-  storageFull:'Memoria piena! Riduci o elimina alcune foto.',stats:'📊 Statistiche anonime',statsHint:'L\'app invia solo: che è stata aperta, il Paese e il tuo codice anonimo. Nessun nome, telefono, posizione precisa o contenuto delle richieste.',statsOn:'Consenti statistiche',yourId:'Il tuo codice anonimo',
+  storageFull:'Memoria piena! Riduci o elimina alcune foto.',updTitle:'🔔 Nuovo aggiornamento disponibile',updNow:'⬇️ Aggiorna ora',updLater:'Più tardi',updDl:'Download in corso…',updPerm:'Consenti all\'app di installare aggiornamenti (solo la prima volta), poi torna nell\'app.',updInst:'Tocca «Installa» nella finestra che si è aperta. I tuoi dati e progetti restano.',updErr:'Aggiornamento non riuscito. Controlla internet e riprova.',updCheck:'🔄 Cerca aggiornamenti',updNone:'Hai già l\'ultima versione ✓',updWeb:'Nuova versione pronta, l\'app si riavvia.',stats:'📊 Statistiche anonime',statsHint:'L\'app invia solo: che è stata aperta, il Paese e il tuo codice anonimo. Nessun nome, telefono, posizione precisa o contenuto delle richieste.',statsOn:'Consenti statistiche',yourId:'Il tuo codice anonimo',
   price:'Prezzi',priceInfo:'Solo manodopera (materiali esclusi), IVA esclusa. I prezzi sono indicativi per Roma — modificali da 🔒 Amministrazione → Listino manodopera.',
   quote:'Preventivo',quoteEmpty:'Scegli i lavori dall\'elenco qui sotto per iniziare il calcolo.',services:'Elenco lavori',customExtra:'➕ Voce libera (la scrivi tu)',
   unitPrice:'Prezzo unitario €',lineTotal:'Totale',labour:'Totale manodopera',discount:'Sconto €',taxable:'Imponibile',withIva:'Aggiungi IVA',iva:'IVA',total:'Totale',
@@ -552,8 +552,10 @@ function settingsSheet(){
    '<button class="contact" data-link="tel"><span class="ci" style="background:#1F4FD8">☎</span><div><b>'+T('call')+'</b><span class="ltr" style="display:block;text-align:start">'+CONTACT.phone+'</span></div></button>'+
    '<button class="contact" data-link="ig"><span class="ci" style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)">IG</span><div><b>Instagram</b><span class="ltr" style="display:block;text-align:start">@'+CONTACT.ig+'</span></div></button>'+
    '<button class="contact" data-link="tt"><span class="ci" style="background:#111">♪</span><div><b>TikTok</b><span class="ltr" style="display:block;text-align:start">@'+CONTACT.tt+'</span></div></button>'+
+   '<button class="btn ghost" style="width:100%;margin-top:16px" id="updChk">'+T('updCheck')+'</button>'+
    '<div class="mini" style="text-align:center;margin-top:14px" dir="ltr">v'+appVersion()+'<br>© 2026 Richiesta materiale – tutti i diritti riservati</div>');
   sheet.querySelectorAll('[data-link]').forEach(function(b){b.onclick=function(){openContact(b.dataset.link)}});
+  $('#updChk').onclick=function(){checkUpdate(true)};
   sheet.querySelectorAll('[data-ui]').forEach(function(b){b.onclick=function(){ui=b.dataset.ui;sheet.querySelectorAll('[data-ui]').forEach(function(x){x.classList.toggle('on',x.dataset.ui===ui)})}});
   sheet.querySelectorAll('[data-out]').forEach(function(b){b.onclick=function(){out=b.dataset.out;sheet.querySelectorAll('[data-out]').forEach(function(x){x.classList.toggle('on',x.dataset.out===out)})}});
   function store(){settings.statsOff=!$('#sstat').checked;settings.tecnico=$('#st').value.trim();settings.ditta=$('#sd').value.trim();settings.waNum=$('#sw').value.trim();settings.ui=ui;settings.out=out;saveSettings()}
@@ -1210,5 +1212,48 @@ window.lmPause=sessEnd; window.lmResume=sessResume;
 document.addEventListener('visibilitychange',function(){if(document.hidden)sessEnd();else sessResume()});
 window.addEventListener('pagehide',sessEnd);
 
-reindex(); cur(); save(); applyLang(); render(); setTimeout(statsStart,1500);
+/* =====================================================================
+   AGGIORNAMENTI / التحديثات
+   version.json pubblico su GitHub Pages: {versionCode, versionName, apk, notes_ar, notes_it}
+   ===================================================================== */
+var UPD_BASE='https://mohamed203055.github.io/lista-materiale-web/';
+function verNum(v){var m=String(v||'').match(/(\d+)\.(\d+)\.(\d+)/);return m?(+m[1])*1e6+(+m[2])*1e3+(+m[3]):0}
+function checkUpdate(manual){
+  if(!window.fetch) return;
+  fetch(UPD_BASE+'version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){
+    var newer;
+    if(A&&A.versionCode) newer=(+v.versionCode||0)>(+A.versionCode()||0);
+    else newer=verNum(v.versionName)>verNum(appVersion());
+    if(!newer){if(manual)toast(T('updNone'));return}
+    if(!manual&&settings.updSkip===v.versionName&&settings.updSkipDay===new Date().toISOString().slice(0,10)) return;
+    updSheet(v);
+  }).catch(function(){if(manual)toast(T('updErr'))});
+}
+function updSheet(v){
+  var notes=(settings.ui==='ar'?v.notes_ar:v.notes_it)||'';
+  openSheet('<h2>'+T('updTitle')+'</h2><div class="mini" dir="ltr">v'+esc(v.versionName)+'</div>'+
+   (notes?'<div class="note" style="white-space:pre-line">'+esc(notes)+'</div>':'')+
+   '<div id="updMsg" class="mini" style="margin-top:10px"></div>'+
+   '<div style="height:10px;background:#EEF0F4;border-radius:6px;margin-top:8px;overflow:hidden;display:none" id="updBarW"><div id="updBar" style="height:100%;width:0;background:var(--brand)"></div></div>'+
+   '<button class="btn main" id="updGo">'+T('updNow')+'</button>'+
+   '<button class="btn ghost" style="width:100%;margin-top:10px" id="updNo">'+T('updLater')+'</button>');
+  $('#updNo').onclick=function(){settings.updSkip=v.versionName;settings.updSkipDay=new Date().toISOString().slice(0,10);saveSettings();closeSheet()};
+  $('#updGo').onclick=function(){
+    ping('/aggiornamento/'+v.versionName,'Aggiornamento');
+    if(A&&A.update){
+      $('#updGo').disabled=true;$('#updBarW').style.display='block';$('#updMsg').textContent=T('updDl');
+      A.update(UPD_BASE+(v.apk||'TalabMawad.apk')+'?v='+encodeURIComponent(v.versionName));
+    }else{
+      $('#updMsg').textContent=T('updWeb');
+      var done=function(){location.reload()};
+      if(window.caches&&caches.keys) caches.keys().then(function(k){return Promise.all(k.map(function(x){return caches.delete(x)}))}).then(done,done); else done();
+    }
+  };
+}
+window.onUpdProgress=function(p){var b=$('#updBar');if(b)b.style.width=p+'%';var m=$('#updMsg');if(m)m.textContent=T('updDl')+' '+p+'%'};
+window.onUpdNeedPermission=function(){var m=$('#updMsg');if(m)m.textContent=T('updPerm')};
+window.onUpdInstalling=function(){var m=$('#updMsg');if(m)m.textContent=T('updInst');var g=$('#updGo');if(g)g.disabled=false};
+window.onUpdError=function(){var m=$('#updMsg');if(m)m.textContent=T('updErr');var g=$('#updGo');if(g)g.disabled=false};
+
+reindex(); cur(); save(); applyLang(); render(); setTimeout(statsStart,1500); setTimeout(function(){checkUpdate(false)},3000);
 })();
