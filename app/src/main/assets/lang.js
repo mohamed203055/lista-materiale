@@ -532,7 +532,9 @@ window.LM_CALC = (function(){
   totHours:['المجموع','Totale','Total','Total'],noHours:['لا توجد ساعات مسجّلة.','Nessuna ora registrata.','No hours recorded.','Aucune heure enregistrée.'],
   toQuote:['💶 أضف المجموع إلى عرض السعر','💶 Aggiungi il totale al preventivo','💶 Add total to the quote','💶 Ajouter le total au devis'],
   shareCheck:['📤 مشاركة نتيجة الفحص','📤 Condividi il collaudo','📤 Share the checklist','📤 Partager le contrôle'],
-  checkDone:['تم','Fatto','Done','Fait']
+  checkDone:['تم','Fatto','Done','Fait'],
+  country:['📍 البلد (كتالوج القطع)','📍 Paese (catalogo materiali)','📍 Country (materials catalogue)','📍 Pays (catalogue du matériel)'],
+  countryHint:['كل بلد له أسماء قطعه ومقاساته وعملته وضريبته. مشاريعك تبقى كما هي.','Ogni Paese ha i suoi nomi, misure, valuta e IVA. I progetti restano.','Each country has its own names, sizes, currency and VAT. Your projects stay.','Chaque pays a ses noms, tailles, monnaie et TVA. Vos projets restent.']
   };
   var L = {ar:0, it:1, en:2, fr:3}, out = {ar:{}, it:{}, en:{}, fr:{}};
   Object.keys(D).forEach(function(k){ Object.keys(L).forEach(function(l){ out[l][k] = D[k][L[l]]; }); });

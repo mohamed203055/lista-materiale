@@ -1,4 +1,5 @@
 // Catalogo materiali — formato riga: "Nome italiano|الاسم بالعربية|unità|misure separate da ;"
+window.CATALOG_VER = 2; // aumentare quando cambia il catalogo italiano (aggiorna chi non ha modificato l'elenco)
 // Unità: pz, m, conf, sacco, coppia
 window.UNITS = {
   pz:    { it: 'pz',    ar: 'قطعة',  step: 1 },

@@ -7,11 +7,11 @@ from PIL import Image, ImageDraw
 src = os.path.join(os.path.dirname(__file__), '..', 'app', 'src', 'main', 'assets')
 dst, ver = sys.argv[1], sys.argv[2]
 os.makedirs(dst, exist_ok=True)
-for f in ('catalog.js', 'lang.js', 'app.js'):
+for f in ('catalog.js', 'packs.js', 'lang.js', 'app.js'):
     shutil.copy(os.path.join(src, f), os.path.join(dst, f))
 # file JS già offuscati (dalla release) se indicati come 3° argomento
 if len(sys.argv) > 3:
-    for f in ('catalog.js', 'lang.js', 'app.js'):
+    for f in ('catalog.js', 'packs.js', 'lang.js', 'app.js'):
         shutil.copy(os.path.join(sys.argv[3], f), os.path.join(dst, f))
 
 html = open(os.path.join(src, 'index.html')).read()
@@ -44,7 +44,7 @@ open(os.path.join(dst, 'manifest.webmanifest'), 'w').write('''{
   ]
 }
 ''')
-files = ['./', 'index.html', 'catalog.js', 'lang.js', 'app.js', 'html2canvas.min.js', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png']
+files = ['./', 'index.html', 'catalog.js', 'packs.js', 'lang.js', 'app.js', 'html2canvas.min.js', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png']
 open(os.path.join(dst, 'sw.js'), 'w').write('''// Funziona anche senza internet: i file restano in cache, e si aggiornano in background
 var CACHE='lm-%s';
 var FILES=%s;
@@ -52,7 +52,7 @@ self.addEventListener('install',function(e){e.waitUntil(caches.open(CACHE).then(
 self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==CACHE}).map(function(x){return caches.delete(x)}))}).then(function(){return self.clients.claim()}))});
 self.addEventListener('fetch',function(e){
   var u=new URL(e.request.url);
-  if(e.request.method!=='GET'||u.origin!==location.origin||/version\\.json|\\.apk$/.test(u.pathname))return;
+  if(e.request.method!=='GET'||u.origin!==location.origin||/version\\.json|\\.apk$|\\/packs\\//.test(u.pathname))return;
   e.respondWith(caches.open(CACHE).then(function(c){return c.match(e.request,{ignoreSearch:true}).then(function(hit){
     var net=fetch(e.request).then(function(r){if(r&&r.ok)c.put(e.request,r.clone());return r}).catch(function(){return hit});
     return hit||net;
@@ -101,4 +101,15 @@ if len(sys.argv) > 3:
         data = dict(old); data.pop('next', None); data.update(new); data['send'] = False
     data.setdefault('message', {'id': '', 'ar': '', 'it': '', 'link': ''})
     json.dump(data, open(vj, 'w'), ensure_ascii=False, indent=1)
+# cataloghi per Paese (scaricabili dall'app): packs/<CC>.json + versioni in version.json
+import subprocess, json as _j
+here = os.path.dirname(os.path.abspath(__file__))
+subprocess.run([sys.executable, os.path.join(here, 'packs', 'ma_pack.py'), os.path.join(dst, 'packs')], check=True, stdout=subprocess.DEVNULL)
+vj = os.path.join(dst, 'version.json')
+if os.path.exists(vj):
+    d = _j.load(open(vj)); d['packs'] = {}
+    for f in os.listdir(os.path.join(dst, 'packs')):
+        if f.endswith('.json'):
+            d['packs'][f[:-5]] = _j.load(open(os.path.join(dst, 'packs', f)))['version']
+    _j.dump(d, open(vj, 'w'), ensure_ascii=False, indent=1)
 print('ok', dst, ver)
