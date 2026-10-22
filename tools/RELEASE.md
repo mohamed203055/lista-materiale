@@ -12,3 +12,11 @@
    Il campo `message` (id, ar, it, link) mostra un messaggio libero una volta a ogni utente; cambiare `id` per un nuovo messaggio.
 
 5. Non cancellare mai l'APK indicato in `version.json` (`apk`): è quello che gli utenti scaricano. Si può cancellare solo un APK non più citato né in `apk` né in `next.apk`.
+
+## Aggiornamento silenzioso (⚡, dalla 1.0.41)
+Per piccoli cambi alla parte web (icone, testi, cataloghi, correzioni JS/CSS) senza nuovo APK:
+1. Push su `main` → la release `v1.0.N` contiene anche `live.json` (firmato ECDSA con `signing/live_ec.pem`) e `live-bundle.zip`.
+2. Nel repo web: estrarre `live-bundle.zip` in `live/N/` e mettere il contenuto di `live.json` in `version.json` → `liveNext`.
+3. Il proprietario preme «⚡ إرسال التحديث الصامت» nell'admin (`liveNext` → `live`).
+4. L'app (nativo ≥ `min`) scarica `live/N/*`, verifica firma e SHA-256, lo usa dal prossimo avvio; se non conferma `liveOk` entro 12 s torna alla versione interna.
+Regole: non cancellare `live/<ver>` di `live` o `liveNext`. Se cambia il ponte Android (metodi `Bridge`), alzare `LIVE_MIN` nel workflow.
