@@ -125,7 +125,7 @@ var COLBY={}; COLORS.forEach(function(c){COLBY[c.id]=c});
 /* =====================================================================
    ARCHIVIO LOCALE / التخزين
    ===================================================================== */
-var K={db:'lm_db_v2',img:'lm_img_v2',proj:'lm_proj_v2',set:'lm_settings_v1',old:'lm_state_v1',fav:'lm_fav_v1'};
+var K={db:'lm_db_v2',img:'lm_img_v2',proj:'lm_proj_v2',set:'lm_settings_v1',old:'lm_state_v1',fav:'lm_fav_v1',people:'lm_people_v1'};
 function load(k,d){try{var v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}}
 function put(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){toast(T('storageFull'));return false}}
 
@@ -306,6 +306,11 @@ var XT={
   myCl:{ar:'👥 زبائني',it:'👥 I miei clienti',en:'👥 My clients',fr:'👥 Mes clients'},
   savedNew:{ar:'✓ حُفظ المشروع السابق — صفحة جديدة',it:'✓ Progetto salvato — nuova pagina',en:'✓ Project saved — new page',fr:'✓ Projet enregistré — nouvelle page'},
   noClients:{ar:'لا يوجد زبائن محفوظون بعد.',it:'Nessun cliente salvato.',en:'No saved clients yet.',fr:'Aucun client enregistré.'},
+  pros:{ar:'🤝 مهنيون موثوقون',it:'🤝 Professionisti consigliati',en:'🤝 Recommended pros',fr:'🤝 Professionnels recommandés'},
+  prosHint:{ar:'أشخاص وشركات نثق بهم. اضغط على أي شخص لترى خدماته ورقمه.',it:'Persone e ditte di fiducia. Tocca una persona per vedere servizi e contatti.',en:'People and companies we trust. Tap someone to see services and contacts.',fr:'Personnes et entreprises de confiance. Touchez une personne pour voir ses services et contacts.'},
+  services:{ar:'الخدمات',it:'Servizi',en:'Services',fr:'Services'},
+  call:{ar:'📞 اتصال',it:'📞 Chiama',en:'📞 Call',fr:'📞 Appeler'},
+  waHello:{ar:'السلام عليكم، وجدت رقمك في تطبيق «طلب مواد».',it:'Buongiorno, ho trovato il suo contatto nell’app «Richiesta materiale».',en:'Hello, I found your contact in the «Material request» app.',fr:'Bonjour, j’ai trouvé votre contact dans l’application «Demande de matériel».'},
   calcBtn:{ar:'حاسبة',it:'Calcoli',en:'Calc',fr:'Calculs'},
   searchCl:{ar:'ابحث عن زبون…',it:'Cerca un cliente…',en:'Search a client…',fr:'Rechercher un client…'},
   dupLine:{ar:'⧉ تكرار السطر',it:'⧉ Duplica riga',en:'⧉ Duplicate line',fr:'⧉ Dupliquer la ligne'},
@@ -845,6 +850,42 @@ function openContact(k){
   else if(k==='ig') openUrl('https://www.instagram.com/'+CONTACT.ig+'/');
   else if(k==='tt') openUrl('https://www.tiktok.com/@'+CONTACT.tt);
 }
+/* ---- professionisti consigliati: gestiti dal proprietario (app admin) in people.json ---- */
+var PEOPLE=load(K.people,{ver:0,list:[]});
+function prosList(){
+  var me=((settings.reg&&settings.reg.paese)||'').toLowerCase();
+  return (PEOPLE.list||[]).filter(function(p){return p&&!p.hidden&&p.name}).map(function(p,i){return {p:p,i:i}})
+   .sort(function(a,b){var x=(a.p.country||'').toLowerCase()===me?0:1,y=(b.p.country||'').toLowerCase()===me?0:1;return x-y||a.i-b.i}).map(function(o){return o.p});
+}
+function proPic(p,big){
+  var sz=big?96:56;
+  if(p.photo&&/^data:image\//.test(p.photo)) return '<img src="'+esc(p.photo)+'" alt="" style="width:'+sz+'px;height:'+sz+'px;border-radius:'+(big?24:14)+'px;object-fit:cover;flex:none;background:#EEF0F4">';
+  return '<span style="width:'+sz+'px;height:'+sz+'px;border-radius:'+(big?24:14)+'px;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand);font-weight:800;font-size:'+(big?36:22)+'px;flex:none">'+esc((p.name.trim()[0]||'?').toUpperCase())+'</span>';
+}
+function prosSection(){
+  var L=prosList(); if(!L.length) return '';
+  return '<h3 style="margin-top:24px">'+L4(XT.pros)+'</h3><div class="mini">'+L4(XT.prosHint)+'</div><div class="pros">'+
+   L.map(function(p){return '<button class="pro" data-pro="'+esc(p.id)+'">'+proPic(p)+'<b>'+esc(p.name)+'</b><span>'+esc(p.job||'')+'</span>'+(p.city||p.country?'<span>📍 '+esc([p.city,p.country].filter(Boolean).join(', '))+'</span>':'')+'</button>'}).join('')+'</div>';
+}
+function proSheet(id){
+  var p=(PEOPLE.list||[]).find(function(x){return x.id===id});if(!p)return;
+  var ph=String(p.phone||'').replace(/[^\d+]/g,''), wa=ph.replace(/^\+/,'').replace(/^00/,'');
+  openSheet('<div style="display:flex;gap:14px;align-items:center">'+proPic(p,true)+'<div style="min-width:0"><h2>'+esc(p.name)+'</h2>'+(p.job?'<div class="it" style="font-weight:600;color:var(--ink)">'+esc(p.job)+'</div>':'')+
+    (p.city||p.country?'<div class="it">📍 '+esc([p.city,p.country].filter(Boolean).join(', '))+'</div>':'')+'</div></div>'+
+   (p.services?'<h3>'+L4(XT.services)+'</h3><div style="white-space:pre-wrap;line-height:1.6;font-size:15px" dir="auto">'+esc(p.services)+'</div>':'')+
+   (ph?'<div class="ltr mini" style="margin-top:14px;text-align:center;font-size:15px">'+esc(p.phone)+'</div>'+
+    '<div class="row2" style="margin-top:8px"><button class="btn wa" id="proWa">WhatsApp</button><button class="btn cp" id="proCall">'+L4(XT.call)+'</button></div>':''));
+  if(ph){
+    $('#proWa').onclick=function(){ping('/usa/professionista','Contatto professionista');var t=L4(XT.waHello);if(A&&A.whatsapp)A.whatsapp(t,wa);else openUrl('https://wa.me/'+wa+'?text='+encodeURIComponent(t))};
+    $('#proCall').onclick=function(){openUrl('tel:'+ph)};
+  }
+}
+function checkPeople(ver){
+  if(!ver||ver===PEOPLE.ver) return;
+  fetch(UPD_BASE+'people.json?v='+encodeURIComponent(ver),{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){
+    PEOPLE={ver:ver,list:Array.isArray(j.people)?j.people:[]};put(K.people,PEOPLE);
+  }).catch(function(){});
+}
 function settingsSheet(){
   var ui=settings.ui, out=settings.out;
   openSheet('<h2>'+T('settings')+'</h2>'+
@@ -860,11 +901,13 @@ function settingsSheet(){
    '<label class="toggle"><span>'+T('statsOn')+'</span><input type="checkbox" id="sstat"'+(settings.statsOff?'':' checked')+'></label>'+
    '<div class="mini" style="margin-top:6px">'+T('yourId')+': <b dir="ltr">'+esc(anonId())+'</b>'+(settings.reg?' · '+esc(settings.reg.nome)+' ('+esc(settings.reg.paese)+')':'')+'</div>'+
    '<button class="contact" style="margin-top:16px" id="goAdmin"><span class="ci" style="background:#16192B">🔒</span><div><b>'+T('admin').replace('🔒 ','')+'</b><span>'+T('adminSub')+'</span></div></button>'+
+   prosSection()+
    '<h3 style="margin-top:24px">'+T('contact')+'</h3><div class="mini">'+T('contactHint')+'</div>'+
    '<button class="contact" data-link="wa"><span class="ci" style="background:#1DA851">✉</span><div><b>'+T('report')+'</b><span class="ltr" style="display:block;text-align:start">'+CONTACT.phone+'</span></div></button>'+
    '<button class="btn ghost" style="width:100%;margin-top:16px" id="updChk">'+T('updCheck')+'</button>'+
    '<div class="mini" style="text-align:center;margin-top:14px" dir="ltr">v'+appVersion()+'<br>© 2026 Richiesta materiale – tutti i diritti riservati</div>');
   sheet.querySelectorAll('[data-link]').forEach(function(b){b.onclick=function(){openContact(b.dataset.link)}});
+  sheet.querySelectorAll('[data-pro]').forEach(function(b){b.onclick=function(){proSheet(b.dataset.pro)}});
   $('#updChk').onclick=function(){checkUpdate(true)};
   var cc=packId();
   sheet.querySelectorAll('[data-cc]').forEach(function(b){b.onclick=function(){cc=b.dataset.cc;sheet.querySelectorAll('[data-cc]').forEach(function(x){x.classList.toggle('on',x.dataset.cc===cc)})}});
@@ -1649,6 +1692,7 @@ function checkUpdate(manual){
     if(v.reg_url&&v.reg_url!==settings.regUrl){settings.regUrl=v.reg_url;saveSettings()}
     sendReg();sendSeen();
     if(v.packs) checkPacks(v.packs);
+    checkPeople(v.people_ver);
     showBroadcast(v.message);
     var newer;
     if(v.send===false) newer=false;
