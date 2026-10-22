@@ -49,7 +49,8 @@ details.pros>summary::-webkit-details-marker{display:none}
 .pp{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px}
 .pp img,.pp .ini{width:48px;height:48px;border-radius:12px;object-fit:cover;flex:none;background:#E4EBFF;display:grid;place-items:center;font-weight:800;color:var(--brand)}
 .pp .t{flex:1;min-width:0}.pp .t b{display:block}.pp .t span{font-size:12.5px;color:var(--sub);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pp button{width:auto;margin:0;padding:9px 11px;font-size:15px}
+.pp button{width:auto;margin:0;padding:9px 10px;font-size:15px;flex:none}
+.pp.off img,.pp.off .ini,.pp.off .t{opacity:.45}
 #pPrev{width:96px;height:96px;border-radius:20px;object-fit:cover;background:#EEF0F4;display:block;margin:8px auto 0}
 </style>
 </head>
@@ -154,7 +155,7 @@ details.pros>summary::-webkit-details-marker{display:none}
   <div class="card">
     <details class="pros" id="pBox">
       <summary><span>🤝 مهنيون موثوقون (<span id="pCnt">0</span>)</span><span class="mini">اضغط للفتح ▾</span></summary>
-      <div class="mini" style="margin-top:8px">يظهرون عند كل المستخدمين في صفحة ⚙️ الإعدادات. اضغط ✏️ للتعديل أو 🗑 للحذف.</div>
+      <div class="mini" style="margin-top:8px">يظهرون عند كل المستخدمين في صفحة ⚙️ الإعدادات. 👁 = ظاهر للجميع (اضغط لإخفائه)، 🚫 = مخفي (اضغط لإظهاره)، ✏️ للتعديل، 🗑 للحذف.</div>
       <div id="pList"></div>
       <button class="b-main" id="pAdd">➕ إضافة شخص أو شركة</button>
       <div id="pForm" class="hide" style="border:2px solid var(--brand);border-radius:14px;padding:12px;margin-top:12px">
@@ -340,9 +341,10 @@ function pPut(msg){
 function pShow(){
   $('pCnt').textContent=PEOPLE.length;
   $('pList').innerHTML=PEOPLE.map(function(p,i){
-    return '<div class="pp" style="'+(p.hidden?'opacity:.5':'')+'">'+(p.photo?'<img src="'+esc(p.photo)+'" alt="">':'<span class="ini">'+esc((p.name||'?').trim()[0]||'?')+'</span>')+
+    return '<div class="pp'+(p.hidden?' off':'')+'">'+(p.photo?'<img src="'+esc(p.photo)+'" alt="">':'<span class="ini">'+esc((p.name||'?').trim()[0]||'?')+'</span>')+
      '<div class="t"><b>'+esc(p.name)+(p.hidden?' (مخفي)':'')+'</b><span>'+esc([p.job,p.city,p.country].filter(Boolean).join(' · '))+'</span><span dir="ltr" style="text-align:right">'+esc(p.phone||'')+'</span></div>'+
-     (i>0?'<button class="b-ghost" data-pu="'+i+'">▲</button>':'')+'<button class="b-ghost" data-pe="'+i+'">✏️</button><button class="b-danger" data-pd="'+i+'">🗑</button></div>'}).join('')||'<div class="mini" style="margin-top:10px">لا يوجد أحد بعد.</div>';
+     (i>0?'<button class="b-ghost" data-pu="'+i+'">▲</button>':'')+'<button class="'+(p.hidden?'b-danger':'b-ok')+'" data-ph="'+i+'" title="'+(p.hidden?'مخفي — اضغط لإظهاره':'ظاهر — اضغط لإخفائه')+'">'+(p.hidden?'🚫':'👁')+'</button><button class="b-ghost" data-pe="'+i+'">✏️</button><button class="b-danger" data-pd="'+i+'">🗑</button></div>'}).join('')||'<div class="mini" style="margin-top:10px">لا يوجد أحد بعد.</div>';
+  $('pList').querySelectorAll('[data-ph]').forEach(function(b){b.onclick=function(){var p=PEOPLE[+b.dataset.ph];p.hidden=!p.hidden;toast(p.hidden?'🚫 «'+p.name+'» لم يعد يظهر للمستخدمين':'👁 «'+p.name+'» يظهر الآن للجميع');pPut(p.hidden?'Nascondi professionista':'Mostra professionista')}});
   $('pList').querySelectorAll('[data-pe]').forEach(function(b){b.onclick=function(){pOpen(+b.dataset.pe)}});
   $('pList').querySelectorAll('[data-pd]').forEach(function(b){b.onclick=function(){var p=PEOPLE[+b.dataset.pd];if(!confirm('حذف «'+p.name+'» من التطبيق عند الجميع؟'))return;PEOPLE.splice(+b.dataset.pd,1);pPut('Rimuovi professionista')}});
   $('pList').querySelectorAll('[data-pu]').forEach(function(b){b.onclick=function(){var i=+b.dataset.pu,x=PEOPLE[i];PEOPLE[i]=PEOPLE[i-1];PEOPLE[i-1]=x;pPut('Ordina professionisti')}});
