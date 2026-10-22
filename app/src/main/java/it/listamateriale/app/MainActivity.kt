@@ -64,6 +64,7 @@ class MainActivity : ComponentActivity() {
         WebView.enableSlowWholeDocumentDraw()
         super.onCreate(savedInstanceState)
         window.statusBarColor = Color.parseColor("#1F4FD8")
+        if (genuine() == false) { notGenuine(); return }
 
         root = FrameLayout(this)
         web = WebView(this)
@@ -200,6 +201,35 @@ class MainActivity : ComponentActivity() {
     private fun openExternal(u: Uri) {
         val i = if (u.scheme == "tel") Intent(Intent.ACTION_DIAL, u) else Intent(Intent.ACTION_VIEW, u)
         try { startActivity(i) } catch (_: Exception) {}
+    }
+
+    // ---------- protezione: l'APK deve essere firmato con la nostra chiave ----------
+    // Se qualcuno modifica e rifirma l'app, l'impronta del certificato cambia e l'app non parte.
+    private fun genuine(): Boolean? = try {
+        val certs: Array<android.content.pm.Signature>? = if (Build.VERSION.SDK_INT >= 28) {
+            val info = packageManager.getPackageInfo(packageName, android.content.pm.PackageManager.GET_SIGNING_CERTIFICATES).signingInfo
+            if (info == null) null else if (info.hasMultipleSigners()) info.apkContentsSigners else info.signingCertificateHistory
+        } else {
+            @Suppress("DEPRECATION")
+            packageManager.getPackageInfo(packageName, android.content.pm.PackageManager.GET_SIGNATURES).signatures
+        }
+        if (certs == null || certs.isEmpty()) null else {
+            val want = listOf("8CC7375853DC662F", "030F5AA1297AFD10", "76A0E445621E425C", "FFD9EAD682135295").joinToString("")
+            val md = java.security.MessageDigest.getInstance("SHA-256")
+            certs.any { c -> md.digest(c.toByteArray()).joinToString("") { b -> "%02X".format(b) } == want }
+        }
+    } catch (e: Exception) { null }
+
+    private fun notGenuine() {
+        android.app.AlertDialog.Builder(this)
+            .setTitle("⚠️ نسخة غير أصلية / Copia non originale")
+            .setMessage("هذه النسخة من التطبيق معدّلة وغير أصلية. حمّل النسخة الأصلية.\n\nQuesta copia dell'app è stata modificata. Scarica l'app originale.")
+            .setCancelable(false)
+            .setPositiveButton("⬇️ Download") { _, _ ->
+                try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://mohamed203055.github.io/lista-materiale-web/TalabMawad.apk"))) } catch (_: Exception) {}
+                finish()
+            }
+            .show()
     }
 
     inner class Bridge {

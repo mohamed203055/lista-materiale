@@ -27,12 +27,24 @@ jobs:
         run: |
           cd app/src/main/assets
           sed -i 's#<script src="catalog.js"></script>#<script>window.LM_RELEASE=1</script>\n<script src="catalog.js"></script>#' index.html
-          for f in catalog.js packs.js trades.js lang.js app.js; do
+          # dati (cataloghi, testi): nomi e stringhe nascosti
+          for f in catalog.js packs.js trades.js lang.js; do
             npx --yes javascript-obfuscator@4.1.1 "$f" --output "$f" \
               --compact true --string-array true --string-array-encoding base64 \
-              --string-array-threshold 0.75 --rename-globals false --self-defending false \
-              --control-flow-flattening false --dead-code-injection false
+              --string-array-threshold 1 --identifier-names-generator hexadecimal \
+              --rename-globals false --self-defending false
           done
+          # logica dell'app: protezione forte (flusso confuso, auto-difesa se viene formattato o modificato)
+          npx --yes javascript-obfuscator@4.1.1 app.js --output app.js \
+            --compact true --identifier-names-generator hexadecimal --rename-globals false \
+            --string-array true --string-array-encoding base64 --string-array-threshold 1 \
+            --string-array-rotate true --string-array-shuffle true \
+            --string-array-wrappers-count 2 --string-array-wrappers-type function \
+            --split-strings true --split-strings-chunk-length 8 \
+            --control-flow-flattening true --control-flow-flattening-threshold 0.3 \
+            --dead-code-injection true --dead-code-injection-threshold 0.1 \
+            --transform-object-keys true --numbers-to-expressions true \
+            --self-defending true --disable-console-output false
           mkdir -p "$GITHUB_WORKSPACE/out"
           cp app.js "$GITHUB_WORKSPACE/out/web-app.js"
           cp catalog.js "$GITHUB_WORKSPACE/out/web-catalog.js"
