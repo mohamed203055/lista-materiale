@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 // protezione: la versione web funziona solo dal sito ufficiale (una copia su un altro sito non parte)
-(function(){var h=location.hostname,ok=['mohamed203055.github.io','localhost','127.0.0.1'];
+(function(){var h=location.hostname,ok=['siteneeds.app','www.siteneeds.app','mohamed203055.github.io','localhost','127.0.0.1'];
   if(/^https?:$/.test(location.protocol)&&h&&ok.indexOf(h)<0){document.documentElement.innerHTML='<body style="font-family:sans-serif;padding:40px;text-align:center"><h2>⚠️</h2><p>نسخة غير أصلية — Copia non originale</p><p><a href="https://mohamed203055.github.io/lista-materiale-web/">mohamed203055.github.io/lista-materiale-web</a></p></body>';throw new Error('x')}})();
 var $=function(s){return document.querySelector(s)};
 var main=$('#main');
