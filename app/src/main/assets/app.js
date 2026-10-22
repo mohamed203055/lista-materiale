@@ -1994,7 +1994,6 @@ function regScreen(){
    '<div class="field"><label>'+regTxt('city')+'</label><input id="rgCi"></div>'+
    '<div class="field"><label>'+L4(XT.tradeT)+'</label><div class="chips">'+tradeList().map(function(t){return '<button class="chip'+(t[0]===tradeId()?' on':'')+'" data-rt="'+t[0]+'">'+t[1]+' '+esc(t[2][settings.ui]||t[2].it)+'</button>'}).join('')+'</div></div>'+
    '<div class="field"><label>'+regTxt('job')+'</label><div class="chips" id="rgJobs"></div></div>'+
-   '<div class="mini" style="margin-top:12px">🔒 '+regTxt('priv')+'</div>'+
    '<button class="btn main" id="rgGo">'+regTxt('go')+'</button></div></div>';
   document.body.appendChild(ov);
   var job='dipendente', rtr=tradeId();
