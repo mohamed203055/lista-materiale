@@ -134,7 +134,17 @@ function put(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catc
 
 var settings=load(K.set,{});
 ['tecnico','ditta','waNum'].forEach(function(k){if(settings[k]==null)settings[k]=''});
-if(!settings.ui) settings.ui='ar';
+// prima apertura: lingua del telefono (it / ar / en / fr); altrimenti in base al fuso orario, poi inglese
+function phoneLang(){
+  var L=[];try{L=(navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||''])}catch(e){}
+  for(var i=0;i<L.length;i++){var c=String(L[i]||'').toLowerCase().slice(0,2);if(c==='it'||c==='ar'||c==='en'||c==='fr')return c}
+  var tz='';try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}
+  if(tz==='Europe/Rome')return 'it';
+  if(/^Africa\/(Casablanca|Algiers|Tunis|Tripoli|Cairo)|^Asia\/(Riyadh|Dubai|Amman|Beirut|Baghdad|Damascus|Qatar|Kuwait|Bahrain|Muscat|Gaza|Hebron)/.test(tz))return 'ar';
+  if(tz==='Europe/Paris'||tz==='Europe/Brussels')return 'fr';
+  return 'en';
+}
+if(!settings.ui) settings.ui=phoneLang();
 if(!settings.out) settings.out='it';
 function saveSettings(){put(K.set,settings)}
 // ---- tema chiaro / scuro ----
