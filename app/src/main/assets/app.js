@@ -624,7 +624,10 @@ var IZ3={1.5:15.5,2.5:21,4:28,6:36,10:50,16:68,25:89,35:110,50:134,70:171,95:207
 var POSA_K={b:1,c:1.12,d:0.95};
 var BREAKERS=[6,10,13,16,20,25,32,40,50,63,80,100,125];
 var RHO=0.0225; // ohm·mm²/m rame a 70°C
-function dropPct(sys,I,L,S,V,cos){var k=sys==='tri'?Math.sqrt(3):2;return k*L*I*RHO*(cos||1)/S/V*100}
+var XL=0.00008; // reattanza cavo ohm/m (0,08 ohm/km), CEI-UNEL 35023
+var GRP_K={1:1,2:0.8,3:0.7,4:0.65,5:0.6,6:0.57};            // circuiti raggruppati in tubo — IEC 60364-5-52 tab. B.52.17
+var TEMP_K={25:1.03,30:1,35:0.94,40:0.87,45:0.79,50:0.71};  // temperatura ambiente, isolante PVC — tab. B.52.14
+function dropPct(sys,I,L,S,V,cos){var k=sys==='tri'?Math.sqrt(3):2,c=cos||1,sn=Math.sqrt(Math.max(0,1-c*c));return k*L*I*(RHO/S*c+XL*sn)/V*100}
 function loadCurrent(sys,P,V,cos){ // P in W
   if(sys==='tri') return P/(Math.sqrt(3)*V*(cos||1));
   if(sys==='dc') return P/V;
@@ -648,10 +651,10 @@ var CALCS=[
    if(v.I>0){var P=v.sys==='tri'?Math.sqrt(3)*V*v.I*cos:V*v.I*cos;return res([[CT('powerKW'),n2(P/1000)+' kW'],['kVA',n2(P/1000/cos)],[CT('voltage'),V+' V']])+'<div class="mini">'+CT('cosHint')+'</div>'}
    return '<div class="mini">'+CT('needLoad')+'</div>';
  }},
- {id:'cable',ic:'〰️',f:[['sys','sys','sel',[['mono','mono'],['tri','tri']]],['P','powerKW'],['I','current'],['L','length','num',null,20],['cos','cosphi','num',null,0.9],['max','maxDrop','num',null,4],['posa','posa','sel',[['b','posa1'],['c','posa2'],['d','posa3']]]],run:function(v){
+ {id:'cable',ic:'〰️',f:[['sys','sys','sel',[['mono','mono'],['tri','tri']]],['P','powerKW'],['I','current'],['L','length','num',null,20],['cos','cosphi','num',null,0.9],['max','maxDrop','num',null,4],['posa','posa','sel',[['b','posa1'],['c','posa2'],['d','posa3']]],['grp','grpN','sel',[[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6+']]],['ta','ambT','sel',[[30,'30 °C'],[25,'25 °C'],[35,'35 °C'],[40,'40 °C'],[45,'45 °C'],[50,'50 °C']]]],run:function(v){
    var V=v.sys==='tri'?400:230, cos=v.cos||1, Ib=v.I>0?v.I:(v.P>0?loadCurrent(v.sys,v.P*1000,V,cos):0);
    if(!(Ib>0)) return '<div class="mini">'+CT('needLoad')+'</div>';
-   var tab=v.sys==='tri'?IZ3:IZ2, k=POSA_K[v.posa||'b']||1, L=v.L||0, max=v.max||4;
+   var tab=v.sys==='tri'?IZ3:IZ2, k=(POSA_K[v.posa||'b']||1)*(GRP_K[+v.grp||1]||1)*(TEMP_K[+v.ta||30]||1), L=v.L||0, max=v.max||4;
    var In=BREAKERS.filter(function(b){return b>=Ib})[0];
    if(!In) return '<div class="warn">'+CT('tooBig')+'</div>';
    var pick=null, rows='';
@@ -662,7 +665,8 @@ var CALCS=[
    });
    if(!pick) return '<div class="warn">'+CT('tooBig')+'</div>';
    return res([[CT('loadI'),n2(Ib)+' A'],[CT('recSection'),'<b style="font-size:20px">'+pick.S+' mm²</b>'],[CT('breaker'),In+' A'+(v.sys==='tri'?' 4P':' 1P+N')],[CT('capacity'),n2(pick.Iz,0)+' A'],[CT('drop'),n2(pick.d)+' %'],[CT('rcd'),'30 mA · '+CT('rcdTip')]])+
-    '<table class="ctab"><tr><th>mm²</th><th>Iz</th><th>ΔV</th><th></th></tr>'+rows+'</table>';
+    '<table class="ctab"><tr><th>mm²</th><th>Iz</th><th>ΔV</th><th></th></tr>'+rows+'</table>'+
+    '<div class="mini" style="margin-top:8px">📘 '+CT('refNorm')+'</div>';
  }},
  {id:'vdrop',ic:'📉',f:[['sys','sys','sel',[['mono','mono'],['tri','tri'],['dc','dc']]],['I','current'],['L','length','num',null,20],['S','section','sel',[[1.5,'1.5'],[2.5,'2.5'],[4,'4'],[6,'6'],[10,'10'],[16,'16'],[25,'25']]],['V','voltage','num',null,230],['cos','cosphi','num',null,0.9]],run:function(v){
    if(!(v.I>0)) return '<div class="mini">'+CT('needLoad')+'</div>';
