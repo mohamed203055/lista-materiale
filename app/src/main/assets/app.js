@@ -494,7 +494,7 @@ function renderFavs(){
    (f.length?'<div class="list">'+f.map(itemRow).join('')+'</div>':'<div class="empty"><div class="big">☆</div>'+L4(XT.favEmpty)+'</div>');
 }
 function renderCats(){
-  return renderRecent()+'<div class="grid">'+(tplList().length?'<button class="cat" data-act="cat" data-v="__tpl"><span class="ic">📋</span><b>'+esc(L4(XT.tpls).replace('📋 ',''))+'</b><span>'+tplList().length+'</span></button>':'')+'<button class="cat" data-act="cat" data-v="__fav"><span class="ic">⭐</span><b>'+esc(L4(XT.favs).replace('⭐ ',''))+'</b><span>'+liveItems(favBox().fav).length+' '+T('items')+'</span></button>'+DB.cats.filter(function(c){return !c.hidden}).map(function(c){
+  return '<div class="grid">'+(tplList().length?'<button class="cat" data-act="cat" data-v="__tpl"><span class="ic">📋</span><b>'+esc(L4(XT.tpls).replace('📋 ',''))+'</b><span>'+tplList().length+'</span></button>':'')+'<button class="cat" data-act="cat" data-v="__fav"><span class="ic">⭐</span><b>'+esc(L4(XT.favs).replace('⭐ ',''))+'</b><span>'+liveItems(favBox().fav).length+' '+T('items')+'</span></button>'+DB.cats.filter(function(c){return !c.hidden}).map(function(c){
     return '<button class="cat" data-act="cat" data-v="'+c.id+'"><span class="ic">'+icH(c.ic,'📦')+'</span><b>'+esc(N(c))+'</b><span>'+visibleItems(c).length+' '+T('items')+'</span></button>'}).join('')+
    '<button class="cat" data-act="custom"><span class="ic">➕</span><b>'+T('custom')+'</b></button></div>'+
    (prosList().length?'<button class="contact prosbtn" data-act="pros"><span class="ci" style="background:#F5A400">🤝</span><div><b>'+L4(XT.pros).replace('🤝 ','')+' ('+prosList().length+')</b><span>'+L4(XT.prosHint)+'</span></div></button>':'');
