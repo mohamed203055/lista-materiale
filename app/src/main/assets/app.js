@@ -161,19 +161,27 @@ function defaultSvc(){
   return SERVICE_GROUPS.map(function(g){return {id:g.id,ic:g.ic,it:g.it,ar:g.ar,hidden:false,
     list:g.list.map(function(x){return {id:x[0],it:x[1],ar:x[2],unit:x[3],price:x[4],hidden:false}})}});
 }
+// ---- Mestiere (elettricista = 'ele', default; altri in trades.js → window.LM_TRADES) ----
+function tradeId(){var t=settings.trade||'ele';return t==='ele'||(window.LM_TRADES||{})[t]?t:'ele'}
+function tradeData(){return tradeId()==='ele'?null:(window.LM_TRADES||{})[tradeId()]}
+function tradePack(cc){var td=tradeData();if(!td)return null;return td.packs[cc||packId()]||td.packs.IT}
+function tradeList(){var l=[['ele','⚡',{ar:'كهربائي',it:'Elettricista',en:'Electrician',fr:'Électricien'}]];var T_=window.LM_TRADES||{};Object.keys(T_).forEach(function(k){l.push([k,T_[k].ic,T_[k].name])});return l}
+function tradeLabel(id){var t=tradeList().find(function(x){return x[0]===(id||tradeId())})||tradeList()[0];return t[1]+' '+(t[2][settings.ui]||t[2].it)}
+function profKey(){return tradeId()==='ele'?packId():tradeId()+'_'+packId()}
 // ---- Paese / catalogo per Paese ----
 function packId(){return settings.country||'IT'}
 function packData(cc){cc=cc||packId();if(cc==='IT')return null;var cached=load('lm_pack_'+cc,null),b=(window.LM_PACKS||{})[cc];if(cached&&(!b||cached.version>b.version))return cached;return b||cached}
 function packList(){var l=[{id:'IT',flag:'🇮🇹',name:{ar:'إيطاليا',it:'Italia',en:'Italy',fr:'Italie'}}];var P_=window.LM_PACKS||{};Object.keys(P_).forEach(function(k){l.push({id:k,flag:P_[k].flag,name:P_[k].name})});return l}
-function dbKey(){return packId()==='IT'?K.db:'lm_db_'+packId()}
+function dbKey(){if(tradeId()!=='ele')return 'lm_db_'+profKey();return packId()==='IT'?K.db:'lm_db_'+packId()}
 function clone(o){return JSON.parse(JSON.stringify(o))}
 function defaultDBFor(cc){
+  var tp=tradePack(cc); if(tp) return {v:2,pack:cc,trade:tradeId(),packVer:tp.version,cats:clone(tp.cats),kits:clone(tp.kits||[]),svc:clone(tp.svc||[])};
   if(cc==='IT') return defaultDB();
   var p=packData(cc); if(!p){settings.country='IT';return defaultDB()}
   return {v:2,pack:cc,packVer:p.version,cats:clone(p.cats),kits:clone(p.kits),svc:clone(p.svc)};
 }
-function defaultSvcFor(cc){return cc==='IT'?defaultSvc():clone((packData(cc)||{}).svc||[])}
-function packVerNow(cc){return cc==='IT'?(window.CATALOG_VER||1):((packData(cc)||{}).version||1)}
+function defaultSvcFor(cc){var tp=tradePack(cc);if(tp)return clone(tp.svc||[]);return cc==='IT'?defaultSvc():clone((packData(cc)||{}).svc||[])}
+function packVerNow(cc){var tp=tradePack(cc);if(tp)return tp.version||1;return cc==='IT'?(window.CATALOG_VER||1):((packData(cc)||{}).version||1)}
 function loadDB(){
   var cc=packId(), db=load(dbKey(),null), ver=packVerNow(cc);
   if(!db) db=defaultDBFor(cc);
@@ -193,6 +201,14 @@ function setCountry(cc){
   settings.out=p?(p.outLang||'fr'):'it';
   saveSettings(); DB=loadDB(); put(dbKey(),DB); reindex(); applyLang();
 }
+function setTrade(t){
+  if(t===tradeId())return;
+  save(); settings.trade=t; saveSettings();
+  DB=loadDB(); put(dbKey(),DB); reindex();
+  P.cur=null; cur(); prune(); save();
+  view.tab='mat'; view.cat=null; view.calc=null; applyLang();
+  ping('/mestiere/'+t,'Cambio mestiere');
+}
 var IMGS=load(K.img,{});
 function saveDB(clean){DB.edited=!clean;reindex();return put(dbKey(),DB)}
 function saveImgs(){return put(K.img,IMGS)}
@@ -205,14 +221,15 @@ function reindex(){
 }
 
 // ---- progetti ----
-function blankProj(){return {id:uid('p'),name:'',site:{cliente:'',indirizzo:'',luogo:'',note:'',open:true},lines:[],created:Date.now(),updated:Date.now()}}
+function blankProj(){return {id:uid('p'),trade:tradeId(),name:'',site:{cliente:'',indirizzo:'',luogo:'',note:'',open:true},lines:[],created:Date.now(),updated:Date.now()}}
 var P=load(K.proj,null);
 if(!P){
   P={cur:null,list:[]};
   var old=load(K.old,null);
   if(old&&(old.lines&&old.lines.length||old.site&&old.site.cliente)){var pr=blankProj();pr.site=old.site;pr.lines=old.lines;pr.created=old.created||Date.now();P.list.push(pr);P.cur=pr.id}
 }
-function cur(){var p=P.list.find(function(x){return x.id===P.cur});if(!p){p=blankProj();P.list.unshift(p);P.cur=p.id}if(!p.quote)p.quote={lines:[],sconto:0,iva:false,rate:0};return p}
+function ofTrade(p){return (p.trade||'ele')===tradeId()}
+function cur(){var p=P.list.find(function(x){return x.id===P.cur});if(!p||!ofTrade(p)){p=P.list.filter(ofTrade).sort(function(a,b){return b.updated-a.updated})[0];if(p)P.cur=p.id}if(!p){p=blankProj();P.list.unshift(p);P.cur=p.id}if(!p.quote)p.quote={lines:[],sconto:0,iva:false,rate:0};return p}
 function isEmpty(p){return !p.lines.length&&!(p.quote&&p.quote.lines.length)&&!p.site.cliente&&!p.site.indirizzo&&!p.site.note&&!p.name}
 function save(){var p=cur();p.updated=Date.now();put(K.proj,{cur:P.cur,list:P.list})}
 function prune(){P.list=P.list.filter(function(p){return p.id===P.cur||!isEmpty(p)})}
@@ -268,6 +285,7 @@ function applyLang(){
   var ar=settings.ui==='ar';
   document.documentElement.lang=settings.ui; document.documentElement.dir=ar?'rtl':'ltr';
   document.title=T('title'); $('#ttl').textContent=(packId()!=='IT'&&packData()?packData().flag+' ':'')+T('title');
+  if(tradeId()!=='ele'){var sm=document.createElement('small');sm.textContent=tradeLabel();$('#ttl').appendChild(sm)}
   $('#btnLang').textContent='🌐 '+settings.ui.toUpperCase();
   $('#q').placeholder=T('search');
   $('#btnCalc').innerHTML='🧮 <span>'+L4(XT.calcBtn)+'</span>';$('#btnCalc').title=CT('calc');
@@ -311,6 +329,9 @@ var XT={
   services:{ar:'الخدمات',it:'Servizi',en:'Services',fr:'Services'},
   call:{ar:'📞 اتصال',it:'📞 Chiama',en:'📞 Call',fr:'📞 Appeler'},
   waHello:{ar:'السلام عليكم، وجدت رقمك في تطبيق «طلب مواد».',it:'Buongiorno, ho trovato il suo contatto nell’app «Richiesta materiale».',en:'Hello, I found your contact in the «Material request» app.',fr:'Bonjour, j’ai trouvé votre contact dans l’application «Demande de matériel».'},
+  tradeT:{ar:'🛠️ المهنة',it:'🛠️ Mestiere',en:'🛠️ Trade',fr:'🛠️ Métier'},
+  tradeHint:{ar:'كل مهنة لها قطعها وأسعارها وحاسباتها ومشاريعها الخاصة. لا شيء يختلط.',it:'Ogni mestiere ha materiali, prezzi, calcoli e progetti propri. Niente si mescola.',en:'Each trade has its own materials, prices, calculators and projects. Nothing gets mixed.',fr:'Chaque métier a ses matériaux, prix, calculs et projets. Rien ne se mélange.'},
+  tradeOn:{ar:'✓ التطبيق الآن:',it:'✓ App ora in modalità:',en:'✓ App now in mode:',fr:'✓ Appli maintenant en mode :'},
   calcBtn:{ar:'حاسبة',it:'Calcoli',en:'Calc',fr:'Calculs'},
   searchCl:{ar:'ابحث عن زبون…',it:'Cerca un cliente…',en:'Search a client…',fr:'Rechercher un client…'},
   dupLine:{ar:'⧉ تكرار السطر',it:'⧉ Duplica riga',en:'⧉ Duplicate line',fr:'⧉ Dupliquer la ligne'},
@@ -329,7 +350,7 @@ function clientsSheet(){
   var q='';
   function draw(){
     var words=norm(q).split(' ').filter(Boolean);
-    var list=P.list.slice().filter(function(p){return !isEmpty(p)||p.id===P.cur}).sort(function(a,b){return b.updated-a.updated}).filter(function(p){
+    var list=P.list.filter(ofTrade).filter(function(p){return !isEmpty(p)||p.id===P.cur}).sort(function(a,b){return b.updated-a.updated}).filter(function(p){
       var t=norm([p.site.cliente,p.name,p.site.indirizzo].join(' '));return words.every(function(w){return t.indexOf(w)>=0})});
     $('#clList').innerHTML=list.length?list.map(function(p){
       var isCur=p.id===P.cur, n=p.lines.length, qn=(p.quote&&p.quote.lines.length)||0;
@@ -372,7 +393,7 @@ function renderSite(){
 function visibleItems(c){return c.items.filter(function(i){return !i.hidden})}
 /* ---- preferiti e usati di recente (salvati a parte, per paese) ---- */
 var FAV=load(K.fav,{});
-function favBox(){var k=packId();if(!FAV[k])FAV[k]={fav:[],rec:[]};return FAV[k]}
+function favBox(){var k=profKey();if(!FAV[k])FAV[k]={fav:[],rec:[]};return FAV[k]}
 function isFav(id){return favBox().fav.indexOf(id)>=0}
 function toggleFav(id){var f=favBox().fav,i=f.indexOf(id);if(i>=0)f.splice(i,1);else f.unshift(id);put(K.fav,FAV);return i<0}
 function addRecent(id){if(!id)return;var r=favBox().rec,i=r.indexOf(id);if(i>=0)r.splice(i,1);r.unshift(id);if(r.length>8)r.length=8;put(K.fav,FAV)}
@@ -419,7 +440,7 @@ function lineSub(l){
   if(l.color) a.push(dot(l.color)+esc(colName(l.color,settings.ui)));
   return a.join(' · ');
 }
-function chkCount(){var p=cur(),n=Object.keys(p.check||{}).filter(function(k){return p.check[k]}).length;return n?'('+n+'/'+(window.LM_CHECK||[]).length+')':''}
+function chkCount(){var p=cur(),n=Object.keys(p.check||{}).filter(function(k){return p.check[k]}).length;return n?'('+n+'/'+chkList().length+')':''}
 function hoursCount(){var t=(cur().hours||[]).reduce(function(a,h){return a+(+h.h||0)},0);return t?'('+n2(t,1)+' h)':''}
 function renderCart(){
   var L=cur().lines;
@@ -458,7 +479,7 @@ function qTotals(q){
   return {lab:lab,sc:sc,imp:imp,iva:iva,tot:Math.round((imp+iva)*100)/100};
 }
 function renderPrice(){
-  var q=cur().quote, pk=packData(), h='<div class="note" style="margin:0 0 12px">'+(pk&&pk.priceNote?(pk.priceNote[settings.ui]||pk.priceNote.fr):T('priceInfo'))+'</div>';
+  var q=cur().quote, pk=tradePack()||packData(), h='<div class="note" style="margin:0 0 12px">'+(pk&&pk.priceNote?(pk.priceNote[settings.ui]||pk.priceNote.fr):T('priceInfo'))+'</div>';
   h+='<div class="sec">🧾 '+T('quote')+'</div>';
   if(!q.lines.length) h+='<div class="card mini">'+T('quoteEmpty')+'</div>';
   else{
@@ -619,7 +640,47 @@ var CALCS=[
  }}
 ];
 function res(rows){return '<div class="card cres">'+rows.map(function(r){return '<div class="trow"><span>'+r[0]+'</span><b dir="ltr">'+r[1]+'</b></div>'}).join('')+'</div>'}
-var CBYID={};CALCS.forEach(function(c){CBYID[c.id]=c});
+/* ---- calcoli per l'edilizia (mestiere 'edi') ---- */
+function bags(kg,size){size=size||25;return Math.ceil(kg/size)}
+var CALCS_EDI=[
+ {id:'tiles',ic:'🔲',f:[['A','areaM2','num',null,20],['w','waste','num',null,10],['b','boxM2','num',null,1.44],['g','glueKg','num',null,5]],run:function(v){
+   var A=v.A||0; if(!(A>0)) return '<div class="mini">'+CT('needArea')+'</div>';
+   var tot=A*(1+(v.w||0)/100), boxes=v.b>0?Math.ceil(tot/v.b):0, glue=A*(v.g||5), grout=A*0.5;
+   return res([[CT('m2Buy'),'<b style="font-size:20px">'+n2(tot,1)+' m²</b>'],[CT('boxes'),boxes||'—'],[CT('glue'),n2(glue,0)+' kg · '+bags(glue)+' × 25 kg'],[CT('grout'),n2(grout,1)+' kg · '+bags(grout,5)+' × 5 kg']])+'<div class="mini">'+CT('tilesTip')+'</div>';
+ }},
+ {id:'paint',ic:'🎨',f:[['A','areaM2','num',null,50],['c','coats','num',null,2],['y','yieldL','num',null,10],['k','bucketL','sel',[[14,'14 L'],[5,'5 L'],[10,'10 L'],[4,'4 L']]]],run:function(v){
+   var A=v.A||0; if(!(A>0)) return '<div class="mini">'+CT('needArea')+'</div>';
+   var L=A*(v.c||2)/(v.y||10), k=+v.k||14;
+   return res([[CT('liters'),'<b style="font-size:20px">'+n2(L,1)+' L</b>'],[CT('buckets'),Math.ceil(L/k)+' × '+k+' L'],[CT('primer'),n2(A/10,1)+' L']])+'<div class="mini">'+CT('paintTip')+'</div>';
+ }},
+ {id:'drywall',ic:'📐',f:[['L','wallLen','num',null,4],['H','wallH','num',null,2.7],['s','sides','sel',[[2,'2'],[1,'1']]],['p','plate','sel',[['3.6','1,2 × 3 m'],['3','1,2 × 2,5 m'],['2.4','1,2 × 2 m']]]],run:function(v){
+   var L=v.L||0,H=v.H||0; if(!(L>0&&H>0)) return '<div class="mini">'+CT('needArea')+'</div>';
+   var A=L*H, sides=+v.s||2, plates=Math.ceil(A*sides*1.05/(+v.p||3.6)), studs=Math.ceil(L/0.6)+1, track=Math.ceil(L*2/3);
+   return res([[CT('area'),n2(A,1)+' m²'],[CT('plates'),'<b style="font-size:20px">'+plates+'</b>'],[CT('studs'),studs+' × '+n2(H,2)+' m'],[CT('tracks'),track+' × 3 m'],[CT('screws'),Math.ceil(A*sides*25)],[CT('joint'),n2(A*sides*0.5,1)+' kg'],[CT('tape'),Math.ceil(A*sides*1.5)+' m']])+'<div class="mini">'+CT('dryTip')+'</div>';
+ }},
+ {id:'screed',ic:'🟫',f:[['A','areaM2','num',null,20],['t','thickCm','num',null,5],['r','kgM2cm','num',null,20]],run:function(v){
+   var A=v.A||0,t=v.t||0; if(!(A>0&&t>0)) return '<div class="mini">'+CT('needArea')+'</div>';
+   var kg=A*t*(v.r||20);
+   return res([[CT('volume'),n2(A*t/100,2)+' m³'],[CT('kgTot'),n2(kg,0)+' kg'],[CT('bags25'),'<b style="font-size:20px">'+bags(kg)+'</b>']])+'<div class="mini">'+CT('screedTip')+'</div>';
+ }},
+ {id:'plaster',ic:'🧽',f:[['A','areaM2','num',null,30],['t','thickCm','num',null,1.5],['r','kgM2cm','num',null,13]],run:function(v){
+   var A=v.A||0,t=v.t||0; if(!(A>0&&t>0)) return '<div class="mini">'+CT('needArea')+'</div>';
+   var kg=A*t*(v.r||13);
+   return res([[CT('kgTot'),n2(kg,0)+' kg'],[CT('bags25'),'<b style="font-size:20px">'+bags(kg)+'</b>']])+'<div class="mini">'+CT('plasterTip')+'</div>';
+ }},
+ {id:'bricks',ic:'🧱',f:[['A','wallM2','num',null,10],['b','block','sel',[[16,'blkF25'],[8,'blkF50'],[10,'blkCem'],[6.7,'blkCel'],[50,'blkPie']]],['w','waste','num',null,5]],run:function(v){
+   var A=v.A||0; if(!(A>0)) return '<div class="mini">'+CT('needArea')+'</div>';
+   var per=+v.b||16, pcs=Math.ceil(A*per*(1+(v.w||0)/100)), mortar=A*(per>=50?60:per>=10?25:15);
+   return res([[CT('perM2'),per],[CT('pieces'),'<b style="font-size:20px">'+pcs+'</b>'],[CT('mortar'),n2(mortar,0)+' kg · '+bags(mortar)+' × 25 kg']])+'<div class="mini">'+CT('bricksTip')+'</div>';
+ }},
+ {id:'concrete',ic:'🏗️',f:[['L','lenM','num',null,3],['W','widM','num',null,3],['H','thickM','num',null,0.1],['c','cementKg','num',null,300]],run:function(v){
+   var V=(v.L||0)*(v.W||0)*(v.H||0); if(!(V>0)) return '<div class="mini">'+CT('needArea')+'</div>';
+   var cem=V*(v.c||300);
+   return res([[CT('volume'),'<b style="font-size:20px">'+n2(V,2)+' m³</b>'],[CT('cement'),n2(cem,0)+' kg · '+bags(cem)+' × 25 kg'],[CT('sand'),n2(V*0.45,2)+' m³'],[CT('gravel'),n2(V*0.85,2)+' m³'],[CT('water'),n2(V*180,0)+' L']])+'<div class="mini">'+CT('concTip')+'</div>';
+ }}
+];
+function activeCalcs(){var td=tradeData();return td?CALCS_EDI.filter(function(c){return (td.calcs||[]).indexOf(c.id)>=0}):CALCS}
+var CBYID={};CALCS.concat(CALCS_EDI).forEach(function(c){CBYID[c.id]=c});
 function calcVals(c){
   var saved=(settings.calcVals||{})[c.id]||{}, v={};
   c.f.forEach(function(f){var k=f[0];v[k]=saved[k]!=null?saved[k]:(f[2]==='sel'?f[3][0][0]:(f[4]!=null?f[4]:''))});
@@ -628,7 +689,7 @@ function calcVals(c){
 function renderCalc(){
   var h='<div class="adm-head"><b>🧮 '+CT('calc')+'</b>'+(view.calc?'<button data-act="calcback">'+(settings.ui==='ar'?'→':'←')+' '+CT('allCalc')+'</button>':'')+'<button data-act="calcclose">✕</button></div>';
   if(!view.calc){
-    return h+'<div class="note" style="margin:0 0 12px">'+CT('calcSub')+'</div><div class="menu">'+CALCS.map(function(c){
+    return h+'<div class="note" style="margin:0 0 12px">'+CT(tradeData()?'calcSubEdi':'calcSub')+'</div><div class="menu">'+activeCalcs().map(function(c){
       return '<button data-act="calcopen" data-v="'+c.id+'"><span class="ic" style="min-width:32px;text-align:center">'+c.ic+'</span><div><b>'+CT(c.id)+'</b><span>'+CT(c.id+'Sub')+'</span></div></button>'}).join('')+'</div>';
   }
   var c=CBYID[view.calc], v=calcVals(c);
@@ -656,9 +717,10 @@ function calcSet(k,val){
 /* =====================================================================
    COLLAUDO E ORE DI LAVORO (per progetto)
    ===================================================================== */
-function chkName(i){var r=(window.LM_CHECK||[])[i]||[];return r[{ar:0,it:1,en:2,fr:3}[settings.ui]]||r[1]||''}
+function chkList(){var td=tradeData();return (td&&td.check)||window.LM_CHECK||[]}
+function chkName(i){var r=chkList()[i]||[];return r[{ar:0,it:1,en:2,fr:3}[settings.ui]]||r[1]||''}
 function checkSheet(){
-  var p=cur(); p.check=p.check||{}; var L=window.LM_CHECK||[];
+  var p=cur(); p.check=p.check||{}; var L=chkList();
   function draw(){
     var done=L.filter(function(_,i){return p.check[i]}).length;
     openSheet('<h2>✅ '+CT('check')+' <span class="mini">'+done+'/'+L.length+'</span></h2>'+L.map(function(_,i){
@@ -687,9 +749,9 @@ function hoursSheet(){
     $('#hAdd').onclick=function(){var h=num($('#hH').value);if(!(h>0)){toast(T('needQty'));return}p.hours.push({d:$('#hD').value||new Date().toISOString().slice(0,10),h:h,w:$('#hW').value.trim()});save();draw()};
     sheet.querySelectorAll('[data-hdel]').forEach(function(b){b.onclick=function(){p.hours.splice(+b.dataset.hdel,1);save();draw()}});
     var q=$('#hQuote'); if(q) q.onclick=function(){
-      var s=SBY.s_ora||{id:'s_ora',it:'Ora di lavoro',ar:'ساعة عمل',unit:'h',price:30};
-      var Q=cur().quote, ex=Q.lines.find(function(l){return l.sid==='s_ora'&&l.fromHours});
-      if(ex) ex.qty=tot(); else Q.lines.push({sid:'s_ora',it:s.it,ar:s.ar,unit:'h',price:s.price,qty:tot(),fromHours:1});
+      var s=SBY.s_ora||SBY.e_hmur||{id:'s_ora',it:'Ora di lavoro',ar:'ساعة عمل',unit:'h',price:30};
+      var Q=cur().quote, ex=Q.lines.find(function(l){return l.sid===s.id&&l.fromHours});
+      if(ex) ex.qty=tot(); else Q.lines.push({sid:s.id,it:s.it,ar:s.ar,en:s.en,fr:s.fr,unit:'h',price:s.price,qty:tot(),fromHours:1});
       save();closeSheet();view.tab='price';render();toast(T('addedQ')+' '+n2(tot(),2)+' h');
     };
   }
@@ -705,7 +767,7 @@ var projQ='';
 function renderProjects(){
   prune();
   var words=norm(projQ).split(' ').filter(Boolean);
-  var list=P.list.slice().sort(function(a,b){return b.updated-a.updated}).filter(function(p){
+  var list=P.list.filter(ofTrade).sort(function(a,b){return b.updated-a.updated}).filter(function(p){
     if(isEmpty(p)&&p.id!==P.cur) return false;
     var s=norm(projTitle(p)+' '+p.site.cliente+' '+p.site.indirizzo);return words.every(function(w){return s.indexOf(w)>=0})});
   var h='<div class="adm-head"><b>'+T('projects')+'</b><button data-act="projclose">✕</button></div>'+
@@ -890,6 +952,7 @@ function settingsSheet(){
   var ui=settings.ui, out=settings.out;
   openSheet('<h2>'+T('settings')+'</h2>'+
    '<h3>'+CT('country')+'</h3>'+segChips('cc',packId(),packList().map(function(p){return [p.id,p.flag+' '+(p.name[settings.ui]||p.name.it)]}))+'<div class="mini">'+CT('countryHint')+'</div>'+
+   '<h3>'+L4(XT.tradeT)+'</h3>'+segChips('tr',tradeId(),tradeList().map(function(t){return [t[0],t[1]+' '+(t[2][settings.ui]||t[2].it)]}))+'<div class="mini">'+L4(XT.tradeHint)+'</div>'+
    '<h3>'+T('uiLang')+'</h3>'+segChips('ui',ui,LANGS)+
    '<h3>'+T('outLang')+'</h3>'+segChips('out',out,[['it',T('langIt')],['ar',T('langAr')],['en',T('langEn')],['fr',T('langFr')],['both',T('langBoth')]])+
    '<div class="field"><label>'+T('tecnico')+'</label><input id="st" value="'+esc(settings.tecnico)+'"></div>'+
@@ -909,12 +972,13 @@ function settingsSheet(){
   sheet.querySelectorAll('[data-link]').forEach(function(b){b.onclick=function(){openContact(b.dataset.link)}});
   sheet.querySelectorAll('[data-pro]').forEach(function(b){b.onclick=function(){proSheet(b.dataset.pro)}});
   $('#updChk').onclick=function(){checkUpdate(true)};
-  var cc=packId();
+  var cc=packId(), tr=tradeId();
+  sheet.querySelectorAll('[data-tr]').forEach(function(b){b.onclick=function(){tr=b.dataset.tr;sheet.querySelectorAll('[data-tr]').forEach(function(x){x.classList.toggle('on',x.dataset.tr===tr)})}});
   sheet.querySelectorAll('[data-cc]').forEach(function(b){b.onclick=function(){cc=b.dataset.cc;sheet.querySelectorAll('[data-cc]').forEach(function(x){x.classList.toggle('on',x.dataset.cc===cc)})}});
   sheet.querySelectorAll('[data-ui]').forEach(function(b){b.onclick=function(){ui=b.dataset.ui;sheet.querySelectorAll('[data-ui]').forEach(function(x){x.classList.toggle('on',x.dataset.ui===ui)})}});
   sheet.querySelectorAll('[data-out]').forEach(function(b){b.onclick=function(){out=b.dataset.out;sheet.querySelectorAll('[data-out]').forEach(function(x){x.classList.toggle('on',x.dataset.out===out)})}});
   function store(){settings.statsOff=!$('#sstat').checked;settings.tecnico=$('#st').value.trim();settings.ditta=$('#sd').value.trim();settings.waNum=$('#sw').value.trim();settings.ui=ui;settings.out=out;saveSettings()}
-  $('#ssave').onclick=function(){var ch=cc!==packId();store();if(ch){setCountry(cc);view.cat=null}closeSheet();applyLang();render();toast(T('saved'))};
+  $('#ssave').onclick=function(){var ch=cc!==packId(),tch=tr!==tradeId();store();if(ch){setCountry(cc);view.cat=null}if(tch)setTrade(tr);closeSheet();applyLang();render();window.scrollTo(0,0);toast(tch?L4(XT.tradeOn)+' '+tradeLabel():T('saved'))};
   $('#goAdmin').onclick=function(){store();applyLang();if(adminOK){closeSheet();enterAdmin()}else pwSheet()};
 }
 
@@ -1616,7 +1680,8 @@ window.addEventListener('pagehide',sessEnd);
    ===================================================================== */
 var COUNTRIES=[['Italia','إيطاليا'],['Marocco','المغرب'],['Tunisia','تونس'],['Algeria','الجزائر'],['Egitto','مصر'],['Libia','ليبيا'],['Mauritania','موريتانيا'],['Sudan','السودان'],['Siria','سوريا'],['Libano','لبنان'],['Giordania','الأردن'],['Palestina','فلسطين'],['Iraq','العراق'],['Arabia Saudita','السعودية'],['Emirati Arabi','الإمارات'],['Qatar','قطر'],['Kuwait','الكويت'],['Oman','عُمان'],['Bahrein','البحرين'],['Yemen','اليمن'],['Francia','فرنسا'],['Spagna','إسبانيا'],['Germania','ألمانيا'],['Belgio','بلجيكا'],['Paesi Bassi','هولندا'],['Svizzera','سويسرا'],['Regno Unito','بريطانيا'],['Senegal','السنغال'],['Bangladesh','بنغلاديش'],['Pakistan','باكستان'],['Albania','ألبانيا'],['Romania','رومانيا'],['Altro','بلد آخر']];
 var JOBS=[['dipendente','كهربائي أعمل عند شركة','Elettricista dipendente','Employed electrician','Électricien salarié'],['proprio','كهربائي أعمل لحسابي','Elettricista in proprio','Self-employed electrician','Électricien indépendant'],['ditta','صاحب شركة','Titolare di ditta','Company owner','Chef d\'entreprise'],['altro','عمل آخر','Altro lavoro','Other job','Autre métier']];
-function jobName(j){return j[{ar:1,it:2,en:3,fr:4}[settings.ui]||2]}
+var JOBS_G={dipendente:['أعمل عند شركة','Dipendente','Employee','Salarié'],proprio:['أعمل لحسابي','In proprio','Self-employed','Indépendant']};
+function jobName(j,tr){if(tr&&tr!=='ele'&&JOBS_G[j[0]])var ix={ar:0,it:1,en:2,fr:3}[settings.ui];return JOBS_G[j[0]][ix==null?1:ix];return j[{ar:1,it:2,en:3,fr:4}[settings.ui]||2]}
 var REG_T={
  ar:{title:'👋 أهلاً بك في «طلب مواد»',sub:'سجّل مرة واحدة فقط لتبدأ استعمال التطبيق.',name:'الاسم واللقب',country:'البلد الذي تعمل فيه',city:'المدينة (اختياري)',job:'عملك',go:'ابدأ ✓',need:'اكتب اسمك واختر البلد',priv:'نستعمل اسمك وبلدك فقط لمعرفة من يستعمل التطبيق وتحسينه. لا نبيعها ولا نعطيها لأحد.',other:'اكتب اسم البلد'},
  it:{title:'👋 Benvenuto in «Richiesta materiale»',sub:'Registrati una sola volta per iniziare a usare l\'app.',name:'Nome e cognome',country:'Paese in cui lavori',city:'Città (facoltativo)',job:'Il tuo lavoro',go:'Inizia ✓',need:'Scrivi il nome e scegli il Paese',priv:'Usiamo nome e Paese solo per sapere chi usa l\'app e migliorarla. Non li vendiamo né li cediamo a nessuno.',other:'Scrivi il Paese'},
@@ -1635,7 +1700,7 @@ function postReg(fields){
 function sendReg(){
   if(!settings.reg||settings.reg.sent||!regUrl()) return;
   var r=settings.reg;
-  postReg({tipo:'iscrizione',nome:r.nome,paese:r.paese,citta:r.citta,lavoro:r.lavoro,codice:anonId(),versione:appVersion(),dispositivo:plat(),lingua:settings.ui,giorni:settings.days||1})
+  postReg({tipo:'iscrizione',nome:r.nome,paese:r.paese,citta:r.citta,lavoro:r.lavoro+((r.mestiere||'ele')!=='ele'?'|'+r.mestiere:''),codice:anonId(),versione:appVersion(),dispositivo:plat(),lingua:settings.ui,giorni:settings.days||1})
    .then(function(){r.sent=Date.now();settings.seenSent=new Date().toISOString().slice(0,10);saveSettings()},function(){});
 }
 // accesso giornaliero: aggiorna "ultimo accesso" e "giorni di uso" nel foglio
@@ -1658,22 +1723,26 @@ function regScreen(){
    '<div class="field"><label>'+regTxt('country')+' *</label><select id="rgC" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#FAFBFD;font:inherit">'+cOpts+'</select></div>'+
    '<div class="field" id="rgOW" style="display:none"><label>'+regTxt('other')+'</label><input id="rgO"></div>'+
    '<div class="field"><label>'+regTxt('city')+'</label><input id="rgCi"></div>'+
-   '<div class="field"><label>'+regTxt('job')+'</label><div class="chips">'+JOBS.map(function(j,i){return '<button class="chip'+(i===0?' on':'')+'" data-rj="'+j[0]+'">'+jobName(j)+'</button>'}).join('')+'</div></div>'+
+   '<div class="field"><label>'+L4(XT.tradeT)+'</label><div class="chips">'+tradeList().map(function(t){return '<button class="chip'+(t[0]===tradeId()?' on':'')+'" data-rt="'+t[0]+'">'+t[1]+' '+esc(t[2][settings.ui]||t[2].it)+'</button>'}).join('')+'</div></div>'+
+   '<div class="field"><label>'+regTxt('job')+'</label><div class="chips" id="rgJobs"></div></div>'+
    '<div class="mini" style="margin-top:12px">🔒 '+regTxt('priv')+'</div>'+
    '<button class="btn main" id="rgGo">'+regTxt('go')+'</button></div></div>';
   document.body.appendChild(ov);
-  var job='dipendente';
+  var job='dipendente', rtr=tradeId();
+  function jobs(){var w=ov.querySelector('#rgJobs');w.innerHTML=JOBS.map(function(j){return '<button class="chip'+(j[0]===job?' on':'')+'" data-rj="'+j[0]+'">'+jobName(j,rtr)+'</button>'}).join('');
+    w.querySelectorAll('[data-rj]').forEach(function(b){b.onclick=function(){job=b.dataset.rj;w.querySelectorAll('[data-rj]').forEach(function(x){x.classList.toggle('on',x===b)})}})}
+  jobs();
+  ov.querySelectorAll('[data-rt]').forEach(function(b){b.onclick=function(){rtr=b.dataset.rt;ov.querySelectorAll('[data-rt]').forEach(function(x){x.classList.toggle('on',x===b)});jobs()}});
   ov.querySelectorAll('[data-rl]').forEach(function(b){b.onclick=function(){settings.ui=b.dataset.rl;saveSettings();applyLang();render();ov.remove();regScreen()}});
-  ov.querySelectorAll('[data-rj]').forEach(function(b){b.onclick=function(){job=b.dataset.rj;ov.querySelectorAll('[data-rj]').forEach(function(x){x.classList.toggle('on',x===b)})}});
   ov.querySelector('#rgC').onchange=function(){ov.querySelector('#rgOW').style.display=this.value==='Altro'?'block':'none'};
   ov.querySelector('#rgGo').onclick=function(){
     var n=ov.querySelector('#rgN').value.trim(), c=ov.querySelector('#rgC').value;
     if(c==='Altro') c=ov.querySelector('#rgO').value.trim();
     if(n.length<2||!c){toast(regTxt('need'));return}
-    settings.reg={nome:n,paese:c,citta:ov.querySelector('#rgCi').value.trim(),lavoro:job,at:Date.now(),sent:0};
+    settings.reg={nome:n,paese:c,citta:ov.querySelector('#rgCi').value.trim(),lavoro:job,mestiere:rtr,at:Date.now(),sent:0};
     if(!settings.tecnico) settings.tecnico=n;
     if(c==='Marocco'&&(window.LM_PACKS||{}).MA) setCountry('MA');
-    saveSettings(); ov.remove();
+    saveSettings(); if(rtr!==tradeId()) setTrade(rtr); ov.remove();
     ping('/iscritto/'+c.replace(/[\/?#]/g,' '),'Nuovo iscritto (Paese)');
     sendReg(); render();
   };

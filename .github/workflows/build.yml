@@ -27,7 +27,7 @@ jobs:
         run: |
           cd app/src/main/assets
           sed -i 's#<script src="catalog.js"></script>#<script>window.LM_RELEASE=1</script>\n<script src="catalog.js"></script>#' index.html
-          for f in catalog.js packs.js lang.js app.js; do
+          for f in catalog.js packs.js trades.js lang.js app.js; do
             npx --yes javascript-obfuscator@4.1.1 "$f" --output "$f" \
               --compact true --string-array true --string-array-encoding base64 \
               --string-array-threshold 0.75 --rename-globals false --self-defending false \
@@ -38,6 +38,7 @@ jobs:
           cp catalog.js "$GITHUB_WORKSPACE/out/web-catalog.js"
           cp lang.js "$GITHUB_WORKSPACE/out/web-lang.js"
           cp packs.js "$GITHUB_WORKSPACE/out/web-packs.js"
+          cp trades.js "$GITHUB_WORKSPACE/out/web-trades.js"
           head -c 200 app.js
 
       - uses: gradle/actions/setup-gradle@v4
@@ -80,3 +81,4 @@ jobs:
             out/web-catalog.js
             out/web-lang.js
             out/web-packs.js
+            out/web-trades.js

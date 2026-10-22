@@ -268,6 +268,8 @@ function ls(k,v){try{if(v===undefined)return localStorage.getItem(k)||'';if(v===
 function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function d(x){if(!x)return '—';var t=new Date(x);if(isNaN(t))return esc(x);function z(n){return (n<10?'0':'')+n}return z(t.getDate())+'/'+z(t.getMonth()+1)+'/'+t.getFullYear()}
 var JOB={dipendente:'يعمل عند شركة',proprio:'يعمل لحسابه',ditta:'صاحب شركة',altro:'عمل آخر'};
+var TRADE={ele:'⚡ كهربائي',edi:'🧱 بنّاء'};
+function jobTxt(l){var p=String(l||'').split('|');return (TRADE[p[1]||'ele']||p[1])+' · '+(JOB[p[0]]||p[0])}
 function usersShow(){
   var q=$('uQ').value.trim().toLowerCase(), wk=Date.now()-7*864e5;
   $('uTot').textContent=USERS.length;
@@ -281,7 +283,7 @@ function usersShow(){
   $('uList').innerHTML=list.map(function(u){
     return '<div style="border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px">'+
      '<div style="display:flex;justify-content:space-between;gap:8px"><b>'+esc(u.nome)+'</b><span class="mini" dir="ltr">'+esc(u.codice)+'</span></div>'+
-     '<div class="mini">📍 '+esc(u.paese)+(u.citta?' – '+esc(u.citta):'')+' · 👷 '+esc(JOB[u.lavoro]||u.lavoro)+'</div>'+
+     '<div class="mini">📍 '+esc(u.paese)+(u.citta?' – '+esc(u.citta):'')+' · 👷 '+esc(jobTxt(u.lavoro))+'</div>'+
      '<div class="mini">📅 سجّل: '+d(u.reg)+' · 👁 آخر دخول: '+d(u.ultimo)+' · 📆 أيام الاستعمال: <b>'+esc(u.giorni||1)+'</b></div>'+
      '<div class="mini" dir="ltr" style="text-align:right">'+esc(u.dispositivo)+' · v'+esc(u.versione)+' · '+esc(u.lingua)+'</div></div>'}).join('')||'<div class="mini">لا يوجد مسجّلون بعد.</div>';
 }

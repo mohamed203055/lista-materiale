@@ -432,6 +432,7 @@ window.LM_QOUT = {
  fr:{title:'DEVIS',titleL:'Devis',descr:'Description des travaux',qty:'Qté',price:'Prix',tot:'Total',labour:'Total main-d\'œuvre',sconto:'Remise',imp:'Montant HT',iva:'TVA',total:'TOTAL',noIva:'Prix hors TVA',matEx:'Main-d\'œuvre seule, matériel exclu.'}
 };
 window.LM_UNITS = {
+ mc:['m³','m³'],kg:['kg','kg'],l:['L','L'],rot:['roll','rouleau'],secchio:['bucket','seau'],
  pz:['pcs','pce'],m:['m','m'],conf:['pack','boîte'],sacco:['bag','sac'],coppia:['pair','paire'],mq:['m²','m²'],h:['h','h'],gg:['day','jour']
 };
 
@@ -539,6 +540,42 @@ window.LM_CALC = (function(){
   var L = {ar:0, it:1, en:2, fr:3}, out = {ar:{}, it:{}, en:{}, fr:{}};
   Object.keys(D).forEach(function(k){ Object.keys(L).forEach(function(l){ out[l][k] = D[k][L[l]]; }); });
   return out;
+})();
+// calcoli edilizia — [ar, it, en, fr]
+(function(){
+  var X = {
+  calcSubEdi:['حسابات سريعة للبناء. النتائج تقريبية — راجع دائماً تعليمات المصنّع على الكيس أو العلبة.','Calcoli rapidi per l’edilizia. Risultati indicativi — controlla sempre la scheda del produttore.','Quick building calculations. Results are indicative — always check the manufacturer’s data sheet.','Calculs rapides pour le bâtiment. Résultats indicatifs — vérifiez toujours la fiche du fabricant.'],
+  tiles:['البلاط','Piastrelle','Tiles','Carrelage'],tilesSub:['م² للشراء، العلب، اللاصق والترويب','m² da comprare, scatole, colla e fughe','m² to buy, boxes, adhesive and grout','m² à acheter, boîtes, colle et joints'],
+  paint:['الدهان','Pittura','Paint','Peinture'],paintSub:['كم لتر وكم سطل','Quanti litri e quanti secchi','How many litres and buckets','Combien de litres et de seaux'],
+  drywall:['حائط جبس','Parete in cartongesso','Drywall wall','Cloison en plaque'],drywallSub:['الألواح، المقاطع، البراغي والمعجون','Lastre, profili, viti e stucco','Boards, studs, screws and compound','Plaques, rails, vis et enduit'],
+  screed:['الصبة (ماسيتو)','Massetto','Screed','Chape'],screedSub:['عدد الأكياس حسب السماكة','Sacchi in base allo spessore','Bags by thickness','Sacs selon l’épaisseur'],
+  plaster:['اللياسة','Intonaco','Plaster','Enduit'],plasterSub:['عدد أكياس اللياسة الجاهزة','Sacchi di intonaco premiscelato','Bags of premixed plaster','Sacs d’enduit prêt à l’emploi'],
+  bricks:['الطوب والبلوك','Mattoni e blocchi','Bricks and blocks','Briques et blocs'],bricksSub:['عدد القطع والمونة لكل حائط','Pezzi e malta per parete','Pieces and mortar per wall','Pièces et mortier par mur'],
+  concrete:['الخرسانة','Calcestruzzo','Concrete','Béton'],concreteSub:['الحجم، الإسمنت، الرمل والحصى','Volume, cemento, sabbia e ghiaia','Volume, cement, sand and gravel','Volume, ciment, sable et gravier'],
+  areaM2:['المساحة (م²)','Superficie (m²)','Area (m²)','Surface (m²)'],waste:['نسبة الهدر (%)','Sfrido (%)','Waste (%)','Chutes (%)'],boxM2:['م² في كل علبة','m² per scatola','m² per box','m² par boîte'],glueKg:['لاصق كغ/م²','Colla kg/m²','Adhesive kg/m²','Colle kg/m²'],
+  coats:['عدد الطبقات','Mani','Coats','Couches'],yieldL:['تغطية م² لكل لتر','Resa m² per litro','Coverage m² per litre','Rendement m² par litre'],bucketL:['حجم السطل','Formato secchio','Bucket size','Taille du seau'],
+  wallLen:['طول الحائط (م)','Lunghezza parete (m)','Wall length (m)','Longueur du mur (m)'],wallH:['ارتفاع الحائط (م)','Altezza parete (m)','Wall height (m)','Hauteur du mur (m)'],sides:['الوجوه المغطاة بالجبس','Lati rivestiti','Boarded sides','Faces parementées'],plate:['حجم اللوح','Formato lastra','Board size','Format de plaque'],
+  thickCm:['السماكة (سم)','Spessore (cm)','Thickness (cm)','Épaisseur (cm)'],kgM2cm:['كغ لكل م² لكل سم','kg per m² per cm','kg per m² per cm','kg par m² par cm'],
+  wallM2:['مساحة الحائط (م²)','Superficie parete (m²)','Wall area (m²)','Surface du mur (m²)'],block:['نوع الطوب','Tipo di blocco','Block type','Type de bloc'],
+  lenM:['الطول (م)','Lunghezza (m)','Length (m)','Longueur (m)'],widM:['العرض (م)','Larghezza (m)','Width (m)','Largeur (m)'],thickM:['السماكة (م)','Spessore (m)','Thickness (m)','Épaisseur (m)'],cementKg:['إسمنت كغ/م³','Cemento kg/m³','Cement kg/m³','Ciment kg/m³'],
+  needArea:['أدخل القياسات.','Inserisci le misure.','Enter the measurements.','Saisissez les mesures.'],
+  m2Buy:['م² للشراء','m² da comprare','m² to buy','m² à acheter'],boxes:['العلب','Scatole','Boxes','Boîtes'],glue:['اللاصق','Colla','Adhesive','Colle'],grout:['الترويب','Stucco fughe','Grout','Joint'],
+  liters:['اللترات','Litri','Litres','Litres'],buckets:['السطول','Secchi','Buckets','Seaux'],primer:['برايمر (تقريباً)','Fondo (circa)','Primer (approx.)','Primaire (env.)'],
+  area:['المساحة','Superficie','Area','Surface'],plates:['عدد الألواح','Lastre','Boards','Plaques'],studs:['المقاطع C (كل 60 سم)','Montanti C (ogni 60 cm)','C studs (every 60 cm)','Montants C (tous les 60 cm)'],tracks:['المقاطع U','Guide U','U tracks','Rails U'],screws:['البراغي','Viti','Screws','Vis'],joint:['معجون الفواصل','Stucco giunti','Joint compound','Enduit à joints'],tape:['الشريط','Nastro','Tape','Bande'],
+  volume:['الحجم','Volume','Volume','Volume'],kgTot:['الوزن الكلي','Peso totale','Total weight','Poids total'],bags25:['أكياس 25 كغ','Sacchi da 25 kg','25 kg bags','Sacs de 25 kg'],
+  perM2:['قطعة لكل م²','Pezzi per m²','Pieces per m²','Pièces par m²'],pieces:['عدد القطع','Pezzi','Pieces','Pièces'],mortar:['المونة','Malta','Mortar','Mortier'],
+  cement:['الإسمنت','Cemento','Cement','Ciment'],sand:['الرمل','Sabbia','Sand','Sable'],gravel:['الحصى','Ghiaia','Gravel','Gravier'],water:['الماء','Acqua','Water','Eau'],
+  blkF25:['طوب مفرغ 25×25','Forato 25×25','Hollow brick 25×25','Brique creuse 25×25'],blkF50:['طوب مفرغ 25×50','Forato 25×50','Hollow brick 25×50','Brique creuse 25×50'],blkCem:['بلوك إسمنت 20×50','Blocco cemento 20×50','Concrete block 20×50','Parpaing 20×50'],blkCel:['بلوك خلوي 25×60','Cellulare 25×60','Aerated block 25×60','Béton cellulaire 25×60'],blkPie:['طوب مصمت 12×25','Mattone pieno 12×25','Solid brick 12×25','Brique pleine 12×25'],
+  tilesTip:['الهدر: 10% للتركيب العادي، 15% للتركيب المائل.','Sfrido: 10% posa dritta, 15% posa in diagonale.','Waste: 10% straight laying, 15% diagonal.','Chutes : 10 % pose droite, 15 % en diagonale.'],
+  paintTip:['التغطية مكتوبة على السطل (عادة 8–12 م²/لتر لكل طبقة).','La resa è scritta sul secchio (di solito 8–12 m²/L per mano).','Coverage is on the bucket (usually 8–12 m²/L per coat).','Le rendement est indiqué sur le seau (8–12 m²/L par couche).'],
+  dryTip:['للسقف المعلق احسب المساحة كحائط بوجه واحد.','Per il controsoffitto calcola come parete a un lato.','For a ceiling, count it as a one-sided wall.','Pour un plafond, comptez une cloison à une face.'],
+  screedTip:['الصبة الجاهزة تقريباً 20 كغ/م² لكل سم.','Massetto premiscelato: circa 20 kg/m² per cm.','Premixed screed: about 20 kg/m² per cm.','Chape prête : environ 20 kg/m² par cm.'],
+  plasterTip:['اللياسة الجاهزة تقريباً 13–14 كغ/م² لكل سم.','Intonaco premiscelato: circa 13–14 kg/m² per cm.','Premixed plaster: about 13–14 kg/m² per cm.','Enduit prêt : environ 13–14 kg/m² par cm.'],
+  bricksTip:['المونة تقريبية وتتغيّر حسب سماكة الفاصل.','La malta è indicativa e dipende dallo spessore dei giunti.','Mortar is indicative and depends on joint thickness.','Le mortier est indicatif et dépend des joints.'],
+  concTip:['300 كغ/م³ للصبات العادية، 350 كغ/م³ للأعمدة والسقف.','300 kg/m³ per getti normali, 350 kg/m³ per pilastri e solai.','300 kg/m³ for normal pours, 350 kg/m³ for columns and slabs.','300 kg/m³ pour coulages courants, 350 kg/m³ pour poteaux et dalles.']
+  };
+  var L = {ar:0, it:1, en:2, fr:3};
+  Object.keys(X).forEach(function(k){ Object.keys(L).forEach(function(l){ window.LM_CALC[l][k] = X[k][L[l]]; }); });
 })();
 // voci del collaudo [ar, it, en, fr]
 window.LM_CHECK = [

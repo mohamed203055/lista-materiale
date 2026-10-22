@@ -6,7 +6,14 @@ window.UNITS = {
   m:     { it: 'm',     ar: 'متر',   step: 5 },
   conf:  { it: 'conf',  ar: 'علبة',  step: 1 },
   sacco: { it: 'sacco', ar: 'كيس',   step: 1 },
-  coppia:{ it: 'coppia',ar: 'زوج',   step: 1 }
+  coppia:{ it: 'coppia',ar: 'زوج',   step: 1 },
+  mq:    { it: 'm²',    ar: 'م²',    step: 1 },
+  mc:    { it: 'm³',    ar: 'م³',    step: 1 },
+  kg:    { it: 'kg',    ar: 'كغ',    step: 1 },
+  l:     { it: 'L',     ar: 'لتر',   step: 1 },
+  rot:   { it: 'rotolo',ar: 'لفّة',  step: 1 },
+  secchio:{ it: 'secchio',ar: 'سطل', step: 1 },
+  gg:    { it: 'gg',    ar: 'يوم',   step: 1 }
 };
 
 // Colori dei cavi unipolari (campo finale 'C' nella riga dell'articolo)

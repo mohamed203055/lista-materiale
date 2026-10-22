@@ -7,11 +7,11 @@ from PIL import Image, ImageDraw
 src = os.path.join(os.path.dirname(__file__), '..', 'app', 'src', 'main', 'assets')
 dst, ver = sys.argv[1], sys.argv[2]
 os.makedirs(dst, exist_ok=True)
-for f in ('catalog.js', 'packs.js', 'lang.js', 'app.js'):
+for f in ('catalog.js', 'packs.js', 'trades.js', 'lang.js', 'app.js'):
     shutil.copy(os.path.join(src, f), os.path.join(dst, f))
 # file JS già offuscati (dalla release) se indicati come 3° argomento
 if len(sys.argv) > 3:
-    for f in ('catalog.js', 'packs.js', 'lang.js', 'app.js'):
+    for f in ('catalog.js', 'packs.js', 'trades.js', 'lang.js', 'app.js'):
         shutil.copy(os.path.join(sys.argv[3], f), os.path.join(dst, f))
 
 html = open(os.path.join(src, 'index.html')).read()
