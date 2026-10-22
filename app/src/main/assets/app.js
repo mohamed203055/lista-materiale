@@ -335,6 +335,14 @@ var XT={
   tradeT:{ar:'🛠️ المهنة',it:'🛠️ Mestiere',en:'🛠️ Trade',fr:'🛠️ Métier'},
   tradeHint:{ar:'كل مهنة لها قطعها وأسعارها وحاسباتها ومشاريعها الخاصة. لا شيء يختلط.',it:'Ogni mestiere ha materiali, prezzi, calcoli e progetti propri. Niente si mescola.',en:'Each trade has its own materials, prices, calculators and projects. Nothing gets mixed.',fr:'Chaque métier a ses matériaux, prix, calculs et projets. Rien ne se mélange.'},
   tradeOn:{ar:'✓ التطبيق الآن:',it:'✓ App ora in modalità:',en:'✓ App now in mode:',fr:'✓ Appli maintenant en mode :'},
+  shareApp:{ar:'أرسل التطبيق لصديق',it:'Invia l’app a un amico',en:'Send the app to a friend',fr:'Envoyer l’appli à un ami'},
+  shareAppSub:{ar:'واتساب، رسالة، أو أي تطبيق',it:'WhatsApp, SMS o altra app',en:'WhatsApp, SMS or any app',fr:'WhatsApp, SMS ou autre appli'},
+  shareAppMsg:{ar:'👷 جرّب تطبيق «طلب مواد»: تختار المواد التي تحتاجها في الورشة وترسلها للمدير بواتساب أو PDF في ثوانٍ. مجاني.',
+    it:'👷 Prova l’app «Richiesta materiale»: scegli il materiale che serve in cantiere e invialo al responsabile su WhatsApp o in PDF in pochi secondi. Gratis.',
+    en:'👷 Try the «Material request» app: pick the materials you need on site and send them to your manager by WhatsApp or PDF in seconds. Free.',
+    fr:'👷 Essaie l’appli «Demande de matériel» : choisis le matériel nécessaire sur le chantier et envoie-le au responsable par WhatsApp ou PDF en quelques secondes. Gratuit.'},
+  shareAndroid:{ar:'📱 أندرويد:',it:'📱 Android:',en:'📱 Android:',fr:'📱 Android :'},
+  shareIos:{ar:'🍏 آيفون وآيباد:',it:'🍏 iPhone e iPad:',en:'🍏 iPhone and iPad:',fr:'🍏 iPhone et iPad :'},
   calcBtn:{ar:'حاسبة',it:'Calcoli',en:'Calc',fr:'Calculs'},
   searchCl:{ar:'ابحث عن زبون…',it:'Cerca un cliente…',en:'Search a client…',fr:'Rechercher un client…'},
   dupLine:{ar:'⧉ تكرار السطر',it:'⧉ Duplica riga',en:'⧉ Duplicate line',fr:'⧉ Dupliquer la ligne'},
@@ -951,6 +959,12 @@ function checkPeople(ver){
     PEOPLE={ver:ver,list:Array.isArray(j.people)?j.people:[]};put(K.people,PEOPLE);
   }).catch(function(){});
 }
+function shareApp(){
+  var apk=settings.liveApk||'TalabMawad.apk';
+  var t=L4(XT.shareAppMsg)+'\n\n'+L4(XT.shareAndroid)+'\n'+(/^https?:/.test(apk)?apk:UPD_BASE+apk)+'\n\n'+L4(XT.shareIos)+'\n'+UPD_BASE;
+  ping('/usa/condividi-app','Invia app a un amico');
+  if(A&&A.shareText)A.shareText(t);else if(navigator.share)navigator.share({text:t}).catch(function(){});else openUrl('https://wa.me/?text='+encodeURIComponent(t));
+}
 function settingsSheet(){
   var ui=settings.ui, out=settings.out;
   openSheet('<h2>'+T('settings')+'</h2>'+
@@ -967,6 +981,7 @@ function settingsSheet(){
    '<div class="mini" style="margin-top:6px">'+T('yourId')+': <b dir="ltr">'+esc(anonId())+'</b>'+(settings.reg?' · '+esc(settings.reg.nome)+' ('+esc(settings.reg.paese)+')':'')+'</div>'+
    '<button class="contact" style="margin-top:16px" id="goAdmin"><span class="ci" style="background:#16192B">🔒</span><div><b>'+T('admin').replace('🔒 ','')+'</b><span>'+T('adminSub')+'</span></div></button>'+
    prosSection()+
+   '<button class="contact" style="margin-top:16px" id="shareApp"><span class="ci" style="background:var(--brand)">📤</span><div><b>'+L4(XT.shareApp)+'</b><span>'+L4(XT.shareAppSub)+'</span></div></button>'+
    '<h3 style="margin-top:24px">'+T('contact')+'</h3><div class="mini">'+T('contactHint')+'</div>'+
    '<button class="contact" data-link="wa"><span class="ci" style="background:#1DA851">✉</span><div><b>'+T('report')+'</b><span class="ltr" style="display:block;text-align:start">'+CONTACT.phone+'</span></div></button>'+
    '<button class="btn ghost" style="width:100%;margin-top:16px" id="updChk">'+T('updCheck')+'</button>'+
@@ -974,6 +989,7 @@ function settingsSheet(){
   sheet.querySelectorAll('[data-link]').forEach(function(b){b.onclick=function(){openContact(b.dataset.link)}});
   sheet.querySelectorAll('[data-pro]').forEach(function(b){b.onclick=function(){proSheet(b.dataset.pro)}});
   $('#updChk').onclick=function(){checkUpdate(true)};
+  $('#shareApp').onclick=shareApp;
   var cc=packId(), tr=tradeId();
   sheet.querySelectorAll('[data-tr]').forEach(function(b){b.onclick=function(){tr=b.dataset.tr;sheet.querySelectorAll('[data-tr]').forEach(function(x){x.classList.toggle('on',x.dataset.tr===tr)})}});
   sheet.querySelectorAll('[data-cc]').forEach(function(b){b.onclick=function(){cc=b.dataset.cc;sheet.querySelectorAll('[data-cc]').forEach(function(x){x.classList.toggle('on',x.dataset.cc===cc)})}});
@@ -1765,6 +1781,7 @@ function checkUpdate(manual){
     if(v.packs) checkPacks(v.packs);
     checkPeople(v.people_ver);
     showBroadcast(v.message);
+    if(v.apk&&v.send!==false&&settings.liveApk!==v.apk){settings.liveApk=v.apk;saveSettings()}
     var newer;
     if(v.send===false) newer=false;
     else if(A&&A.versionCode) newer=(+v.versionCode||0)>(+A.versionCode()||0);
