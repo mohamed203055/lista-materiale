@@ -1021,7 +1021,7 @@ function prosList(){
 }
 function proPic(p,big){
   var sz=big?96:56;
-  if(p.photo&&/^data:image\//.test(p.photo)) return '<img src="'+esc(p.photo)+'" alt="" style="width:'+sz+'px;height:'+sz+'px;border-radius:'+(big?24:14)+'px;object-fit:cover;flex:none;background:#EEF0F4">';
+  if(p.photo&&/^data:image\//.test(p.photo)) return '<img src="'+esc(p.photo)+'" alt="" style="width:'+sz+'px;height:'+sz+'px;border-radius:'+(big?24:14)+'px;object-fit:cover;flex:none;background:var(--ghost)">';
   return '<span style="width:'+sz+'px;height:'+sz+'px;border-radius:'+(big?24:14)+'px;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand);font-weight:800;font-size:'+(big?36:22)+'px;flex:none">'+esc((p.name.trim()[0]||'?').toUpperCase())+'</span>';
 }
 function prosSection(){
@@ -1682,7 +1682,7 @@ document.addEventListener('click',function(e){
     var l=L[+v],st=unit(l.unit).step;l.qty=Math.max(0,Math.round((l.qty+(a==='inc'?st:-st))*100)/100);if(l.qty===0)L.splice(+v,1);save();render();break;
    case 'del': L.splice(+v,1);save();render();break;
    case 'clear': confirmSheet(T('clearQ'),T('clear'),function(){cur().lines=[];save();render()});break;
-   case 'preview': openSheet('<h2>'+T('previewT')+'</h2><pre dir="'+(settings.out==='ar'?'rtl':'ltr')+'" style="white-space:pre-wrap;font-family:inherit;font-size:14px;background:#F3F4F8;padding:12px;border-radius:12px;text-align:start">'+esc(buildText(false))+'</pre>');break;
+   case 'preview': openSheet('<h2>'+T('previewT')+'</h2><pre dir="'+(settings.out==='ar'?'rtl':'ltr')+'" style="white-space:pre-wrap;font-family:inherit;font-size:14px;background:var(--field);color:var(--ink);padding:12px;border-radius:12px;text-align:start">'+esc(buildText(false))+'</pre>');break;
    // progetti
    case 'projclose': view.tab='mat';render();break;
    case 'projnew': newProject();break;
@@ -2069,7 +2069,7 @@ function updSheet(v){
   openSheet('<h2>'+T('updTitle')+'</h2><div class="mini" dir="ltr">v'+esc(v.versionName)+'</div>'+
    (notes?'<div class="note" style="white-space:pre-line">'+esc(notes)+'</div>':'')+
    '<div id="updMsg" class="mini" style="margin-top:10px"></div>'+
-   '<div style="height:10px;background:#EEF0F4;border-radius:6px;margin-top:8px;overflow:hidden;display:none" id="updBarW"><div id="updBar" style="height:100%;width:0;background:var(--brand)"></div></div>'+
+   '<div style="height:10px;background:var(--ghost);border-radius:6px;margin-top:8px;overflow:hidden;display:none" id="updBarW"><div id="updBar" style="height:100%;width:0;background:var(--brand)"></div></div>'+
    '<button class="btn main" id="updGo">'+T('updNow')+'</button>'+
    (v.force?'':'<button class="btn ghost" style="width:100%;margin-top:10px" id="updNo">'+T('updLater')+'</button>'));
   if(v.force){sheetLocked=true}
