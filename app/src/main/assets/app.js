@@ -449,6 +449,11 @@ function renderSite(){
    '<div class="field"><label>'+T('note')+'</label><textarea data-f="note" rows="2" placeholder="'+T('noteP')+'">'+esc(s.note)+'</textarea></div>'+
    '<button class="btn main" data-act="sitesave">💾 '+T('save')+'</button></div>';
 }
+// icone disegnate (al posto di emoji poco chiare): 🌈 → striscia LED
+var SVGIC={'🌈':'<svg class="svgic" viewBox="1 6 46 33" aria-hidden="true"><rect x="3" y="17" width="42" height="14" rx="3" fill="#EEF1F7" stroke="#8C95A8" stroke-width="2"/>'+
+  [9,21,33].map(function(x){return '<g><path d="M'+(x+3)+' 9v4M'+(x-1)+' 11l2 3M'+(x+7)+' 11l-2 3" stroke="#FFB31A" stroke-width="2" stroke-linecap="round"/><rect x="'+x+'" y="20" width="7" height="8" rx="1.5" fill="#FFC83D" stroke="#C98A00" stroke-width="1.2"/></g>'}).join('')+
+  '<path d="M3 37h42" stroke="#C4CAD6" stroke-width="2" stroke-dasharray="3 3"/></svg>'};
+function icH(ic,fb){ic=ic||fb||'';return SVGIC[ic]||esc(ic)}
 function visibleItems(c){return c.items.filter(function(i){return !i.hidden})}
 /* ---- preferiti e usati di recente (salvati a parte, per paese) ---- */
 var FAV=load(K.fav,{});
@@ -467,7 +472,7 @@ function renderFavs(){
 }
 function renderCats(){
   return renderRecent()+'<div class="grid"><button class="cat" data-act="cat" data-v="__tpl"><span class="ic">📋</span><b>'+esc(L4(XT.tpls).replace('📋 ',''))+'</b><span>'+tplList().length+'</span></button><button class="cat" data-act="cat" data-v="__fav"><span class="ic">⭐</span><b>'+esc(L4(XT.favs).replace('⭐ ',''))+'</b><span>'+liveItems(favBox().fav).length+' '+T('items')+'</span></button>'+DB.cats.filter(function(c){return !c.hidden}).map(function(c){
-    return '<button class="cat" data-act="cat" data-v="'+c.id+'"><span class="ic">'+esc(c.ic||'📦')+'</span><b>'+esc(N(c))+'</b><span>'+visibleItems(c).length+' '+T('items')+'</span></button>'}).join('')+
+    return '<button class="cat" data-act="cat" data-v="'+c.id+'"><span class="ic">'+icH(c.ic,'📦')+'</span><b>'+esc(N(c))+'</b><span>'+visibleItems(c).length+' '+T('items')+'</span></button>'}).join('')+
    '<button class="cat" data-act="custom"><span class="ic">➕</span><b>'+T('custom')+'</b></button></div>';
 }
 function itemRow(it){
@@ -479,7 +484,7 @@ function itemRow(it){
 }
 function renderCat(id){
   var c=CBY[id];
-  return '<button class="back" data-act="back">'+(settings.ui==='ar'?'→ ':'← ')+T('allCats')+'</button><div class="sec">'+esc(c.ic||'')+' '+esc(N(c))+'</div><div class="list">'+visibleItems(c).map(itemRow).join('')+'</div>';
+  return '<button class="back" data-act="back">'+(settings.ui==='ar'?'→ ':'← ')+T('allCats')+'</button><div class="sec">'+icH(c.ic)+' '+esc(N(c))+'</div><div class="list">'+visibleItems(c).map(itemRow).join('')+'</div>';
 }
 function renderSearch(){
   var words=norm(view.q).split(' ').filter(Boolean);
@@ -491,7 +496,7 @@ function renderSearch(){
   h+='<button class="btn main" data-act="custom" data-v="'+esc(view.q)+'">➕ '+esc(T('addNew').replace('%',view.q))+'</button>';
   return h;
 }
-function kitRow(k){return '<button class="row" data-act="kit" data-v="'+k.id+'"><span style="font-size:24px">'+esc(k.ic||'🧩')+'</span><div class="t"><b>'+esc(N(k))+'</b><span>'+k.parts.length+' '+T('items')+'</span></div><span class="plus">+</span></button>'}
+function kitRow(k){return '<button class="row" data-act="kit" data-v="'+k.id+'"><span style="font-size:24px">'+icH(k.ic,'🧩')+'</span><div class="t"><b>'+esc(N(k))+'</b><span>'+k.parts.length+' '+T('items')+'</span></div><span class="plus">+</span></button>'}
 function renderKits(){
   return '<div class="note" style="margin:0 0 12px">'+T('kitInfo')+'</div><div class="list">'+DB.kits.filter(function(k){return !k.hidden}).map(kitRow).join('')+'</div>';
 }
@@ -512,7 +517,7 @@ function renderCart(){
   var h='';
   order.forEach(function(g){
     var c=CBY[g];
-    h+='<div class="sec">'+(c?esc(c.ic||'')+' '+esc(N(c)):'➕ '+T('other'))+'</div><div class="list">';
+    h+='<div class="sec">'+(c?icH(c.ic)+' '+esc(N(c)):'➕ '+T('other'))+'</div><div class="list">';
     groups[g].forEach(function(i){
       var l=L[i], sub=lineSub(l);
       h+='<div class="line'+(l.got?' got':'')+'" data-li="'+i+'">'+(l.pid&&PH[l.pid]?'<img class="thumb" src="'+PH[l.pid]+'">':(l.item?thumb(l.item):''))+'<div class="t"><b>'+esc(N(l))+(l.got?' <span class="gtag">'+L4(XT.gotTag)+'</span>':'')+'</b>'+(sub?'<span style="text-align:start">'+sub+'</span>':'')+(l.note?'<i>📝 '+esc(l.note)+'</i>':'')+'</div>'+
@@ -754,10 +759,10 @@ function renderCalc(){
   var h='<div class="adm-head"><b>🧮 '+CT('calc')+'</b>'+(view.calc?'<button data-act="calcback">'+(settings.ui==='ar'?'→':'←')+' '+CT('allCalc')+'</button>':'')+'<button data-act="calcclose">✕</button></div>';
   if(!view.calc){
     return h+'<div class="note" style="margin:0 0 12px">'+CT(tradeData()?'calcSubEdi':'calcSub')+'</div><div class="menu">'+activeCalcs().map(function(c){
-      return '<button data-act="calcopen" data-v="'+c.id+'"><span class="ic" style="min-width:32px;text-align:center">'+c.ic+'</span><div><b>'+CT(c.id)+'</b><span>'+CT(c.id+'Sub')+'</span></div></button>'}).join('')+'</div>';
+      return '<button data-act="calcopen" data-v="'+c.id+'"><span class="ic" style="min-width:32px;text-align:center">'+(SVGIC[c.ic]||c.ic)+'</span><div><b>'+CT(c.id)+'</b><span>'+CT(c.id+'Sub')+'</span></div></button>'}).join('')+'</div>';
   }
   var c=CBYID[view.calc], v=calcVals(c);
-  h+='<div class="sec" style="font-size:16px">'+c.ic+' '+CT(c.id)+'</div>';
+  h+='<div class="sec" style="font-size:16px">'+(SVGIC[c.ic]||c.ic)+' '+CT(c.id)+'</div>';
   if(c.f.length){
     h+='<div class="card">'+c.f.map(function(f){
       var k=f[0],lab=CT(f[1]);
@@ -1137,11 +1142,11 @@ function renderAdmin(){
     '<button data-act="admreset"><span class="ic">↩️</span><div><b>'+T('admReset')+'</b></div></button></div>';
   if(a.page==='cats'){
     return admHead(T('admCats'),'home')+'<button class="btn main" style="margin:0 0 12px" data-act="catnew">'+T('newCat')+'</button><div class="list">'+
-     DB.cats.map(function(c,i){return '<div class="row'+(c.hidden?' hid':'')+'"><button class="t" style="text-align:start;display:flex;gap:10px;align-items:center" data-act="admcat" data-v="'+c.id+'"><span style="font-size:22px">'+esc(c.ic||'📦')+'</span><span><b style="display:block">'+esc(N(c))+'</b><span style="display:block;font-size:12.5px;color:var(--sub)">'+c.items.length+' '+T('items')+'</span></span></button>'+tools('cat',c.id,i,DB.cats.length,c.hidden)+'</div>'}).join('')+'</div>';
+     DB.cats.map(function(c,i){return '<div class="row'+(c.hidden?' hid':'')+'"><button class="t" style="text-align:start;display:flex;gap:10px;align-items:center" data-act="admcat" data-v="'+c.id+'"><span style="font-size:22px">'+icH(c.ic,'📦')+'</span><span><b style="display:block">'+esc(N(c))+'</b><span style="display:block;font-size:12.5px;color:var(--sub)">'+c.items.length+' '+T('items')+'</span></span></button>'+tools('cat',c.id,i,DB.cats.length,c.hidden)+'</div>'}).join('')+'</div>';
   }
   if(a.page==='items'){
     var c=CBY[a.cat]; if(!c){view.adm={page:'cats'};return renderAdmin()}
-    return admHead(esc(c.ic||'')+' '+esc(N(c)),'cats')+
+    return admHead(icH(c.ic)+' '+esc(N(c)),'cats')+
      '<div class="row2" style="margin-bottom:12px"><button class="btn main" style="margin:0" data-act="itemnew" data-v="'+c.id+'">'+T('newItem')+'</button><button class="btn ghost" style="flex:none;width:auto;padding:0 16px" data-act="catedit" data-v="'+c.id+'">✏️</button></div><div class="list">'+
      c.items.map(function(it,i){return '<div class="row'+(it.hidden?' hid':'')+'"><button class="t" style="text-align:start;display:flex;gap:10px;align-items:center;min-width:0" data-act="itemedit" data-v="'+it.id+'">'+(thumb(it.id)||'<span class="thumb" style="display:grid;place-items:center">📷</span>')+'<span style="min-width:0"><b style="display:block">'+esc(N(it))+'</b><span class="ltr" style="display:block;font-size:12px;color:var(--sub);text-align:start;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(it.sizes.slice(0,3).join(' · '))+(it.colors?' 🎨':'')+'</span></span></button>'+tools('item',it.id,i,c.items.length,it.hidden)+'</div>'}).join('')+'</div>';
   }
@@ -1227,7 +1232,7 @@ function itemEditSheet(it,catId){
    '<div class="field"><label>'+T('unit')+'</label><div class="chips">'+Object.keys(UNITS).map(function(k){return '<button class="chip'+(k===u?' on':'')+'" data-u="'+k+'">'+N(UNITS[k])+'</button>'}).join('')+'</div></div>'+
    '<div class="field"><label>'+T('sizesL')+'</label><textarea id="esz" rows="4" class="ltr">'+esc(it.sizes.join('\n'))+'</textarea></div>'+
    '<label class="toggle"><span>🎨 '+T('hasColors')+'</span><input type="checkbox" id="ecol"'+(it.colors?' checked':'')+'></label>'+
-   '<div class="field"><label>'+T('category')+'</label><div class="chips">'+DB.cats.map(function(c){return '<button class="chip'+(c.id===cat?' on':'')+'" data-cat="'+c.id+'">'+esc(c.ic||'')+' '+esc(N(c))+'</button>'}).join('')+'</div></div>'+
+   '<div class="field"><label>'+T('category')+'</label><div class="chips">'+DB.cats.map(function(c){return '<button class="chip'+(c.id===cat?' on':'')+'" data-cat="'+c.id+'">'+icH(c.ic)+' '+esc(N(c))+'</button>'}).join('')+'</div></div>'+
    '<button class="btn main" id="esave">'+T('save')+'</button>'+(isNew?'':'<button class="btn ghost" style="width:100%;margin-top:10px;color:var(--danger)" id="edel">🗑 '+T('del')+'</button>'));
   sheet.querySelectorAll('[data-u]').forEach(function(b){b.onclick=function(){u=b.dataset.u;sheet.querySelectorAll('[data-u]').forEach(function(x){x.classList.toggle('on',x.dataset.u===u)})}});
   sheet.querySelectorAll('[data-cat]').forEach(function(b){b.onclick=function(){cat=b.dataset.cat;sheet.querySelectorAll('[data-cat]').forEach(function(x){x.classList.toggle('on',x.dataset.cat===cat)})}});
