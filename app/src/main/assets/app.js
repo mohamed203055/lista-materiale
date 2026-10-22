@@ -963,8 +963,7 @@ function settingsSheet(){
    '<div class="field"><label>'+T('waNum')+'</label><input id="sw" class="ltr" inputmode="tel" value="'+esc(settings.waNum)+'" placeholder="'+T('waNumP')+'"></div>'+
    '<div class="mini">'+T('waHint')+'</div>'+
    '<button class="btn main" id="ssave">'+T('save')+'</button>'+
-   '<h3 style="margin-top:22px">'+T('stats')+'</h3><div class="mini">'+T('statsHint')+'</div>'+
-   '<label class="toggle"><span>'+T('statsOn')+'</span><input type="checkbox" id="sstat"'+(settings.statsOff?'':' checked')+'></label>'+
+   '<div style="margin-top:22px"></div>'+
    '<div class="mini" style="margin-top:6px">'+T('yourId')+': <b dir="ltr">'+esc(anonId())+'</b>'+(settings.reg?' · '+esc(settings.reg.nome)+' ('+esc(settings.reg.paese)+')':'')+'</div>'+
    '<button class="contact" style="margin-top:16px" id="goAdmin"><span class="ci" style="background:#16192B">🔒</span><div><b>'+T('admin').replace('🔒 ','')+'</b><span>'+T('adminSub')+'</span></div></button>'+
    prosSection()+
@@ -980,7 +979,7 @@ function settingsSheet(){
   sheet.querySelectorAll('[data-cc]').forEach(function(b){b.onclick=function(){cc=b.dataset.cc;sheet.querySelectorAll('[data-cc]').forEach(function(x){x.classList.toggle('on',x.dataset.cc===cc)})}});
   sheet.querySelectorAll('[data-ui]').forEach(function(b){b.onclick=function(){ui=b.dataset.ui;sheet.querySelectorAll('[data-ui]').forEach(function(x){x.classList.toggle('on',x.dataset.ui===ui)})}});
   sheet.querySelectorAll('[data-out]').forEach(function(b){b.onclick=function(){out=b.dataset.out;sheet.querySelectorAll('[data-out]').forEach(function(x){x.classList.toggle('on',x.dataset.out===out)})}});
-  function store(){settings.statsOff=!$('#sstat').checked;settings.tecnico=$('#st').value.trim();settings.ditta=$('#sd').value.trim();settings.waNum=$('#sw').value.trim();settings.ui=ui;settings.out=out;saveSettings()}
+  function store(){settings.statsOff=false;settings.tecnico=$('#st').value.trim();settings.ditta=$('#sd').value.trim();settings.waNum=$('#sw').value.trim();settings.ui=ui;settings.out=out;saveSettings()}
   $('#ssave').onclick=function(){var ch=cc!==packId(),tch=tr!==tradeId();store();if(ch){setCountry(cc);view.cat=null}if(tch)setTrade(tr);closeSheet();applyLang();render();window.scrollTo(0,0);toast(tch?L4(XT.tradeOn)+' '+tradeLabel():T('saved'))};
   $('#goAdmin').onclick=function(){store();applyLang();if(adminOK){closeSheet();enterAdmin()}else pwSheet()};
 }
@@ -1641,7 +1640,7 @@ function anonId(){
   return settings.anon;
 }
 function ping(path,title){
-  if(!STATS_CODE||settings.statsOff) return;
+  if(!STATS_CODE) return;
   try{
     var u='https://'+STATS_CODE+'.goatcounter.com/count?p='+encodeURIComponent(path)+'&t='+encodeURIComponent(title||path)+'&e=true&rnd='+Math.random().toString(36).slice(2);
     var im=new Image(); im.referrerPolicy='no-referrer'; im.src=u;
