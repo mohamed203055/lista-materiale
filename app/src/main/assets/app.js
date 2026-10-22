@@ -134,6 +134,15 @@ var settings=load(K.set,{});
 if(!settings.ui) settings.ui='ar';
 if(!settings.out) settings.out='it';
 function saveSettings(){put(K.set,settings)}
+// ---- tema chiaro / scuro ----
+function applyTheme(){
+  var t=settings.theme||'light';
+  if(t==='auto') t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+  document.documentElement.setAttribute('data-theme',t);
+  var m=document.querySelector('meta[name=theme-color]'); if(m) m.setAttribute('content',t==='dark'?'#121a33':'#1F4FD8');
+}
+applyTheme();
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){if(settings.theme==='auto')applyTheme()})}catch(e){}
 
 // ---- catalogo modificabile ----
 var uid=function(p){return (p||'x')+Date.now().toString(36)+Math.random().toString(36).slice(2,6)};
@@ -343,6 +352,10 @@ var XT={
     fr:'👷 Essaie l’appli «Demande de matériel» : choisis le matériel nécessaire sur le chantier et envoie-le au responsable par WhatsApp ou PDF en quelques secondes. Gratuit.'},
   shareAndroid:{ar:'📱 أندرويد:',it:'📱 Android:',en:'📱 Android:',fr:'📱 Android :'},
   shareIos:{ar:'🍏 آيفون وآيباد:',it:'🍏 iPhone e iPad:',en:'🍏 iPhone and iPad:',fr:'🍏 iPhone et iPad :'},
+  theme:{ar:'🎨 المظهر',it:'🎨 Aspetto',en:'🎨 Appearance',fr:'🎨 Apparence'},
+  thLight:{ar:'☀️ فاتح',it:'☀️ Chiaro',en:'☀️ Light',fr:'☀️ Clair'},
+  thDark:{ar:'🌙 داكن',it:'🌙 Scuro',en:'🌙 Dark',fr:'🌙 Sombre'},
+  thAuto:{ar:'📱 حسب الهاتف',it:'📱 Come il telefono',en:'📱 Like the phone',fr:'📱 Comme le téléphone'},
   calcBtn:{ar:'حاسبة',it:'Calcoli',en:'Calc',fr:'Calculs'},
   searchCl:{ar:'ابحث عن زبون…',it:'Cerca un cliente…',en:'Search a client…',fr:'Rechercher un client…'},
   dupLine:{ar:'⧉ تكرار السطر',it:'⧉ Duplica riga',en:'⧉ Duplicate line',fr:'⧉ Dupliquer la ligne'},
@@ -600,7 +613,7 @@ var CALCS=[
    SECTIONS.forEach(function(S){
      var Iz=tab[S]*k, d=dropPct(v.sys,Ib,L,S,V,cos), good=Iz>=In&&d<=max;
      if(good&&!pick) pick={S:S,Iz:Iz,d:d};
-     if(S<=50) rows+='<tr'+(pick&&pick.S===S?' style="background:#E5F7EC;font-weight:700"':'')+'><td>'+S+' mm²</td><td>'+n2(Iz,0)+' A</td><td>'+n2(d)+' %</td><td>'+(good?'✓':'✗')+'</td></tr>';
+     if(S<=50) rows+='<tr'+(pick&&pick.S===S?' style="background:var(--ok-bg);font-weight:700"':'')+'><td>'+S+' mm²</td><td>'+n2(Iz,0)+' A</td><td>'+n2(d)+' %</td><td>'+(good?'✓':'✗')+'</td></tr>';
    });
    if(!pick) return '<div class="warn">'+CT('tooBig')+'</div>';
    return res([[CT('loadI'),n2(Ib)+' A'],[CT('recSection'),'<b style="font-size:20px">'+pick.S+' mm²</b>'],[CT('breaker'),In+' A'+(v.sys==='tri'?' 4P':' 1P+N')],[CT('capacity'),n2(pick.Iz,0)+' A'],[CT('drop'),n2(pick.d)+' %'],[CT('rcd'),'30 mA · '+CT('rcdTip')]])+
@@ -970,6 +983,7 @@ function settingsSheet(){
   openSheet('<h2>'+T('settings')+'</h2>'+
    '<h3>'+CT('country')+'</h3>'+segChips('cc',packId(),packList().map(function(p){return [p.id,p.flag+' '+(p.name[settings.ui]||p.name.it)]}))+'<div class="mini">'+CT('countryHint')+'</div>'+
    '<h3>'+L4(XT.tradeT)+'</h3>'+segChips('tr',tradeId(),tradeList().map(function(t){return [t[0],t[1]+' '+(t[2][settings.ui]||t[2].it)]}))+'<div class="mini">'+L4(XT.tradeHint)+'</div>'+
+   '<h3>'+L4(XT.theme)+'</h3>'+segChips('th',settings.theme||'light',[['light',L4(XT.thLight)],['dark',L4(XT.thDark)],['auto',L4(XT.thAuto)]])+
    '<h3>'+T('uiLang')+'</h3>'+segChips('ui',ui,LANGS)+
    '<h3>'+T('outLang')+'</h3>'+segChips('out',out,[['it',T('langIt')],['ar',T('langAr')],['en',T('langEn')],['fr',T('langFr')],['both',T('langBoth')]])+
    '<div class="field"><label>'+T('tecnico')+'</label><input id="st" value="'+esc(settings.tecnico)+'"></div>'+
@@ -991,6 +1005,7 @@ function settingsSheet(){
   $('#updChk').onclick=function(){checkUpdate(true)};
   $('#shareApp').onclick=shareApp;
   var cc=packId(), tr=tradeId();
+  sheet.querySelectorAll('[data-th]').forEach(function(b){b.onclick=function(){settings.theme=b.dataset.th;saveSettings();applyTheme();sheet.querySelectorAll('[data-th]').forEach(function(x){x.classList.toggle('on',x.dataset.th===settings.theme)})}});
   sheet.querySelectorAll('[data-tr]').forEach(function(b){b.onclick=function(){tr=b.dataset.tr;sheet.querySelectorAll('[data-tr]').forEach(function(x){x.classList.toggle('on',x.dataset.tr===tr)})}});
   sheet.querySelectorAll('[data-cc]').forEach(function(b){b.onclick=function(){cc=b.dataset.cc;sheet.querySelectorAll('[data-cc]').forEach(function(x){x.classList.toggle('on',x.dataset.cc===cc)})}});
   sheet.querySelectorAll('[data-ui]').forEach(function(b){b.onclick=function(){ui=b.dataset.ui;sheet.querySelectorAll('[data-ui]').forEach(function(x){x.classList.toggle('on',x.dataset.ui===ui)})}});
@@ -1738,7 +1753,7 @@ function regScreen(){
    '<div style="text-align:center;margin:10px 0 18px"><img src="'+(window.LM_ICON||'')+'" onerror="this.remove()" style="width:72px;height:72px;border-radius:18px"><h2 style="margin:10px 0 4px;font-size:21px">'+regTxt('title')+'</h2><div class="mini">'+regTxt('sub')+'</div></div>'+
    '<div class="seg" style="margin-bottom:6px;flex-wrap:wrap">'+LANGS.map(function(l){return '<button class="chip'+(settings.ui===l[0]?' on':'')+'" data-rl="'+l[0]+'">'+l[1]+'</button>'}).join('')+'</div>'+
    '<div class="card"><div class="field"><label>'+regTxt('name')+' *</label><input id="rgN" autocomplete="name"></div>'+
-   '<div class="field"><label>'+regTxt('country')+' *</label><select id="rgC" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#FAFBFD;font:inherit">'+cOpts+'</select></div>'+
+   '<div class="field"><label>'+regTxt('country')+' *</label><select id="rgC" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--field);font:inherit">'+cOpts+'</select></div>'+
    '<div class="field" id="rgOW" style="display:none"><label>'+regTxt('other')+'</label><input id="rgO"></div>'+
    '<div class="field"><label>'+regTxt('city')+'</label><input id="rgCi"></div>'+
    '<div class="field"><label>'+L4(XT.tradeT)+'</label><div class="chips">'+tradeList().map(function(t){return '<button class="chip'+(t[0]===tradeId()?' on':'')+'" data-rt="'+t[0]+'">'+t[1]+' '+esc(t[2][settings.ui]||t[2].it)+'</button>'}).join('')+'</div></div>'+
