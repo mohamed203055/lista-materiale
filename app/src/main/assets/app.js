@@ -149,7 +149,7 @@ if(!settings.out) settings.out='it';
 function saveSettings(){put(K.set,settings)}
 // ---- tema chiaro / scuro ----
 function applyTheme(){
-  var t=settings.theme||'light';
+  var t=settings.theme||'auto';
   if(t==='auto') t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
   document.documentElement.setAttribute('data-theme',t);
   var m=document.querySelector('meta[name=theme-color]'); if(m) m.setAttribute('content',t==='dark'?'#121a33':'#1F4FD8');
@@ -220,7 +220,7 @@ function vatDef(){var p=packData();return p?p.vatDefault:22}
 function setCountry(cc){
   if(cc===packId())return;
   settings.country=cc; var p=packData(cc);
-  settings.out=p?(p.outLang||'fr'):'it';
+  settings.out=p?((settings.ui==='ar'||settings.ui==='fr')?settings.ui:(p.outLang||'fr')):'it'; // Marocco: arabo o francese come il telefono
   saveSettings(); DB=loadDB(); put(dbKey(),DB); reindex(); applyLang();
 }
 function setTrade(t){
@@ -1055,7 +1055,7 @@ function settingsSheet(){
   var cty=(packList().find(function(p){return p.id===packId()})||packList()[0]);
   var langName=(LANGS.find(function(l){return l[0]===settings.ui})||LANGS[0])[1];
   var outName={it:T('langIt'),ar:T('langAr'),en:T('langEn'),fr:T('langFr'),both:T('langBoth')}[settings.out]||'';
-  var thName={light:L4(XT.thLight),dark:L4(XT.thDark),auto:L4(XT.thAuto)}[settings.theme||'light'];
+  var thName={light:L4(XT.thLight),dark:L4(XT.thDark),auto:L4(XT.thAuto)}[settings.theme||'auto'];
   function mrow(id,ic,bg,title,sub){return '<button class="mrow" id="'+id+'"><span class="ci" style="background:'+bg+'">'+ic+'</span><div><b>'+title+'</b>'+(sub?'<span dir="auto">'+sub+'</span>':'')+'</div><i>›</i></button>'}
   openSheet('<h2>'+T('settings')+'</h2><div class="mlist">'+
    mrow('mProf','👤','var(--brand)',L4(XT.secProfile).replace(/^\S+\s/,''),esc([cty.flag+' '+tradeLabel(),settings.tecnico,settings.ditta].filter(Boolean).join(' · ')))+
@@ -1085,7 +1085,7 @@ function langSheet(){
   sheet.querySelectorAll('[data-out]').forEach(function(b){b.onclick=function(){settings.out=b.dataset.out;saveSettings();langSheet();toast(T('saved'))}});
 }
 function themeSheet(){
-  openSheet(backTo()+'<h2>'+L4(XT.theme)+'</h2>'+segChips('th',settings.theme||'light',[['light',L4(XT.thLight)],['dark',L4(XT.thDark)],['auto',L4(XT.thAuto)]]));
+  openSheet(backTo()+'<h2>'+L4(XT.theme)+'</h2>'+segChips('th',settings.theme||'auto',[['light',L4(XT.thLight)],['dark',L4(XT.thDark)],['auto',L4(XT.thAuto)]]));
   $('#sBack').onclick=settingsSheet;
   sheet.querySelectorAll('[data-th]').forEach(function(b){b.onclick=function(){settings.theme=b.dataset.th;saveSettings();applyTheme();themeSheet()}});
 }
