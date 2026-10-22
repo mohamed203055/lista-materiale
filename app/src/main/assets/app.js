@@ -144,6 +144,7 @@ function phoneLang(){
   if(tz==='Europe/Paris'||tz==='Europe/Brussels')return 'fr';
   return 'en';
 }
+if(!A&&!settings.reg&&!settings.uiPicked){settings.ui=phoneLang();if(settings.ui==='ar')settings.ui='en'} // web (iPhone/browser): mai arabo automatico
 if(!settings.ui) settings.ui=phoneLang();
 if(!settings.out) settings.out='it';
 function saveSettings(){put(K.set,settings)}
@@ -2001,7 +2002,7 @@ function regScreen(){
     w.querySelectorAll('[data-rj]').forEach(function(b){b.onclick=function(){job=b.dataset.rj;w.querySelectorAll('[data-rj]').forEach(function(x){x.classList.toggle('on',x===b)})}})}
   jobs();
   ov.querySelectorAll('[data-rt]').forEach(function(b){b.onclick=function(){rtr=b.dataset.rt;ov.querySelectorAll('[data-rt]').forEach(function(x){x.classList.toggle('on',x===b)});jobs()}});
-  ov.querySelectorAll('[data-rl]').forEach(function(b){b.onclick=function(){settings.ui=b.dataset.rl;saveSettings();applyLang();render();ov.remove();regScreen()}});
+  ov.querySelectorAll('[data-rl]').forEach(function(b){b.onclick=function(){settings.ui=b.dataset.rl;settings.uiPicked=1;saveSettings();applyLang();render();ov.remove();regScreen()}});
   ov.querySelector('#rgC').onchange=function(){ov.querySelector('#rgOW').style.display=this.value==='Altro'?'block':'none'};
   ov.querySelector('#rgGo').onclick=function(){
     var n=ov.querySelector('#rgN').value.trim(), c=ov.querySelector('#rgC').value;
