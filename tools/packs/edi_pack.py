@@ -6,7 +6,9 @@ Riga articolo: (italiano, arabo, inglese, francese, unità, misure 'a;b;c')
 Genera app/src/main/assets/trades.js  →  window.LM_TRADES
 Per aggiungere un mestiere: un nuovo file *_pack.py con lo stesso schema e una voce in TRADES qui sotto.
 """
-import json, os
+import json, os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import edi_ma
 
 VERSION = 1
 
@@ -288,7 +290,7 @@ def build_it():
 TRADES = {
     'edi': {'ic': '🧱', 'name': {'ar': 'بنّاء', 'it': 'Edilizia', 'en': 'Building', 'fr': 'Maçonnerie'},
             'calcs': ['tiles', 'paint', 'drywall', 'screed', 'plaster', 'bricks', 'concrete'],
-            'check': CHECK, 'packs': {'IT': build_it()}},
+            'check': CHECK, 'packs': {'IT': build_it(), 'MA': edi_ma.build_ma()}},
 }
 
 if __name__ == '__main__':
@@ -297,4 +299,6 @@ if __name__ == '__main__':
     open(os.path.join(assets, 'trades.js'), 'w').write(
         '// Mestieri oltre all\'elettricista (generato da tools/packs/edi_pack.py)\nwindow.LM_TRADES = ' + json.dumps(TRADES, ensure_ascii=False) + ';\n')
     p = TRADES['edi']['packs']['IT']
+    m = TRADES['edi']['packs']['MA']
+    print('edi MA:', len(m['cats']), 'categorie,', sum(len(c['items']) for c in m['cats']), 'articoli,', sum(len(g['list']) for g in m['svc']), 'lavori')
     print('edi IT:', len(p['cats']), 'categorie,', sum(len(c['items']) for c in p['cats']), 'articoli,', sum(len(g['list']) for g in p['svc']), 'lavori,', len(CHECK), 'collaudo')

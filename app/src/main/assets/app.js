@@ -245,7 +245,10 @@ var PACK_TXT={MA:{
   noteP:{ar:'مثلاً: Legrand Niloé أبيض',it:'es. serie Legrand Niloé bianca',en:'e.g. Legrand Niloé white',fr:'ex. série Legrand Niloé blanche'},
   itemNoteP:{ar:'مثلاً Ingelec أبيض',it:'es. Ingelec bianco',en:'e.g. Ingelec white',fr:'ex. Ingelec blanc'},
   addrP:'Rue …, Casablanca'}};
-function T(k){var o=PACK_TXT[packId()];if(o&&o[k]&&o[k][settings.ui])return o[k][settings.ui];return TXT[settings.ui][k]!=null?TXT[settings.ui][k]:k}
+var TRADE_TXT={edi:{
+  search:{ar:'ابحث عن قطعة، إسمنت، بلاط...',it:'Cerca pezzo, cemento, piastrelle...',en:'Search part, cement, tiles...',fr:'Chercher pièce, ciment, carrelage...'},
+  noteP:{ar:'مثلاً: بلاط 60×60 رمادي، إسمنت 42,5',it:'es. gres 60x60 grigio, cemento 42,5',en:'e.g. grey 60x60 tiles, cement 42.5',fr:'ex. carrelage 60x60 gris, ciment 42,5'}}};
+function T(k){var tt=TRADE_TXT[tradeId()];if(tt&&tt[k]&&tt[k][settings.ui])return tt[k][settings.ui];var o=PACK_TXT[packId()];if(o&&o[k]&&o[k][settings.ui])return o[k][settings.ui];return TXT[settings.ui][k]!=null?TXT[settings.ui][k]:k}
 function N(o){return trName(o,settings.ui)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function norm(s){
