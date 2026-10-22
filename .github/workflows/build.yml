@@ -26,7 +26,7 @@ jobs:
       - name: Protect JS (obfuscate)
         run: |
           cd app/src/main/assets
-          sed -i 's#<script src="catalog.js"></script>#<script>window.LM_RELEASE=1</script>\n<script src="catalog.js"></script>#' index.html
+          sed -i "s#<script src=\"catalog.js\"></script>#<script>window.LM_RELEASE=1;window.LM_JS_VER=${GITHUB_RUN_NUMBER}</script>\\n<script src=\"catalog.js\"></script>#" index.html
           # dati (cataloghi, testi): nomi e stringhe nascosti
           for f in catalog.js packs.js trades.js lang.js; do
             npx --yes javascript-obfuscator@4.1.1 "$f" --output "$f" \
@@ -52,6 +52,24 @@ jobs:
           cp packs.js "$GITHUB_WORKSPACE/out/web-packs.js"
           cp trades.js "$GITHUB_WORKSPACE/out/web-trades.js"
           head -c 200 app.js
+          # pacchetto per l'aggiornamento silenzioso (stessi file dell'APK), firmato
+          LIVE_MIN=41
+          mkdir -p "$GITHUB_WORKSPACE/out/live"
+          cp index.html catalog.js packs.js trades.js lang.js app.js "$GITHUB_WORKSPACE/out/live/"
+          cd "$GITHUB_WORKSPACE/out/live"
+          python3 - "$GITHUB_RUN_NUMBER" "$LIVE_MIN" <<'PY'
+          import hashlib, json, os, sys
+          ver, mn = sys.argv[1], int(sys.argv[2])
+          files = {n: hashlib.sha256(open(n, 'rb').read()).hexdigest() for n in sorted(os.listdir('.'))}
+          msg = 'SN-LIVE\n%s\n%d\n' % (ver, mn) + ''.join('%s=%s\n' % (n, files[n]) for n in sorted(files))
+          open('../live-msg.txt', 'w').write(msg)
+          json.dump({'ver': ver, 'min': mn, 'files': files}, open('../live-unsigned.json', 'w'))
+          PY
+          openssl dgst -sha256 -sign "$GITHUB_WORKSPACE/signing/live_ec.pem" -out ../live.sig ../live-msg.txt
+          python3 -c "import json,base64;d=json.load(open('../live-unsigned.json'));d['sig']=base64.b64encode(open('../live.sig','rb').read()).decode();json.dump(d,open('../live.json','w'))"
+          openssl dgst -sha256 -verify <(openssl ec -in "$GITHUB_WORKSPACE/signing/live_ec.pem" -pubout 2>/dev/null) -signature ../live.sig ../live-msg.txt
+          zip -q -j ../live-bundle.zip ./*
+          cd -
 
       - uses: gradle/actions/setup-gradle@v4
         with:
@@ -94,3 +112,5 @@ jobs:
             out/web-lang.js
             out/web-packs.js
             out/web-trades.js
+            out/live.json
+            out/live-bundle.zip

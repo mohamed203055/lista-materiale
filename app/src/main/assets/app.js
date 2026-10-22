@@ -973,7 +973,7 @@ function kitSheet(k){
    IMPOSTAZIONI
    ===================================================================== */
 function segChips(name,curv,opts){return '<div class="seg">'+opts.map(function(o){return '<button class="chip'+(o[0]===curv?' on':'')+'" data-'+name+'="'+o[0]+'">'+o[1]+'</button>'}).join('')+'</div>'}
-function appVersion(){try{return (A&&A.version)?A.version():WEB_VERSION}catch(e){return WEB_VERSION}}
+function appVersion(){try{if(A&&A.version){var v=A.version(),j=+window.LM_JS_VER||0,m=String(v).match(/(\d+)$/);return j&&m&&j>+m[1]?v+' ⚡'+j:v}return WEB_VERSION}catch(e){return WEB_VERSION}}
 function openUrl(u){if(A&&A.open)A.open(u);else if(/^https?:/.test(u))window.open(u,'_blank');else location.href=u}
 function openContact(k){
   if(k==='wa'){var t=T('reportMsg')+'\n\n(v'+appVersion()+')';if(A&&A.whatsapp)A.whatsapp(t,CONTACT.num);else openUrl('https://wa.me/'+CONTACT.num+'?text='+encodeURIComponent(t))}
@@ -1968,6 +1968,7 @@ function checkUpdate(manual){
     sendReg();sendSeen();
     if(v.packs) checkPacks(v.packs);
     checkPeople(v.people_ver);
+    try{if(A&&A.liveFetch&&v.live&&v.live.ver)A.liveFetch(JSON.stringify(v.live),UPD_BASE)}catch(e){}
     showBroadcast(v.message);
     if(v.apk&&v.send!==false&&settings.liveApk!==v.apk){settings.liveApk=v.apk;saveSettings()}
     var newer;
@@ -2030,4 +2031,6 @@ window.onUpdError=function(){var m=$('#updMsg');if(m)m.textContent=T('updErr');v
 
 reindex(); cur(); save(); applyLang(); render(); setTimeout(statsStart,1500); setTimeout(function(){checkUpdate(false)},3000);
 if(!regScreen()) setTimeout(function(){sendReg();sendSeen()},2500);
+// aggiornamento silenzioso: conferma che questa versione è partita bene
+try{if(A&&A.liveOk&&window.LM_JS_VER)setTimeout(function(){A.liveOk(String(window.LM_JS_VER))},1500)}catch(e){}
 })();

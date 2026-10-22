@@ -107,7 +107,7 @@ class MainActivity : ComponentActivity() {
         }
         root.addView(web, FrameLayout.LayoutParams(-1, -1))
         setContentView(root)
-        web.loadUrl("file:///android_asset/index.html")
+        web.loadUrl(startUrl())
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -232,7 +232,120 @@ class MainActivity : ComponentActivity() {
             .show()
     }
 
+    // ---------- aggiornamento silenzioso: solo la parte web (html/js), firmata ----------
+    // Il pacchetto viene scaricato in background, verificato (firma ECDSA + SHA-256) e usato dal prossimo avvio.
+    // Se non parte (nessuna conferma liveOk entro 12 s) viene scartato e si torna alla versione interna.
+    private val ASSET_URL = "file:///android_asset/index.html"
+    private val LIVE_PUB = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEbZqC8tCafp0UGhNA04swKizQ2HNjqZJN4dsDQSPlIBD0J1UQdCh1ZO+7Dg+zsI/vHRVc6eErwc3fxrXyMbMByA=="
+    private val liveRoot by lazy { File(filesDir, "live") }
+    private var liveRunning = ""
+    private var liveBusy = false
+
+    private fun nativeCode(): Long = try {
+        val pi = packageManager.getPackageInfo(packageName, 0)
+        if (Build.VERSION.SDK_INT >= 28) pi.longVersionCode else @Suppress("DEPRECATION") pi.versionCode.toLong()
+    } catch (_: Exception) { 0L }
+
+    private fun liveState(): org.json.JSONObject = try {
+        org.json.JSONObject(File(liveRoot, "state.json").readText())
+    } catch (_: Exception) { org.json.JSONObject() }
+
+    private fun saveLiveState(o: org.json.JSONObject) {
+        try { liveRoot.mkdirs(); File(liveRoot, "state.json").writeText(o.toString()) } catch (_: Exception) {}
+    }
+
+    private fun isBad(st: org.json.JSONObject, ver: String): Boolean {
+        val b = st.optJSONArray("bad") ?: return false
+        for (i in 0 until b.length()) if (b.optString(i) == ver) return true
+        return false
+    }
+
+    private fun markBad(ver: String) {
+        val st = liveState()
+        val b = st.optJSONArray("bad") ?: org.json.JSONArray()
+        b.put(ver); st.put("bad", b); st.put("pending", ""); st.put("ready", "")
+        saveLiveState(st)
+        try { File(liveRoot, ver).deleteRecursively() } catch (_: Exception) {}
+    }
+
+    private fun startUrl(): String = try {
+        val st = liveState()
+        val ver = st.optString("ready", "")
+        val idx = File(liveRoot, "$ver/index.html")
+        when {
+            ver.isEmpty() || !idx.exists() -> ASSET_URL
+            (ver.toLongOrNull() ?: 0L) <= nativeCode() -> { st.put("ready", ""); saveLiveState(st); File(liveRoot, ver).deleteRecursively(); ASSET_URL }
+            nativeCode() < st.optLong("min", Long.MAX_VALUE) || isBad(st, ver) -> ASSET_URL
+            st.optString("pending", "") == ver -> { markBad(ver); ASSET_URL }   // l'ultima volta non è partito
+            else -> {
+                st.put("pending", ver); saveLiveState(st); liveRunning = ver
+                ui.postDelayed({ if (liveRunning == ver && liveState().optString("pending") == ver) { markBad(ver); liveRunning = ""; web.loadUrl(ASSET_URL) } }, 12000)
+                "file://" + idx.absolutePath
+            }
+        }
+    } catch (_: Exception) { ASSET_URL }
+
+    private fun sha256Hex(b: ByteArray): String =
+        java.security.MessageDigest.getInstance("SHA-256").digest(b).joinToString("") { "%02x".format(it) }
+
+    private fun liveFetch(json: String, base: String) {
+        if (liveBusy) return
+        liveBusy = true
+        Thread {
+            try {
+                val o = org.json.JSONObject(json)
+                val ver = o.getString("ver"); val min = o.getLong("min")
+                val v = ver.toLongOrNull() ?: throw Exception("ver")
+                val st = liveState()
+                val have = maxOf(nativeCode(), st.optString("ready", "0").toLongOrNull() ?: 0L)
+                if (v <= have || nativeCode() < min || isBad(st, ver)) { liveBusy = false; return@Thread }
+                val files = o.getJSONObject("files")
+                val names = files.keys().asSequence().toList().sorted()
+                if (names.isEmpty() || names.any { !Regex("^[A-Za-z0-9._-]+$").matches(it) } || "index.html" !in names) throw Exception("names")
+                val msg = "SN-LIVE\n$ver\n$min\n" + names.joinToString("") { it + "=" + files.getString(it) + "\n" }
+                val key = java.security.KeyFactory.getInstance("EC").generatePublic(
+                    java.security.spec.X509EncodedKeySpec(android.util.Base64.decode(LIVE_PUB, android.util.Base64.DEFAULT)))
+                val sg = java.security.Signature.getInstance("SHA256withECDSA")
+                sg.initVerify(key); sg.update(msg.toByteArray(Charsets.UTF_8))
+                if (!sg.verify(android.util.Base64.decode(o.getString("sig"), android.util.Base64.DEFAULT))) throw Exception("sig")
+                val tmp = File(liveRoot, "$ver.tmp"); tmp.deleteRecursively(); tmp.mkdirs()
+                for (n in names) {
+                    val c = URL(base + "live/" + ver + "/" + n).openConnection() as HttpURLConnection
+                    c.instanceFollowRedirects = true; c.connectTimeout = 15000; c.readTimeout = 30000
+                    val data = c.inputStream.use { it.readBytes() }; c.disconnect()
+                    if (sha256Hex(data) != files.getString(n)) throw Exception("hash $n")
+                    File(tmp, n).writeBytes(data)
+                }
+                val dst = File(liveRoot, ver); dst.deleteRecursively()
+                if (!tmp.renameTo(dst)) throw Exception("rename")
+                val st2 = liveState(); val old = st2.optString("ready", "")
+                st2.put("ready", ver); st2.put("min", min); st2.put("pending", ""); saveLiveState(st2)
+                liveRoot.listFiles()?.forEach { f -> if (f.isDirectory && f.name != ver && f.name != liveRunning) f.deleteRecursively() }
+                if (old != ver) js("window.onLiveReady&&window.onLiveReady('$ver')")
+            } catch (_: Exception) {
+                try { liveRoot.listFiles()?.forEach { if (it.name.endsWith(".tmp")) it.deleteRecursively() } } catch (_: Exception) {}
+            }
+            liveBusy = false
+        }.start()
+    }
+
     inner class Bridge {
+        @JavascriptInterface
+        fun liveFetch(json: String, base: String) { this@MainActivity.liveFetch(json, base) }
+
+        @JavascriptInterface
+        fun liveOk(ver: String) {
+            ui.post {
+                if (liveRunning.isNotEmpty() && ver == liveRunning) {
+                    val st = liveState(); st.put("pending", ""); st.put("ok", ver); saveLiveState(st)
+                    liveRunning = ""
+                }
+            }
+        }
+
+        @JavascriptInterface
+        fun liveVer(): String = liveState().optString("ok", "")
+
         @JavascriptInterface
         fun copy(text: String) {
             val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

@@ -77,6 +77,12 @@ details.pros>summary::-webkit-details-marker{display:none}
       <div class="mini">اكتب «ما الجديد» في الأسفل ثم اضغط إرسال.</div>
       <button class="b-ok" id="btnNext">🚀 إرسال النسخة الجديدة للجميع</button>
     </div>
+    <div id="liveBox" class="hide" style="margin-top:10px;border:2px solid #7A5CFF;border-radius:12px;padding:12px">
+      <b>⚡ تحديث صامت جاهز: <span id="lvName" dir="ltr"></span></b>
+      <div class="mini">يصل للجميع بهدوء في الخلفية ويظهر عند فتح التطبيق المرة القادمة — بدون رسالة وبدون تثبيت. للتغييرات الصغيرة (أيقونات، نصوص، قوائم، إصلاحات).</div>
+      <button style="background:#7A5CFF;color:#fff" id="btnLive">⚡ إرسال التحديث الصامت</button>
+    </div>
+    <div class="mini" id="lvCur" style="margin-top:6px"></div>
     <div style="margin-top:10px">
       <div class="kv"><span>النسخة</span><b id="vName">—</b></div>
       <div class="kv"><span>رقم النسخة (versionCode)</span><b id="vCode">—</b></div>
@@ -222,6 +228,9 @@ function show(){
   if(document.activeElement!==$('nAr'))$('nAr').value=src.notes_ar||'';
   if(document.activeElement!==$('nIt'))$('nIt').value=src.notes_it||'';
   $('nextBox').classList.toggle('hide',!data.next);
+  $('liveBox').classList.toggle('hide',!data.liveNext);
+  if(data.liveNext)$('lvName').textContent='⚡'+data.liveNext.ver;
+  $('lvCur').textContent=data.live&&data.live.ver?'⚡ آخر تحديث صامت مُرسل: '+data.live.ver:'';
   if(data.next)$('nxName').textContent='v'+data.next.versionName;
   var m=data.message||{};
   $('mCur').textContent=m.id?('الرسالة الحالية (رقم '+m.id+'): '+(m.ar||m.it)):'لا توجد رسالة حالياً.';
@@ -241,6 +250,11 @@ $('btnNext').onclick=function(){
   notes(); var n=data.next; delete data.next;
   data.versionCode=n.versionCode;data.versionName=n.versionName;data.apk=n.apk;data.notes_ar=n.notes_ar;data.notes_it=n.notes_it;
   data.send=true;data.force=$('force').checked;save('Invia aggiornamento '+n.versionName);
+};
+$('btnLive').onclick=function(){
+  if(!data.liveNext)return;
+  if(!confirm('إرسال التحديث الصامت ⚡'+data.liveNext.ver+' لكل المستخدمين؟'))return;
+  data.live=data.liveNext; delete data.liveNext; save('Aggiornamento silenzioso '+data.live.ver);
 };
 $('btnStop').onclick=function(){data.send=false;save('Sospendi aggiornamento')};
 $('btnNotes').onclick=function(){notes();save('Note aggiornamento')};
