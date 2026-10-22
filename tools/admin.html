@@ -166,7 +166,7 @@ details.pros>summary::-webkit-details-marker{display:none}
         <button class="b-ghost" id="pNoPhoto" style="margin-top:6px;padding:9px">إزالة الصورة</button>
         <label>الاسم *</label><input id="pName" dir="auto" placeholder="مثلاً: أحمد – شركة البناء">
         <label>المهنة</label><input id="pJob" dir="auto" placeholder="كهربائي، بنّاء، سبّاك…">
-        <div class="row"><div><label>البلد</label><input id="pCountry" dir="auto" placeholder="Maroc / Italia"></div><div><label>المدينة</label><input id="pCity" dir="auto" placeholder="الدار البيضاء"></div></div>
+        <div class="row"><div><label>يظهر لمستخدمي</label><select id="pCC" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font:inherit;background:#FAFBFD"><option value="IT">🇮🇹 إيطاليا فقط</option><option value="MA">🇲🇦 المغرب فقط</option><option value="ALL">🌍 كل البلدان</option></select></div><div><label>المدينة</label><input id="pCity" dir="auto" placeholder="الدار البيضاء"></div></div>
         <label>الخدمات التي يقدّمها</label><textarea id="pServ" dir="auto" placeholder="تركيب كهرباء المنازل، لوحات، إنارة…"></textarea>
         <label>رقم الهاتف / واتساب (مع رمز البلد)</label><input id="pPhone" class="ltr" inputmode="tel" placeholder="+212 6xx xxx xxx">
         <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);font-size:15px"><span>👁 ظاهر للمستخدمين</span><input type="checkbox" id="pShow" style="width:22px;height:22px" checked></label>
@@ -338,11 +338,13 @@ function pPut(msg){
    .then(function(r){if(!r.ok)throw new Error('http '+r.status);return r.json()}).then(function(j){psha=j.content.sha;pShow();data.people_ver=String(Date.now());return save('Aggiorna professionisti')})
    .catch(function(e){toast('خطأ: '+e.message);return pGet()});
 }
+function ccOf(t){t=String(t||'').toLowerCase();if(/ital|إيطال/.test(t))return 'IT';if(/maroc|morocc|المغرب/.test(t))return 'MA';return ''}
+var FLAG={IT:'🇮🇹 إيطاليا',MA:'🇲🇦 المغرب',ALL:'🌍 الكل'};
 function pShow(){
   $('pCnt').textContent=PEOPLE.length;
   $('pList').innerHTML=PEOPLE.map(function(p,i){
     return '<div class="pp'+(p.hidden?' off':'')+'">'+(p.photo?'<img src="'+esc(p.photo)+'" alt="">':'<span class="ini">'+esc((p.name||'?').trim()[0]||'?')+'</span>')+
-     '<div class="t"><b>'+esc(p.name)+(p.hidden?' (مخفي)':'')+'</b><span>'+esc([p.job,p.city,p.country].filter(Boolean).join(' · '))+'</span><span dir="ltr" style="text-align:right">'+esc(p.phone||'')+'</span></div>'+
+     '<div class="t"><b>'+esc(p.name)+(p.hidden?' (مخفي)':'')+'</b><span>'+esc([FLAG[p.cc||ccOf(p.country)]||'❔',p.job,p.city].filter(Boolean).join(' · '))+'</span><span dir="ltr" style="text-align:right">'+esc(p.phone||'')+'</span></div>'+
      (i>0?'<button class="b-ghost" data-pu="'+i+'">▲</button>':'')+'<button class="'+(p.hidden?'b-danger':'b-ok')+'" data-ph="'+i+'" title="'+(p.hidden?'مخفي — اضغط لإظهاره':'ظاهر — اضغط لإخفائه')+'">'+(p.hidden?'🚫':'👁')+'</button><button class="b-ghost" data-pe="'+i+'">✏️</button><button class="b-danger" data-pd="'+i+'">🗑</button></div>'}).join('')||'<div class="mini" style="margin-top:10px">لا يوجد أحد بعد.</div>';
   $('pList').querySelectorAll('[data-ph]').forEach(function(b){b.onclick=function(){var p=PEOPLE[+b.dataset.ph];p.hidden=!p.hidden;toast(p.hidden?'🚫 «'+p.name+'» لم يعد يظهر للمستخدمين':'👁 «'+p.name+'» يظهر الآن للجميع');pPut(p.hidden?'Nascondi professionista':'Mostra professionista')}});
   $('pList').querySelectorAll('[data-pe]').forEach(function(b){b.onclick=function(){pOpen(+b.dataset.pe)}});
@@ -352,7 +354,7 @@ function pShow(){
 function pOpen(i){
   pEdit=i; var p=i==null?{}:PEOPLE[i];
   $('pTitle').textContent=i==null?'شخص جديد':'تعديل: '+p.name;
-  $('pName').value=p.name||'';$('pJob').value=p.job||'';$('pCountry').value=p.country||'';$('pCity').value=p.city||'';$('pServ').value=p.services||'';$('pPhone').value=p.phone||'';$('pShow').checked=!p.hidden;
+  $('pName').value=p.name||'';$('pJob').value=p.job||'';$('pCC').value=p.cc||ccOf(p.country)||'IT';$('pCity').value=p.city||'';$('pServ').value=p.services||'';$('pPhone').value=p.phone||'';$('pShow').checked=!p.hidden;
   pPhotoData=p.photo||'';$('pPrev').src=pPhotoData||'data:image/gif;base64,R0lGODlhAQABAAAAACw=';$('pPhoto').value='';
   $('pForm').classList.remove('hide');$('pForm').scrollIntoView({behavior:'smooth',block:'start'});
 }
@@ -370,7 +372,7 @@ $('pPhoto').onchange=function(){
 $('pSave').onclick=function(){
   var n=$('pName').value.trim();if(!n){toast('اكتب الاسم أولاً');return}
   var o=pEdit==null?{id:'p'+Date.now().toString(36)}:PEOPLE[pEdit];
-  o.name=n;o.job=$('pJob').value.trim();o.country=$('pCountry').value.trim();o.city=$('pCity').value.trim();o.services=$('pServ').value.trim();o.phone=$('pPhone').value.trim();o.photo=pPhotoData;o.hidden=!$('pShow').checked;
+  o.name=n;o.job=$('pJob').value.trim();o.cc=$('pCC').value;o.country={IT:'Italia',MA:'Maroc',ALL:''}[o.cc];o.city=$('pCity').value.trim();o.services=$('pServ').value.trim();o.phone=$('pPhone').value.trim();o.photo=pPhotoData;o.hidden=!$('pShow').checked;
   if(pEdit==null)PEOPLE.push(o);
   $('pForm').classList.add('hide');pPut(pEdit==null?'Aggiungi professionista':'Modifica professionista');
 };

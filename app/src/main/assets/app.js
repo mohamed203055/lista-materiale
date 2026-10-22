@@ -997,10 +997,13 @@ function openContact(k){
 }
 /* ---- professionisti consigliati: gestiti dal proprietario (app admin) in people.json ---- */
 var PEOPLE=load(K.people,{ver:0,list:[]});
+// ogni professionista appare solo agli utenti dello stesso Paese ('ALL' = a tutti)
+function ccOf(txt){var t=String(txt||'').toLowerCase();if(/ital|إيطال/.test(t))return 'IT';if(/maroc|morocc|المغرب/.test(t))return 'MA';return t.trim()}
+function myCC(){var r=settings.reg&&settings.reg.paese;return r?ccOf(r):packId()}
+function proCC(p){return p.cc||ccOf(p.country)||'ALL'}
 function prosList(){
-  var me=((settings.reg&&settings.reg.paese)||'').toLowerCase();
-  return (PEOPLE.list||[]).filter(function(p){return p&&!p.hidden&&p.name}).map(function(p,i){return {p:p,i:i}})
-   .sort(function(a,b){var x=(a.p.country||'').toLowerCase()===me?0:1,y=(b.p.country||'').toLowerCase()===me?0:1;return x-y||a.i-b.i}).map(function(o){return o.p});
+  var me=myCC();
+  return (PEOPLE.list||[]).filter(function(p){if(!p||p.hidden||!p.name)return false;var c=proCC(p);return c==='ALL'||c===me});
 }
 function proPic(p,big){
   var sz=big?96:56;
