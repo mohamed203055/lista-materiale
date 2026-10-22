@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<title>طلب مواد</title>
+<title>SiteNeeds</title>
 <style>
 :root{
   --bg:#F3F4F8; --card:#FFFFFF; --ink:#16192B; --sub:#646A80; --line:#E3E5EC;
@@ -37,7 +37,8 @@ input,textarea{font:inherit;color:inherit}
 header{position:sticky;top:0;z-index:20;background:var(--brand);color:#fff;padding:14px 16px 10px}
 .top{display:flex;align-items:center;gap:10px}
 .top h1{flex:1;margin:0;font-size:20px}
-.top h1 small{display:block;font-size:12px;font-weight:400;opacity:.8}
+.top h1{min-width:0;overflow:hidden}
+.top h1 small{display:block;font-size:12px;font-weight:400;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .iconbtn{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:19px}
 .search{margin-top:10px;display:flex;align-items:center;gap:8px;height:44px;background:var(--surface);border-radius:12px;padding:0 6px 0 12px;padding-inline:14px 6px;color:var(--ink)}
 .search>span{font-size:16px;opacity:.55;flex:none;line-height:1}

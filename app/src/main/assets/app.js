@@ -27,7 +27,7 @@ var TXT={
   langIt:'الإيطالية',langAr:'العربية',langBoth:'الاثنتان',save:'حفظ',saved:'تم الحفظ ✓',cancel:'إلغاء',del:'حذف',
   clearQ:'مسح كل المواد من هذا الطلب؟',
   copied:'تم نسخ الطلب ✓',pdfWait:'جاري تجهيز PDF…',pdfOk:'PDF جاهز ✓',pdfErr:'تعذّر إنشاء PDF',previewT:'معاينة الرسالة',
-  contact:'📞 تواصل معنا',contactHint:'وجدت خطأ أو عندك فكرة؟ راسلنا وسنصلحه.',report:'أبلغ عن خطأ عبر واتساب',call:'اتصال',reportMsg:'مرحباً، عندي ملاحظة عن تطبيق «طلب مواد»:',
+  contact:'📞 تواصل معنا',contactHint:'وجدت خطأ أو عندك فكرة؟ راسلنا وسنصلحه.',report:'أبلغ عن خطأ عبر واتساب',call:'اتصال',reportMsg:'مرحباً، عندي ملاحظة عن تطبيق «SiteNeeds»:',
   // progetti
   projects:'📁 مشاريعي',newProj:'➕ مشروع جديد',projEmpty:'لا توجد مشاريع محفوظة بعد.',current:'الحالي',open:'فتح',dup:'نسخ',
   noName:'بدون اسم',saveT:'💾 حفظ المشروع',saveHint:'المشروع يُحفظ تلقائياً. اكتب اسماً لتجده بسهولة لاحقاً.',projName:'اسم المشروع',projNameP:'مثلاً: شقة Rossi – Via Appia',
@@ -66,7 +66,7 @@ var TXT={
   langIt:'Italiano',langAr:'Arabo',langBoth:'Entrambe',save:'Salva',saved:'Salvato ✓',cancel:'Annulla',del:'Elimina',
   clearQ:'Svuotare tutta questa richiesta?',
   copied:'Richiesta copiata ✓',pdfWait:'Preparazione PDF…',pdfOk:'PDF pronto ✓',pdfErr:'Impossibile creare il PDF',previewT:'Anteprima messaggio',
-  contact:'📞 Contatti',contactHint:'Hai trovato un errore o hai un\'idea? Scrivici e lo sistemiamo.',report:'Segnala un errore su WhatsApp',call:'Chiama',reportMsg:'Ciao, ho una segnalazione sull\'app «Richiesta materiale»:',
+  contact:'📞 Contatti',contactHint:'Hai trovato un errore o hai un\'idea? Scrivici e lo sistemiamo.',report:'Segnala un errore su WhatsApp',call:'Chiama',reportMsg:'Ciao, ho una segnalazione sull\'app «SiteNeeds»:',
   projects:'📁 I miei progetti',newProj:'➕ Nuovo progetto',projEmpty:'Nessun progetto salvato.',current:'attuale',open:'Apri',dup:'Duplica',
   noName:'Senza nome',saveT:'💾 Salva progetto',saveHint:'Il progetto si salva da solo. Dagli un nome per ritrovarlo facilmente.',projName:'Nome progetto',projNameP:'es. Appartamento Rossi – Via Appia',
   projSaved:'Progetto salvato ✓',delProjQ:'Eliminare definitivamente questo progetto?',opened:'Aperto:',dupDone:'Progetto duplicato',searchProj:'Cerca nei progetti…',lines:'voci',
@@ -299,8 +299,8 @@ function refreshCounts(){var n=view.tab==='price'?cur().quote.lines.length:cur()
 function applyLang(){
   var ar=settings.ui==='ar';
   document.documentElement.lang=settings.ui; document.documentElement.dir=ar?'rtl':'ltr';
-  document.title=T('title'); $('#ttl').textContent=(packId()!=='IT'&&packData()?packData().flag+' ':'')+T('title');
-  if(tradeId()!=='ele'){var sm=document.createElement('small');sm.textContent=tradeLabel();$('#ttl').appendChild(sm)}
+  document.title='SiteNeeds – '+T('title'); $('#ttl').textContent=(packId()!=='IT'&&packData()?packData().flag+' ':'')+'SiteNeeds';
+  var sm=document.createElement('small');sm.textContent=tradeId()!=='ele'?tradeLabel():T('title');$('#ttl').appendChild(sm);
   $('#btnLang').textContent='🌐 '+settings.ui.toUpperCase();
   $('#q').placeholder=T('search');
   $('#btnCalc').innerHTML='🧮 <span>'+L4(XT.calcBtn)+'</span>';$('#btnCalc').title=CT('calc');
@@ -343,16 +343,16 @@ var XT={
   prosHint:{ar:'أشخاص وشركات نثق بهم. اضغط على أي شخص لترى خدماته ورقمه.',it:'Persone e ditte di fiducia. Tocca una persona per vedere servizi e contatti.',en:'People and companies we trust. Tap someone to see services and contacts.',fr:'Personnes et entreprises de confiance. Touchez une personne pour voir ses services et contacts.'},
   services:{ar:'الخدمات',it:'Servizi',en:'Services',fr:'Services'},
   call:{ar:'📞 اتصال',it:'📞 Chiama',en:'📞 Call',fr:'📞 Appeler'},
-  waHello:{ar:'السلام عليكم، وجدت رقمك في تطبيق «طلب مواد».',it:'Buongiorno, ho trovato il suo contatto nell’app «Richiesta materiale».',en:'Hello, I found your contact in the «Material request» app.',fr:'Bonjour, j’ai trouvé votre contact dans l’application «Demande de matériel».'},
+  waHello:{ar:'السلام عليكم، وجدت رقمك في تطبيق «SiteNeeds».',it:'Buongiorno, ho trovato il suo contatto nell’app «SiteNeeds».',en:'Hello, I found your contact in the «SiteNeeds» app.',fr:'Bonjour, j’ai trouvé votre contact dans l’application «SiteNeeds».'},
   tradeT:{ar:'🛠️ المهنة',it:'🛠️ Mestiere',en:'🛠️ Trade',fr:'🛠️ Métier'},
   tradeHint:{ar:'كل مهنة لها قطعها وأسعارها وحاسباتها ومشاريعها الخاصة. لا شيء يختلط.',it:'Ogni mestiere ha materiali, prezzi, calcoli e progetti propri. Niente si mescola.',en:'Each trade has its own materials, prices, calculators and projects. Nothing gets mixed.',fr:'Chaque métier a ses matériaux, prix, calculs et projets. Rien ne se mélange.'},
   tradeOn:{ar:'✓ التطبيق الآن:',it:'✓ App ora in modalità:',en:'✓ App now in mode:',fr:'✓ Appli maintenant en mode :'},
   shareApp:{ar:'أرسل التطبيق لصديق',it:'Invia l’app a un amico',en:'Send the app to a friend',fr:'Envoyer l’appli à un ami'},
   shareAppSub:{ar:'واتساب، رسالة، أو أي تطبيق',it:'WhatsApp, SMS o altra app',en:'WhatsApp, SMS or any app',fr:'WhatsApp, SMS ou autre appli'},
-  shareAppMsg:{ar:'👷 جرّب تطبيق «طلب مواد»: تختار المواد التي تحتاجها في الورشة وترسلها للمدير بواتساب أو PDF في ثوانٍ. مجاني.',
-    it:'👷 Prova l’app «Richiesta materiale»: scegli il materiale che serve in cantiere e invialo al responsabile su WhatsApp o in PDF in pochi secondi. Gratis.',
-    en:'👷 Try the «Material request» app: pick the materials you need on site and send them to your manager by WhatsApp or PDF in seconds. Free.',
-    fr:'👷 Essaie l’appli «Demande de matériel» : choisis le matériel nécessaire sur le chantier et envoie-le au responsable par WhatsApp ou PDF en quelques secondes. Gratuit.'},
+  shareAppMsg:{ar:'👷 جرّب تطبيق «SiteNeeds»: تختار المواد التي تحتاجها في الورشة وترسلها للمدير بواتساب أو PDF في ثوانٍ. مجاني.',
+    it:'👷 Prova l’app «SiteNeeds»: scegli il materiale che serve in cantiere e invialo al responsabile su WhatsApp o in PDF in pochi secondi. Gratis.',
+    en:'👷 Try the «SiteNeeds» app: pick the materials you need on site and send them to your manager by WhatsApp or PDF in seconds. Free.',
+    fr:'👷 Essaie l’appli «SiteNeeds» : choisis le matériel nécessaire sur le chantier et envoie-le au responsable par WhatsApp ou PDF en quelques secondes. Gratuit.'},
   shareAndroid:{ar:'📱 أندرويد:',it:'📱 Android:',en:'📱 Android:',fr:'📱 Android :'},
   shareIos:{ar:'🍏 آيفون وآيباد:',it:'🍏 iPhone e iPad:',en:'🍏 iPhone and iPad:',fr:'🍏 iPhone et iPad :'},
   theme:{ar:'🎨 المظهر',it:'🎨 Aspetto',en:'🎨 Appearance',fr:'🎨 Apparence'},
@@ -1042,7 +1042,7 @@ function settingsSheet(){
    '<h3 style="margin-top:24px">'+T('contact')+'</h3><div class="mini">'+T('contactHint')+'</div>'+
    '<button class="contact" data-link="wa"><span class="ci" style="background:#1DA851">✉</span><div><b>'+T('report')+'</b><span class="ltr" style="display:block;text-align:start">'+CONTACT.phone+'</span></div></button>'+
    '<button class="btn ghost" style="width:100%;margin-top:16px" id="updChk">'+T('updCheck')+'</button>'+
-   '<div class="mini" style="text-align:center;margin-top:14px" dir="ltr">v'+appVersion()+'<br>© 2026 Richiesta materiale – tutti i diritti riservati</div>');
+   '<div class="mini" style="text-align:center;margin-top:14px" dir="ltr">v'+appVersion()+'<br>© 2026 SiteNeeds – tutti i diritti riservati</div>');
   sheet.querySelectorAll('[data-link]').forEach(function(b){b.onclick=function(){openContact(b.dataset.link)}});
   sheet.querySelectorAll('[data-pro]').forEach(function(b){b.onclick=function(){proSheet(b.dataset.pro)}});
   $('#updChk').onclick=function(){checkUpdate(true)};
@@ -1884,10 +1884,10 @@ var JOBS=[['dipendente','كهربائي أعمل عند شركة','Elettricista 
 var JOBS_G={dipendente:['أعمل عند شركة','Dipendente','Employee','Salarié'],proprio:['أعمل لحسابي','In proprio','Self-employed','Indépendant']};
 function jobName(j,tr){if(tr&&tr!=='ele'&&JOBS_G[j[0]]){var ix={ar:0,it:1,en:2,fr:3}[settings.ui];return JOBS_G[j[0]][ix==null?1:ix]}return j[{ar:1,it:2,en:3,fr:4}[settings.ui]||2]}
 var REG_T={
- ar:{title:'👋 أهلاً بك في «طلب مواد»',sub:'سجّل مرة واحدة فقط لتبدأ استعمال التطبيق.',name:'الاسم واللقب',country:'البلد الذي تعمل فيه',city:'المدينة (اختياري)',job:'عملك',go:'ابدأ ✓',need:'اكتب اسمك واختر البلد',priv:'نستعمل اسمك وبلدك فقط لمعرفة من يستعمل التطبيق وتحسينه. لا نبيعها ولا نعطيها لأحد.',other:'اكتب اسم البلد'},
- it:{title:'👋 Benvenuto in «Richiesta materiale»',sub:'Registrati una sola volta per iniziare a usare l\'app.',name:'Nome e cognome',country:'Paese in cui lavori',city:'Città (facoltativo)',job:'Il tuo lavoro',go:'Inizia ✓',need:'Scrivi il nome e scegli il Paese',priv:'Usiamo nome e Paese solo per sapere chi usa l\'app e migliorarla. Non li vendiamo né li cediamo a nessuno.',other:'Scrivi il Paese'},
- en:{title:'👋 Welcome to «Material request»',sub:'Register just once to start using the app.',name:'Full name',country:'Country where you work',city:'City (optional)',job:'Your job',go:'Start ✓',need:'Write your name and choose the country',priv:'We use your name and country only to know who uses the app and to improve it. We never sell or share them.',other:'Write the country'},
- fr:{title:'👋 Bienvenue dans «Demande de matériel»',sub:'Inscrivez-vous une seule fois pour utiliser l\'appli.',name:'Nom et prénom',country:'Pays où vous travaillez',city:'Ville (facultatif)',job:'Votre métier',go:'Commencer ✓',need:'Écrivez votre nom et choisissez le pays',priv:'Nous utilisons votre nom et votre pays uniquement pour savoir qui utilise l\'appli et l\'améliorer. Nous ne les vendons ni ne les cédons.',other:'Écrivez le pays'}
+ ar:{title:'👋 أهلاً بك في «SiteNeeds»',sub:'سجّل مرة واحدة فقط لتبدأ استعمال التطبيق.',name:'الاسم واللقب',country:'البلد الذي تعمل فيه',city:'المدينة (اختياري)',job:'عملك',go:'ابدأ ✓',need:'اكتب اسمك واختر البلد',priv:'نستعمل اسمك وبلدك فقط لمعرفة من يستعمل التطبيق وتحسينه. لا نبيعها ولا نعطيها لأحد.',other:'اكتب اسم البلد'},
+ it:{title:'👋 Benvenuto in «SiteNeeds»',sub:'Registrati una sola volta per iniziare a usare l\'app.',name:'Nome e cognome',country:'Paese in cui lavori',city:'Città (facoltativo)',job:'Il tuo lavoro',go:'Inizia ✓',need:'Scrivi il nome e scegli il Paese',priv:'Usiamo nome e Paese solo per sapere chi usa l\'app e migliorarla. Non li vendiamo né li cediamo a nessuno.',other:'Scrivi il Paese'},
+ en:{title:'👋 Welcome to «SiteNeeds»',sub:'Register just once to start using the app.',name:'Full name',country:'Country where you work',city:'City (optional)',job:'Your job',go:'Start ✓',need:'Write your name and choose the country',priv:'We use your name and country only to know who uses the app and to improve it. We never sell or share them.',other:'Write the country'},
+ fr:{title:'👋 Bienvenue dans «SiteNeeds»',sub:'Inscrivez-vous une seule fois pour utiliser l\'appli.',name:'Nom et prénom',country:'Pays où vous travaillez',city:'Ville (facultatif)',job:'Votre métier',go:'Commencer ✓',need:'Écrivez votre nom et choisissez le pays',priv:'Nous utilisons votre nom et votre pays uniquement pour savoir qui utilise l\'appli et l\'améliorer. Nous ne les vendons ni ne les cédons.',other:'Écrivez le pays'}
 };
 function regTxt(k){return (REG_T[settings.ui]||REG_T.it)[k]}
 function regPending(){return settings.reg&&!settings.reg.sent}

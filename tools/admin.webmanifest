@@ -1,5 +1,5 @@
 {
-  "name": "إدارة طلب مواد",
+  "name": "SiteNeeds Admin",
   "short_name": "إدارة",
   "start_url": "./admin.html",
   "scope": "./admin.html",

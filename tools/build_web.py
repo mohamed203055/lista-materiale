@@ -19,7 +19,7 @@ head = '''<meta name="theme-color" content="#1F4FD8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="طلب مواد">
+<meta name="apple-mobile-web-app-title" content="SiteNeeds">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
@@ -31,8 +31,8 @@ html = html.replace('<script src="app.js"></script>', '''<script src="app.js"></
 open(os.path.join(dst, 'index.html'), 'w').write(html)
 
 open(os.path.join(dst, 'manifest.webmanifest'), 'w').write('''{
-  "name": "طلب مواد – Richiesta materiale",
-  "short_name": "طلب مواد",
+  "name": "SiteNeeds – طلب مواد",
+  "short_name": "SiteNeeds",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
