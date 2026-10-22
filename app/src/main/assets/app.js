@@ -353,6 +353,8 @@ var XT={
   prosHint:{ar:'أشخاص وشركات نثق بهم. اضغط على أي شخص لترى خدماته ورقمه.',it:'Persone e ditte di fiducia. Tocca una persona per vedere servizi e contatti.',en:'People and companies we trust. Tap someone to see services and contacts.',fr:'Personnes et entreprises de confiance. Touchez une personne pour voir ses services et contacts.'},
   services:{ar:'الخدمات',it:'Servizi',en:'Services',fr:'Services'},
   call:{ar:'📞 اتصال',it:'📞 Chiama',en:'📞 Call',fr:'📞 Appeler'},
+  pwAsk:{ar:'طلب كلمة السر',it:'Richiedi la password',en:'Request the password',fr:'Demander le mot de passe'},
+  pwAskMsg:{ar:'السلام عليكم، من فضلك أريد كلمة السر لإعدادات تطبيق SiteNeeds.',it:'Buongiorno, per favore vorrei la password per le impostazioni dell’app SiteNeeds.',en:'Hello, please, I would like the password for the SiteNeeds app settings.',fr:'Bonjour, s’il vous plaît, je voudrais le mot de passe des réglages de l’application SiteNeeds.'},
   waHello:{ar:'السلام عليكم، وجدت رقمك في تطبيق «SiteNeeds».',it:'Buongiorno, ho trovato il suo contatto nell’app «SiteNeeds».',en:'Hello, I found your contact in the «SiteNeeds» app.',fr:'Bonjour, j’ai trouvé votre contact dans l’application «SiteNeeds».'},
   tradeT:{ar:'🛠️ المهنة',it:'🛠️ Mestiere',en:'🛠️ Trade',fr:'🛠️ Métier'},
   tradeHint:{ar:'كل مهنة لها قطعها وأسعارها وحاسباتها ومشاريعها الخاصة. لا شيء يختلط.',it:'Ogni mestiere ha materiali, prezzi, calcoli e progetti propri. Niente si mescola.',en:'Each trade has its own materials, prices, calculators and projects. Nothing gets mixed.',fr:'Chaque métier a ses matériaux, prix, calculs et projets. Rien ne se mélange.'},
@@ -491,7 +493,7 @@ function renderFavs(){
    (f.length?'<div class="list">'+f.map(itemRow).join('')+'</div>':'<div class="empty"><div class="big">☆</div>'+L4(XT.favEmpty)+'</div>');
 }
 function renderCats(){
-  return renderRecent()+'<div class="grid"><button class="cat" data-act="cat" data-v="__tpl"><span class="ic">📋</span><b>'+esc(L4(XT.tpls).replace('📋 ',''))+'</b><span>'+tplList().length+'</span></button><button class="cat" data-act="cat" data-v="__fav"><span class="ic">⭐</span><b>'+esc(L4(XT.favs).replace('⭐ ',''))+'</b><span>'+liveItems(favBox().fav).length+' '+T('items')+'</span></button>'+DB.cats.filter(function(c){return !c.hidden}).map(function(c){
+  return renderRecent()+'<div class="grid">'+(tplList().length?'<button class="cat" data-act="cat" data-v="__tpl"><span class="ic">📋</span><b>'+esc(L4(XT.tpls).replace('📋 ',''))+'</b><span>'+tplList().length+'</span></button>':'')+'<button class="cat" data-act="cat" data-v="__fav"><span class="ic">⭐</span><b>'+esc(L4(XT.favs).replace('⭐ ',''))+'</b><span>'+liveItems(favBox().fav).length+' '+T('items')+'</span></button>'+DB.cats.filter(function(c){return !c.hidden}).map(function(c){
     return '<button class="cat" data-act="cat" data-v="'+c.id+'"><span class="ic">'+icH(c.ic,'📦')+'</span><b>'+esc(N(c))+'</b><span>'+visibleItems(c).length+' '+T('items')+'</span></button>'}).join('')+
    '<button class="cat" data-act="custom"><span class="ic">➕</span><b>'+T('custom')+'</b></button></div>'+
    (prosList().length?'<button class="contact prosbtn" data-act="pros"><span class="ci" style="background:#F5A400">🤝</span><div><b>'+L4(XT.pros).replace('🤝 ','')+' ('+prosList().length+')</b><span>'+L4(XT.prosHint)+'</span></div></button>':'');
@@ -531,7 +533,7 @@ function chkCount(){var p=cur(),n=Object.keys(p.check||{}).filter(function(k){re
 function hoursCount(){var t=(cur().hours||[]).reduce(function(a,h){return a+(+h.h||0)},0);return t?'('+n2(t,1)+' h)':''}
 function renderCart(){
   var L=cur().lines;
-  if(!L.length) return '<div class="empty"><div class="big">🧺</div>'+T('emptyCart')+'</div><div class="row2" style="margin-top:14px"><button class="btn ghost" data-act="check">✅ '+CT('check')+' '+chkCount()+'</button><button class="btn ghost" data-act="hours">⏱️ '+CT('hours')+' '+hoursCount()+'</button></div>';
+  if(!L.length) return '<div class="empty"><div class="big">🧺</div>'+T('emptyCart')+'</div>';
   var groups={}, order=[];
   L.forEach(function(l,i){var g=l.cat||'x';if(!groups[g]){groups[g]=[];order.push(g)}groups[g].push(i)});
   order.sort(function(a,b){return catIndex(a)-catIndex(b)});
@@ -548,11 +550,7 @@ function renderCart(){
     h+='</div>';
   });
   h+='<div class="mini" style="text-align:center;margin-top:8px">👆 '+L4(XT.pressHint)+'</div>';
-  var gotN=L.filter(function(l){return l.got}).length;
-  h+='<button class="btn ghost arrbtn" data-act="arrived">'+L4(XT.arrived)+(gotN?' <span class="badge">'+gotN+'/'+L.length+'</span>':'')+'</button>';
-  h+='<div class="row2" style="margin-top:8px"><button class="btn ghost" data-act="tplsave">'+L4(XT.tplSave)+'</button><button class="btn ghost" data-act="tomate">'+L4(XT.toMate).replace(' المشروع','').replace(' il progetto','').replace(' project','').replace(' le projet','')+'</button></div>';
-  h+='<div class="row2" style="margin-top:14px"><button class="btn ghost" data-act="check">✅ '+CT('check')+' '+chkCount()+'</button><button class="btn ghost" data-act="hours">⏱️ '+CT('hours')+' '+hoursCount()+'</button></div>';
-  h+='<div class="row2" style="margin-top:8px"><button class="btn ghost" data-act="preview">'+T('preview')+'</button><button class="btn ghost" data-act="clear" style="color:var(--danger)">'+T('clear')+'</button></div>';
+  h+='<div class="row2" style="margin-top:12px"><button class="btn ghost" data-act="tomate">'+L4(XT.toMate).replace(' المشروع','').replace(' il progetto','').replace(' project','').replace(' le projet','')+'</button><button class="btn ghost" data-act="preview">'+T('preview')+'</button></div>';
   return h;
 }
 
@@ -1159,7 +1157,9 @@ var DEFAULT_PW_HASH='6e0fb2592c99bf8e5c4ee0cdc14d58a45761c844c306464aae2424bb1d6
 function pwHash(p){return sha256('lm-salt:'+p)}
 function checkPw(p){return pwHash(p)===(settings.pwHash||DEFAULT_PW_HASH)}
 function pwSheet(){
-  openSheet('<h2>'+T('admin')+'</h2><div class="field"><label>'+T('pw')+'</label><input id="pw" type="password" class="ltr" autocomplete="off"></div><button class="btn main" id="pwok">'+T('enter')+'</button>');
+  openSheet('<h2>'+T('admin')+'</h2><div class="field"><label>'+T('pw')+'</label><input id="pw" type="password" class="ltr" autocomplete="off"></div><button class="btn main" id="pwok">'+T('enter')+'</button>'+
+   '<button class="btn pwask" id="pwAsk"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 20 3"/><path d="m16 7 3 3"/><path d="m18.5 4.5 2 2"/></svg><span>'+esc(L4(XT.pwAsk))+'</span></button>');
+  $('#pwAsk').onclick=function(){ping('/usa/richiesta-password','Richiesta password');var nm=settings.reg&&settings.reg.nome?settings.reg.nome:'';var t=L4(XT.pwAskMsg)+(nm?'\n— '+nm:'');if(A&&A.whatsapp)A.whatsapp(t,CONTACT.num);else openUrl('https://wa.me/'+CONTACT.num+'?text='+encodeURIComponent(t))};
   var f=$('#pw'); setTimeout(function(){f.focus()},250);
   function go(){if(checkPw(f.value)){adminOK=true;closeSheet();enterAdmin()}else{toast(T('pwWrong'));f.value=''}}
   $('#pwok').onclick=go; f.onkeydown=function(e){if(e.key==='Enter')go()};
