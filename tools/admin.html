@@ -135,7 +135,10 @@ details.pros>summary::-webkit-details-marker{display:none}
       </div>
       <div id="uCountries" class="mini" style="line-height:1.9;margin:8px 0"></div>
       <input id="uQ" placeholder="🔍 ابحث بالاسم أو البلد أو المدينة…">
-      <div id="uList" style="margin-top:8px"></div>
+      <details class="pros" id="uBox" style="margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:12px">
+        <summary style="font-size:15.5px"><span>📋 قائمة كل المسجّلين (<span id="uCnt">0</span>)</span><span class="mini">اضغط للفتح ▾</span></summary>
+        <div id="uList" style="margin-top:8px"></div>
+      </details>
       <button class="b-ghost" id="btnUsers">🔄 تحديث القائمة</button>
       <button class="b-ghost" id="btnUnlink" style="font-size:13px">تغيير رابط السكربت أو المفتاح</button>
     </div>
@@ -273,6 +276,8 @@ function usersShow(){
   $('uCountries').innerHTML='🌍 '+Object.keys(by).sort(function(a,b){return by[b]-by[a]}).map(function(c){return '<b>'+esc(c)+'</b> '+by[c]}).join(' · ');
   var list=USERS.filter(function(u){return !q||[u.nome,u.paese,u.citta,u.codice].join(' ').toLowerCase().indexOf(q)>=0})
     .sort(function(a,b){return new Date(b.ultimo)-new Date(a.ultimo)});
+  $('uCnt').textContent=q?list.length+' / '+USERS.length:USERS.length;
+  if(q)$('uBox').open=true;
   $('uList').innerHTML=list.map(function(u){
     return '<div style="border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px">'+
      '<div style="display:flex;justify-content:space-between;gap:8px"><b>'+esc(u.nome)+'</b><span class="mini" dir="ltr">'+esc(u.codice)+'</span></div>'+
