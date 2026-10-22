@@ -33,7 +33,7 @@ var TXT={
   noName:'بدون اسم',saveT:'💾 حفظ المشروع',saveHint:'المشروع يُحفظ تلقائياً. اكتب اسماً لتجده بسهولة لاحقاً.',projName:'اسم المشروع',projNameP:'مثلاً: شقة Rossi – Via Appia',
   projSaved:'حُفظ المشروع ✓',delProjQ:'حذف هذا المشروع نهائياً؟',opened:'فُتح المشروع:',dupDone:'تم نسخ المشروع',searchProj:'ابحث في المشاريع…',lines:'مادة',
   // admin
-  admin:'🔒 الإدارة',adminSub:'تعديل المواد والفئات والكيتات والصور',pw:'كلمة السر',pwWrong:'كلمة السر غير صحيحة',enter:'دخول',exit:'خروج',
+  admin:'🔒 الإدارة',adminSub:'تعديل المواد والفئات والأسعار والصور',pw:'كلمة السر',pwWrong:'كلمة السر غير صحيحة',enter:'دخول',exit:'خروج',
   admCats:'الفئات والمواد',admCatsSub:'إضافة، تعديل، إخفاء، ترتيب، صور',admKits:'الكيتات',admKitsSub:'إنشاء وتعديل الكيتات',
   admBackup:'نسخة احتياطية',admBackupSub:'تصدير واستيراد كل التعديلات',admPw:'تغيير كلمة السر',admReset:'استرجاع القائمة الأصلية',
   newCat:'➕ فئة جديدة',newItem:'➕ مادة جديدة',newKit:'➕ كيت جديد',editCat:'تعديل الفئة',editItem:'تعديل المادة',editKit:'تعديل الكيت',
@@ -70,7 +70,7 @@ var TXT={
   projects:'📁 I miei progetti',newProj:'➕ Nuovo progetto',projEmpty:'Nessun progetto salvato.',current:'attuale',open:'Apri',dup:'Duplica',
   noName:'Senza nome',saveT:'💾 Salva progetto',saveHint:'Il progetto si salva da solo. Dagli un nome per ritrovarlo facilmente.',projName:'Nome progetto',projNameP:'es. Appartamento Rossi – Via Appia',
   projSaved:'Progetto salvato ✓',delProjQ:'Eliminare definitivamente questo progetto?',opened:'Aperto:',dupDone:'Progetto duplicato',searchProj:'Cerca nei progetti…',lines:'voci',
-  admin:'🔒 Amministrazione',adminSub:'Modifica materiali, categorie, kit e foto',pw:'Password',pwWrong:'Password errata',enter:'Entra',exit:'Esci',
+  admin:'🔒 Amministrazione',adminSub:'Modifica materiali, categorie, prezzi e foto',pw:'Password',pwWrong:'Password errata',enter:'Entra',exit:'Esci',
   admCats:'Categorie e materiali',admCatsSub:'Aggiungi, modifica, nascondi, ordina, foto',admKits:'Kit',admKitsSub:'Crea e modifica i kit',
   admBackup:'Backup',admBackupSub:'Esporta e importa tutte le modifiche',admPw:'Cambia password',admReset:'Ripristina elenco originale',
   newCat:'➕ Nuova categoria',newItem:'➕ Nuovo articolo',newKit:'➕ Nuovo kit',editCat:'Modifica categoria',editItem:'Modifica articolo',editKit:'Modifica kit',
@@ -401,6 +401,16 @@ var XT={
   logo:{ar:'🖼️ شعار الشركة (يظهر في PDF)',it:'🖼️ Logo ditta (compare nel PDF)',en:'🖼️ Company logo (shown in the PDF)',fr:'🖼️ Logo de l’entreprise (dans le PDF)'},
   logoAdd:{ar:'اختر صورة',it:'Scegli immagine',en:'Choose image',fr:'Choisir une image'},
   myPhone:{ar:'هاتفك (يظهر في عرض السعر، اختياري)',it:'Il tuo telefono (nel preventivo, facoltativo)',en:'Your phone (on the quote, optional)',fr:'Votre téléphone (sur le devis, facultatif)'},
+  secProfile:{ar:'👤 الملف المهني',it:'👤 Profilo professionale',en:'👤 Professional profile',fr:'👤 Profil professionnel'},
+  secPrefs:{ar:'🎨 تفضيلات التطبيق',it:'🎨 Preferenze dell’app',en:'🎨 App preferences',fr:'🎨 Préférences de l’appli'},
+  secData:{ar:'💾 البيانات والنسخ الاحتياطي',it:'💾 Dati e copia di sicurezza',en:'💾 Data and backup',fr:'💾 Données et sauvegarde'},
+  secAdmin:{ar:'🗂️ الكتالوج والإدارة',it:'🗂️ Catalogo e gestione',en:'🗂️ Catalogue and management',fr:'🗂️ Catalogue et gestion'},
+  secHelp:{ar:'💬 المساعدة والتواصل',it:'💬 Aiuto e contatti',en:'💬 Help and contact',fr:'💬 Aide et contact'},
+  editProfile:{ar:'✏️ تعديل الملف المهني',it:'✏️ Modifica profilo',en:'✏️ Edit profile',fr:'✏️ Modifier le profil'},
+  notSet:{ar:'لم يُكتب بعد',it:'non indicato',en:'not set',fr:'non renseigné'},
+  mgr:{ar:'المدير:',it:'Responsabile:',en:'Manager:',fr:'Responsable :'},
+  uiHint:{ar:'تغيّر لغة القوائم والأزرار في التطبيق.',it:'Cambia la lingua di menu e pulsanti dell’app.',en:'Changes the language of the app’s menus and buttons.',fr:'Change la langue des menus et boutons de l’appli.'},
+  outHint:{ar:'لغة الرسائل وملفات PDF التي ترسلها للمدير أو للزبون.',it:'Lingua dei messaggi e dei PDF che invii al responsabile o al cliente.',en:'Language of the messages and PDFs you send to the manager or client.',fr:'Langue des messages et PDF envoyés au responsable ou au client.'},
   calcBtn:{ar:'حاسبة',it:'Calcoli',en:'Calc',fr:'Calculs'},
   searchCl:{ar:'ابحث عن زبون…',it:'Cerca un cliente…',en:'Search a client…',fr:'Rechercher un client…'},
   dupLine:{ar:'⧉ تكرار السطر',it:'⧉ Duplica riga',en:'⧉ Duplicate line',fr:'⧉ Dupliquer la ligne'},
@@ -483,7 +493,8 @@ function renderFavs(){
 function renderCats(){
   return renderRecent()+'<div class="grid"><button class="cat" data-act="cat" data-v="__tpl"><span class="ic">📋</span><b>'+esc(L4(XT.tpls).replace('📋 ',''))+'</b><span>'+tplList().length+'</span></button><button class="cat" data-act="cat" data-v="__fav"><span class="ic">⭐</span><b>'+esc(L4(XT.favs).replace('⭐ ',''))+'</b><span>'+liveItems(favBox().fav).length+' '+T('items')+'</span></button>'+DB.cats.filter(function(c){return !c.hidden}).map(function(c){
     return '<button class="cat" data-act="cat" data-v="'+c.id+'"><span class="ic">'+icH(c.ic,'📦')+'</span><b>'+esc(N(c))+'</b><span>'+visibleItems(c).length+' '+T('items')+'</span></button>'}).join('')+
-   '<button class="cat" data-act="custom"><span class="ic">➕</span><b>'+T('custom')+'</b></button></div>';
+   '<button class="cat" data-act="custom"><span class="ic">➕</span><b>'+T('custom')+'</b></button></div>'+
+   (prosList().length?'<button class="contact prosbtn" data-act="pros"><span class="ci" style="background:#F5A400">🤝</span><div><b>'+L4(XT.pros).replace('🤝 ','')+' ('+prosList().length+')</b><span>'+L4(XT.prosHint)+'</span></div></button>':'');
 }
 function itemRow(it){
   var h=haveQty(it);
@@ -1041,48 +1052,81 @@ function shareApp(){
   if(A&&A.shareText)A.shareText(t);else if(navigator.share)navigator.share({text:t}).catch(function(){});else openUrl('https://wa.me/?text='+encodeURIComponent(t));
 }
 function settingsSheet(){
-  var ui=settings.ui, out=settings.out;
-  openSheet('<h2>'+T('settings')+'</h2>'+
-   '<h3>'+CT('country')+'</h3>'+segChips('cc',packId(),packList().map(function(p){return [p.id,p.flag+' '+(p.name[settings.ui]||p.name.it)]}))+'<div class="mini">'+CT('countryHint')+'</div>'+
-   '<h3>'+L4(XT.tradeT)+'</h3>'+segChips('tr',tradeId(),tradeList().map(function(t){return [t[0],t[1]+' '+(t[2][settings.ui]||t[2].it)]}))+'<div class="mini">'+L4(XT.tradeHint)+'</div>'+
-   '<h3>'+L4(XT.theme)+'</h3>'+segChips('th',settings.theme||'light',[['light',L4(XT.thLight)],['dark',L4(XT.thDark)],['auto',L4(XT.thAuto)]])+
-   '<h3>'+T('uiLang')+'</h3>'+segChips('ui',ui,LANGS)+
-   '<h3>'+T('outLang')+'</h3>'+segChips('out',out,[['it',T('langIt')],['ar',T('langAr')],['en',T('langEn')],['fr',T('langFr')],['both',T('langBoth')]])+
-   '<div class="field"><label>'+T('tecnico')+'</label><input id="st" value="'+esc(settings.tecnico)+'"></div>'+
-   '<div class="field"><label>'+T('ditta')+'</label><input id="sd" value="'+esc(settings.ditta)+'" placeholder="'+T('dittaP')+'"></div>'+
-   '<div class="field"><label>'+L4(XT.logo)+'</label><div class="logorow">'+(settings.logo?'<img src="'+settings.logo+'" alt="">':'')+'<button class="btn ghost" id="slogo">'+L4(XT.logoAdd)+'</button>'+(settings.logo?'<button class="del" id="slogoDel">🗑</button>':'')+'</div></div>'+
-   '<div class="field"><label>'+L4(XT.myPhone)+'</label><input id="sph" class="ltr" inputmode="tel" value="'+esc(settings.myPhone||'')+'" placeholder="+39 3xx xxx xxxx"></div>'+
-   '<div class="field"><label>'+T('waNum')+'</label><input id="sw" class="ltr" inputmode="tel" value="'+esc(settings.waNum)+'" placeholder="'+T('waNumP')+'"></div>'+
-   '<div class="mini">'+T('waHint')+'</div>'+
-   '<button class="btn main" id="ssave">'+T('save')+'</button>'+
-   '<div style="margin-top:22px"></div>'+
-   '<div class="mini" style="margin-top:6px">'+T('yourId')+': <b dir="ltr">'+esc(anonId())+'</b>'+(settings.reg?' · '+esc(settings.reg.nome)+' ('+esc(settings.reg.paese)+')':'')+'</div>'+
-   '<button class="contact" style="margin-top:16px" id="goAdmin"><span class="ci" style="background:#16192B">🔒</span><div><b>'+T('admin').replace('🔒 ','')+'</b><span>'+T('adminSub')+'</span></div></button>'+
-   prosSection()+
-   '<h3 style="margin-top:24px">'+L4(XT.bk)+'</h3><div class="mini">'+L4(XT.bkHint)+'</div><div class="row2" style="margin-top:8px"><button class="btn ghost" id="bkSave">'+L4(XT.bkSave)+'</button><button class="btn ghost" id="bkOpen">'+L4(XT.bkOpen)+'</button></div>'+
-   '<button class="contact" style="margin-top:16px" id="shareApp"><span class="ci" style="background:var(--brand)">📤</span><div><b>'+L4(XT.shareApp)+'</b><span>'+L4(XT.shareAppSub)+'</span></div></button>'+
-   '<h3 style="margin-top:24px">'+T('contact')+'</h3><div class="mini">'+T('contactHint')+'</div>'+
-   '<button class="contact" data-link="wa"><span class="ci" style="background:#1DA851">✉</span><div><b>'+T('report')+'</b><span class="ltr" style="display:block;text-align:start">'+CONTACT.phone+'</span></div></button>'+
-   '<button class="btn ghost" style="width:100%;margin-top:16px" id="updChk">'+T('updCheck')+'</button>'+
-   '<div class="mini" style="text-align:center;margin-top:14px" dir="ltr">v'+appVersion()+'<br>© 2026 SiteNeeds – tutti i diritti riservati</div>');
-  sheet.querySelectorAll('[data-link]').forEach(function(b){b.onclick=function(){openContact(b.dataset.link)}});
-  sheet.querySelectorAll('[data-pro]').forEach(function(b){b.onclick=function(){proSheet(b.dataset.pro)}});
+  var cty=(packList().find(function(p){return p.id===packId()})||packList()[0]);
+  var langName=(LANGS.find(function(l){return l[0]===settings.ui})||LANGS[0])[1];
+  var outName={it:T('langIt'),ar:T('langAr'),en:T('langEn'),fr:T('langFr'),both:T('langBoth')}[settings.out]||'';
+  var thName={light:L4(XT.thLight),dark:L4(XT.thDark),auto:L4(XT.thAuto)}[settings.theme||'light'];
+  function mrow(id,ic,bg,title,sub){return '<button class="mrow" id="'+id+'"><span class="ci" style="background:'+bg+'">'+ic+'</span><div><b>'+title+'</b>'+(sub?'<span dir="auto">'+sub+'</span>':'')+'</div><i>›</i></button>'}
+  openSheet('<h2>'+T('settings')+'</h2><div class="mlist">'+
+   mrow('mProf','👤','var(--brand)',L4(XT.secProfile).replace(/^\S+\s/,''),esc([cty.flag+' '+tradeLabel(),settings.tecnico,settings.ditta].filter(Boolean).join(' · ')))+
+   mrow('mLang','🌐','#0EA5A4',T('uiLang'),esc(langName+' · 📄 '+outName))+
+   mrow('mTheme','🎨','#8B5CF6',L4(XT.theme).replace(/^\S+\s/,''),thName)+
+   mrow('mData','💾','#64748B',L4(XT.secData).replace(/^\S+\s/,''),L4(XT.bkHint))+
+   '</div><div class="mlist">'+
+   mrow('goAdmin','🔒','var(--dark)',T('admin').replace('🔒 ',''),T('adminSub'))+
+   '</div><div class="mlist">'+
+   mrow('shareApp','📤','var(--brand)',L4(XT.shareApp),'')+
+   mrow('mBug','✉','#1DA851',T('report'),'')+
+   mrow('updChk','🔄','#F59E0B',T('updCheck').replace(/^\S+\s/,''),'')+
+   '</div><div class="mini" style="text-align:center;margin-top:14px" dir="ltr">v'+appVersion()+' · '+esc(anonId())+'<br>© 2026 SiteNeeds</div>');
+  $('#mProf').onclick=function(){profileSheet()};
+  $('#mLang').onclick=langSheet; $('#mTheme').onclick=themeSheet; $('#mData').onclick=dataSheet;
+  $('#mBug').onclick=function(){openContact('wa')};
   $('#updChk').onclick=function(){checkUpdate(true)};
   $('#shareApp').onclick=shareApp;
+  $('#goAdmin').onclick=function(){if(adminOK){closeSheet();enterAdmin()}else pwSheet()};
+}
+function backTo(){return '<button class="sback" id="sBack">'+(settings.ui==='ar'?'→ ':'← ')+T('settings').replace(/^\S+\s/,'')+'</button>'}
+function langSheet(){
+  openSheet(backTo()+'<h2>🌐 '+T('uiLang')+'</h2>'+segChips('ui',settings.ui,LANGS)+'<div class="mini">'+L4(XT.uiHint)+'</div>'+
+   '<h3>📄 '+T('outLang')+'</h3>'+segChips('out',settings.out,[['it',T('langIt')],['ar',T('langAr')],['en',T('langEn')],['fr',T('langFr')],['both',T('langBoth')]])+'<div class="mini">'+L4(XT.outHint)+'</div>');
+  $('#sBack').onclick=settingsSheet;
+  sheet.querySelectorAll('[data-ui]').forEach(function(b){b.onclick=function(){settings.ui=b.dataset.ui;saveSettings();applyLang();render();langSheet();toast(T('saved'))}});
+  sheet.querySelectorAll('[data-out]').forEach(function(b){b.onclick=function(){settings.out=b.dataset.out;saveSettings();langSheet();toast(T('saved'))}});
+}
+function themeSheet(){
+  openSheet(backTo()+'<h2>'+L4(XT.theme)+'</h2>'+segChips('th',settings.theme||'light',[['light',L4(XT.thLight)],['dark',L4(XT.thDark)],['auto',L4(XT.thAuto)]]));
+  $('#sBack').onclick=settingsSheet;
+  sheet.querySelectorAll('[data-th]').forEach(function(b){b.onclick=function(){settings.theme=b.dataset.th;saveSettings();applyTheme();themeSheet()}});
+}
+function dataSheet(){
+  openSheet(backTo()+'<h2>'+L4(XT.secData)+'</h2><div class="mini">'+L4(XT.bkHint)+'</div><div class="row2" style="margin-top:12px"><button class="btn ghost" id="bkSave">'+L4(XT.bkSave)+'</button><button class="btn ghost" id="bkOpen">'+L4(XT.bkOpen)+'</button></div>');
+  $('#sBack').onclick=settingsSheet;
   $('#bkSave').onclick=userBackup; $('#bkOpen').onclick=openUserFile;
-  $('#slogo').onclick=function(){store();pickPhoto(function(d){
-    var im=new Image();im.onload=function(){var M=300,k=Math.min(1,M/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);var g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);g.drawImage(im,0,0,cv.width,cv.height);
-      settings.logo=cv.toDataURL('image/jpeg',0.85);saveSettings();settingsSheet();sheet.scrollTop=300};im.src=d})};
-  var ld=$('#slogoDel'); if(ld) ld.onclick=function(){store();settings.logo='';saveSettings();settingsSheet();sheet.scrollTop=300};
-  var cc=packId(), tr=tradeId();
-  sheet.querySelectorAll('[data-th]').forEach(function(b){b.onclick=function(){settings.theme=b.dataset.th;saveSettings();applyTheme();sheet.querySelectorAll('[data-th]').forEach(function(x){x.classList.toggle('on',x.dataset.th===settings.theme)})}});
+}
+// profilo professionale: modifica con «Salva» sempre visibile in basso
+function profileSheet(keep){
+  var cc=(keep&&keep.cc)||packId(), tr=(keep&&keep.tr)||tradeId(), k=keep||{};
+  function val(x,d){return k[x]!=null?k[x]:d}
+  openSheet(backTo()+'<h2>'+L4(XT.editProfile)+'</h2>'+
+   '<h3>'+CT('country')+'</h3>'+segChips('cc',cc,packList().map(function(p){return [p.id,p.flag+' '+(p.name[settings.ui]||p.name.it)]}))+'<div class="mini">'+CT('countryHint')+'</div>'+
+   '<h3>'+L4(XT.tradeT)+'</h3>'+segChips('tr',tr,tradeList().map(function(t){return [t[0],t[1]+' '+(t[2][settings.ui]||t[2].it)]}))+'<div class="mini">'+L4(XT.tradeHint)+'</div>'+
+   '<div class="field"><label>'+T('tecnico')+'</label><input id="st" value="'+esc(val('st',settings.tecnico))+'"></div>'+
+   '<div class="field"><label>'+T('ditta')+'</label><input id="sd" value="'+esc(val('sd',settings.ditta))+'" placeholder="'+T('dittaP')+'"></div>'+
+   '<div class="field"><label>'+L4(XT.logo)+'</label><div class="logorow">'+(settings.logo?'<img src="'+settings.logo+'" alt="">':'')+'<button class="btn ghost" id="slogo">'+L4(XT.logoAdd)+'</button>'+(settings.logo?'<button class="del" id="slogoDel">🗑</button>':'')+'</div></div>'+
+   '<div class="field"><label>'+L4(XT.myPhone)+'</label><input id="sph" class="ltr" inputmode="tel" value="'+esc(val('sph',settings.myPhone||''))+'" placeholder="+39 3xx xxx xxxx"></div>'+
+   '<div class="field"><label>'+T('waNum')+'</label><input id="sw" class="ltr" inputmode="tel" value="'+esc(val('sw',settings.waNum))+'" placeholder="'+T('waNumP')+'"></div>'+
+   '<div class="mini">'+T('waHint')+'</div>'+
+   '<div class="ssave"><button class="btn main" id="ssave" style="margin:0">'+T('save')+'</button></div>');
+  $('#sBack').onclick=settingsSheet;
   sheet.querySelectorAll('[data-tr]').forEach(function(b){b.onclick=function(){tr=b.dataset.tr;sheet.querySelectorAll('[data-tr]').forEach(function(x){x.classList.toggle('on',x.dataset.tr===tr)})}});
   sheet.querySelectorAll('[data-cc]').forEach(function(b){b.onclick=function(){cc=b.dataset.cc;sheet.querySelectorAll('[data-cc]').forEach(function(x){x.classList.toggle('on',x.dataset.cc===cc)})}});
-  sheet.querySelectorAll('[data-ui]').forEach(function(b){b.onclick=function(){ui=b.dataset.ui;sheet.querySelectorAll('[data-ui]').forEach(function(x){x.classList.toggle('on',x.dataset.ui===ui)})}});
-  sheet.querySelectorAll('[data-out]').forEach(function(b){b.onclick=function(){out=b.dataset.out;sheet.querySelectorAll('[data-out]').forEach(function(x){x.classList.toggle('on',x.dataset.out===out)})}});
-  function store(){settings.statsOff=false;settings.myPhone=$('#sph').value.trim();settings.tecnico=$('#st').value.trim();settings.ditta=$('#sd').value.trim();settings.waNum=$('#sw').value.trim();settings.ui=ui;settings.out=out;saveSettings()}
-  $('#ssave').onclick=function(){var ch=cc!==packId(),tch=tr!==tradeId();store();if(ch){setCountry(cc);view.cat=null}if(tch)setTrade(tr);closeSheet();applyLang();render();window.scrollTo(0,0);toast(tch?L4(XT.tradeOn)+' '+tradeLabel():T('saved'))};
-  $('#goAdmin').onclick=function(){store();applyLang();if(adminOK){closeSheet();enterAdmin()}else pwSheet()};
+  function typed(){return {cc:cc,tr:tr,st:$('#st').value,sd:$('#sd').value,sph:$('#sph').value,sw:$('#sw').value}}
+  $('#slogo').onclick=function(){var t=typed();pickPhoto(function(d){
+    var im=new Image();im.onload=function(){var M=300,q=Math.min(1,M/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=Math.round(im.width*q);cv.height=Math.round(im.height*q);var g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);g.drawImage(im,0,0,cv.width,cv.height);
+      settings.logo=cv.toDataURL('image/jpeg',0.85);saveSettings();profileSheet(t);sheet.scrollTop=300};im.src=d})};
+  var ld=$('#slogoDel'); if(ld) ld.onclick=function(){var t=typed();settings.logo='';saveSettings();profileSheet(t);sheet.scrollTop=300};
+  $('#ssave').onclick=function(){
+    var ch=cc!==packId(),tch=tr!==tradeId();
+    settings.statsOff=false;settings.tecnico=$('#st').value.trim();settings.ditta=$('#sd').value.trim();settings.myPhone=$('#sph').value.trim();settings.waNum=$('#sw').value.trim();saveSettings();
+    if(ch){setCountry(cc);view.cat=null} if(tch)setTrade(tr);
+    closeSheet();applyLang();render();window.scrollTo(0,0);toast(tch?L4(XT.tradeOn)+' '+tradeLabel():T('saved'));
+  };
+}
+// professionisti consigliati: pagina a parte (non più nelle impostazioni)
+function prosPage(){
+  openSheet('<h2>'+L4(XT.pros)+'</h2><div class="mini">'+L4(XT.prosHint)+'</div>'+prosSection().replace(/^<h3[^>]*>.*?<\/h3><div class="mini">.*?<\/div>/,''));
+  sheet.querySelectorAll('[data-pro]').forEach(function(b){b.onclick=function(){proSheet(b.dataset.pro)}});
 }
 
 /* =====================================================================
@@ -1622,6 +1666,7 @@ document.addEventListener('click',function(e){
    case 'back': view.cat=null;render();break;
    case 'item': itemSheet(IBY[v]);break;
    case 'arrived': arrivedSheet();break;
+   case 'pros': prosPage();break;
    case 'tplsave': tplSaveSheet();break;
    case 'tpluse': useTpl(v);break;
    case 'tpldel': confirmSheet(L4(XT.tplDelQ),T('del'),function(){TPL[profKey()]=tplList().filter(function(t){return t.id!==v});saveTpl();render()});break;
