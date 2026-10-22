@@ -893,7 +893,11 @@ function saveSheet(){
    FOGLI (sheet)
    ===================================================================== */
 var sheet=$('#sheet'), bg=$('#sheetBg'), sheetOpen=false;
-function openSheet(html){sheet.innerHTML='<div class="grab"></div>'+html;sheet.scrollTop=0;bg.style.display='block';requestAnimationFrame(function(){sheet.classList.add('open')});sheetOpen=true}
+// ogni finestra ha in alto un pulsante ✕ (o ← per tornare alla pagina precedente), sempre visibile
+var SHEET_BACK=null;
+function openSheet(html){var back=SHEET_BACK;SHEET_BACK=null;
+  sheet.innerHTML='<div class="shead"><div class="grab"></div>'+(back?'<button class="sbk" id="sBk">'+(settings.ui==='ar'?'→':'←')+'</button>':'')+'<button class="sx" id="sX" aria-label="✕">✕</button></div>'+html;
+  sheet.querySelector('#sX').onclick=closeSheet; if(back) sheet.querySelector('#sBk').onclick=back;sheet.scrollTop=0;bg.style.display='block';requestAnimationFrame(function(){sheet.classList.add('open')});sheetOpen=true}
 function closeSheet(){sheet.classList.remove('open');bg.style.display='none';sheetOpen=false;if(document.activeElement)document.activeElement.blur();var f=sheet._onclose;sheet._onclose=null;if(f)f()}
 var sheetLocked=false;
 bg.onclick=function(){if(!sheetLocked)closeSheet()};
@@ -1076,22 +1080,19 @@ function settingsSheet(){
   $('#shareApp').onclick=shareApp;
   $('#goAdmin').onclick=function(){if(adminOK){closeSheet();enterAdmin()}else pwSheet()};
 }
-function backTo(){return '<button class="sback" id="sBack">'+(settings.ui==='ar'?'→ ':'← ')+T('settings').replace(/^\S+\s/,'')+'</button>'}
+function backTo(){SHEET_BACK=settingsSheet;return ''}
 function langSheet(){
   openSheet(backTo()+'<h2>🌐 '+T('uiLang')+'</h2>'+segChips('ui',settings.ui,LANGS)+'<div class="mini">'+L4(XT.uiHint)+'</div>'+
    '<h3>📄 '+T('outLang')+'</h3>'+segChips('out',settings.out,[['it',T('langIt')],['ar',T('langAr')],['en',T('langEn')],['fr',T('langFr')],['both',T('langBoth')]])+'<div class="mini">'+L4(XT.outHint)+'</div>');
-  $('#sBack').onclick=settingsSheet;
   sheet.querySelectorAll('[data-ui]').forEach(function(b){b.onclick=function(){settings.ui=b.dataset.ui;saveSettings();applyLang();render();langSheet();toast(T('saved'))}});
   sheet.querySelectorAll('[data-out]').forEach(function(b){b.onclick=function(){settings.out=b.dataset.out;saveSettings();langSheet();toast(T('saved'))}});
 }
 function themeSheet(){
   openSheet(backTo()+'<h2>'+L4(XT.theme)+'</h2>'+segChips('th',settings.theme||'auto',[['light',L4(XT.thLight)],['dark',L4(XT.thDark)],['auto',L4(XT.thAuto)]]));
-  $('#sBack').onclick=settingsSheet;
   sheet.querySelectorAll('[data-th]').forEach(function(b){b.onclick=function(){settings.theme=b.dataset.th;saveSettings();applyTheme();themeSheet()}});
 }
 function dataSheet(){
   openSheet(backTo()+'<h2>'+L4(XT.secData)+'</h2><div class="mini">'+L4(XT.bkHint)+'</div><div class="row2" style="margin-top:12px"><button class="btn ghost" id="bkSave">'+L4(XT.bkSave)+'</button><button class="btn ghost" id="bkOpen">'+L4(XT.bkOpen)+'</button></div>');
-  $('#sBack').onclick=settingsSheet;
   $('#bkSave').onclick=userBackup; $('#bkOpen').onclick=openUserFile;
 }
 // profilo professionale: modifica con «Salva» sempre visibile in basso
@@ -1108,7 +1109,6 @@ function profileSheet(keep){
    '<div class="field"><label>'+T('waNum')+'</label><input id="sw" class="ltr" inputmode="tel" value="'+esc(val('sw',settings.waNum))+'" placeholder="'+T('waNumP')+'"></div>'+
    '<div class="mini">'+T('waHint')+'</div>'+
    '<div class="ssave"><button class="btn main" id="ssave" style="margin:0">'+T('save')+'</button></div>');
-  $('#sBack').onclick=settingsSheet;
   sheet.querySelectorAll('[data-tr]').forEach(function(b){b.onclick=function(){tr=b.dataset.tr;sheet.querySelectorAll('[data-tr]').forEach(function(x){x.classList.toggle('on',x.dataset.tr===tr)})}});
   sheet.querySelectorAll('[data-cc]').forEach(function(b){b.onclick=function(){cc=b.dataset.cc;sheet.querySelectorAll('[data-cc]').forEach(function(x){x.classList.toggle('on',x.dataset.cc===cc)})}});
   function typed(){return {cc:cc,tr:tr,st:$('#st').value,sd:$('#sd').value,sph:$('#sph').value,sw:$('#sw').value}}
@@ -1126,7 +1126,7 @@ function profileSheet(keep){
 // professionisti consigliati: pagina a parte (non più nelle impostazioni)
 function prosPage(){
   openSheet('<h2>'+L4(XT.pros)+'</h2><div class="mini">'+L4(XT.prosHint)+'</div>'+prosSection().replace(/^<h3[^>]*>.*?<\/h3><div class="mini">.*?<\/div>/,''));
-  sheet.querySelectorAll('[data-pro]').forEach(function(b){b.onclick=function(){proSheet(b.dataset.pro)}});
+  sheet.querySelectorAll('[data-pro]').forEach(function(b){b.onclick=function(){SHEET_BACK=prosPage;proSheet(b.dataset.pro)}});
 }
 
 /* =====================================================================
