@@ -1,0 +1,15 @@
+name: diag
+on:
+  push:
+    branches: [diag]
+jobs:
+  d:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          curl -sSI -H "Origin: null" "https://mohamed203055.github.io/lista-materiale-web/version.json?t=1" || true
+          echo ======
+          curl -sS -L -H "Origin: null" "https://mohamed203055.github.io/lista-materiale-web/version.json?t=2" | head -c 300; echo
+          echo ======
+          curl -sSI -H "Origin: null" "https://siteneeds.net/version.json?t=3" || true
+          curl -sS "https://siteneeds.net/version.json?t=4" | python3 -c "import json,sys;v=json.load(sys.stdin);print(v['versionCode'],v['apk'],v['live']['ver'])"
