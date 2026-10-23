@@ -2021,7 +2021,7 @@ function regScreen(){
    AGGIORNAMENTI / التحديثات
    version.json pubblico su GitHub Pages: {versionCode, versionName, apk, notes_ar, notes_it}
    ===================================================================== */
-var UPD_BASE='https://mohamed203055.github.io/lista-materiale-web/';
+var UPD_BASE='https://siteneeds.net/';
 function verNum(v){var m=String(v||'').match(/(\d+)\.(\d+)\.(\d+)/);return m?(+m[1])*1e6+(+m[2])*1e3+(+m[3]):0}
 function checkUpdate(manual){
   if(!window.fetch) return;
