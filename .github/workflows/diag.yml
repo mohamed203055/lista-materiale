@@ -7,7 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          a=$(curl -sSI -H "Origin: null" "https://mohamed203055.github.io/lista-materiale-web/version.json?t=$RANDOM" | tr -d '\r' | grep -iE "^HTTP|^location|^access-control" | tr '\n' ' ')
-          echo "::notice::OLD $a"
-          b=$(curl -sS "https://mohamed203055.github.io/lista-materiale-web/version.json?t=$RANDOM" | python3 -c "import json,sys;v=json.load(sys.stdin);print(v['versionCode'],v['apk'],v['live']['ver'])")
-          echo "::notice::DATA $b"
+          for u in "https://siteneeds.net/" "https://siteneeds.net/SiteNeeds.apk" "https://siteneeds.net/admin.html" "https://www.siteneeds.net/" "https://mohamed203055.github.io/lista-materiale-web/version.json?t=$RANDOM"; do
+            a=$(curl -sSI -H "Origin: null" "$u" | tr -d '\r' | grep -iE "^HTTP|^location|^access-control|^content-length" | tr '\n' ' ')
+            echo "::notice::$u => $a"
+          done
+          t=$(curl -sS https://siteneeds.net/ | grep -o "<title>[^<]*")
+          echo "::notice::TITLE $t"
