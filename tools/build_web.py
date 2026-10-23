@@ -81,18 +81,19 @@ if len(sys.argv) > 3:
     import json
     rel = sys.argv[3]
     if os.path.exists(os.path.join(rel, 'app.apk')):
-        shutil.copy(os.path.join(rel, 'app.apk'), os.path.join(dst, 'TalabMawad.apk'))
+        shutil.copy(os.path.join(rel, 'app.apk'), os.path.join(dst, 'SiteNeeds.apk'))
+        shutil.copy(os.path.join(rel, 'app.apk'), os.path.join(dst, 'TalabMawad.apk'))  # vecchi link
     def rd(n):
         f = os.path.join(rel, n)
         return open(f).read().strip() if os.path.exists(f) else ''
     # l'APK resta anche con il nome di versione: version.json punta a quello
     if os.path.exists(os.path.join(rel, 'app.apk')):
-        shutil.copy(os.path.join(rel, 'app.apk'), os.path.join(dst, 'TalabMawad-%s.apk' % ver))
+        shutil.copy(os.path.join(rel, 'app.apk'), os.path.join(dst, 'SiteNeeds-%s.apk' % ver))
     vj = os.path.join(dst, 'version.json')
     old = {}
     try: old = json.load(open(vj))
     except Exception: pass
-    new = {'versionCode': int(ver.split('.')[-1]), 'versionName': ver, 'apk': 'TalabMawad-%s.apk' % ver,
+    new = {'versionCode': int(ver.split('.')[-1]), 'versionName': ver, 'apk': 'SiteNeeds-%s.apk' % ver,
            'notes_ar': rd('notes_ar.txt'), 'notes_it': rd('notes_it.txt')}
     if old.get('send'):
         # il proprietario ha già inviato una versione: non toccarla, la nuova resta "pronta" in next

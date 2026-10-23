@@ -226,7 +226,7 @@ class MainActivity : ComponentActivity() {
             .setMessage("هذه النسخة من التطبيق معدّلة وغير أصلية. حمّل النسخة الأصلية.\n\nQuesta copia dell'app è stata modificata. Scarica l'app originale.")
             .setCancelable(false)
             .setPositiveButton("⬇️ Download") { _, _ ->
-                try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://mohamed203055.github.io/lista-materiale-web/TalabMawad.apk"))) } catch (_: Exception) {}
+                try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://siteneeds.net/SiteNeeds.apk"))) } catch (_: Exception) {}
                 finish()
             }
             .show()

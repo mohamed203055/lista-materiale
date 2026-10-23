@@ -92,7 +92,7 @@ jobs:
       - name: Rename APK
         run: |
           mkdir -p out
-          cp app/build/outputs/apk/release/app-release.apk "out/TalabMawad-1.0.${{ github.run_number }}.apk"
+          cp app/build/outputs/apk/release/app-release.apk "out/SiteNeeds-1.0.${{ github.run_number }}.apk"
 
       - uses: actions/upload-artifact@v4
         with:

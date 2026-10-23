@@ -1049,7 +1049,7 @@ function checkPeople(ver){
   }).catch(function(){});
 }
 function shareApp(){
-  var apk=settings.liveApk||'TalabMawad.apk';
+  var apk=settings.liveApk||'SiteNeeds.apk';
   var t=L4(XT.shareAppMsg)+'\n\n'+L4(XT.shareAndroid)+'\n'+(/^https?:/.test(apk)?apk:UPD_BASE+apk)+'\n\n'+L4(XT.shareIos)+'\n'+UPD_BASE;
   ping('/usa/condividi-app','Invia app a un amico');
   if(A&&A.shareText)A.shareText(t);else if(navigator.share)navigator.share({text:t}).catch(function(){});else openUrl('https://wa.me/?text='+encodeURIComponent(t));
@@ -2078,7 +2078,7 @@ function updSheet(v){
     ping('/aggiornamento/'+v.versionName,'Aggiornamento');
     if(A&&A.update){
       $('#updGo').disabled=true;$('#updBarW').style.display='block';$('#updMsg').textContent=T('updDl');
-      var apk=v.apk||'TalabMawad.apk';A.update((/^https?:\/\//.test(apk)?apk:UPD_BASE+apk+'?v='+encodeURIComponent(v.versionName)));
+      var apk=v.apk||'SiteNeeds.apk';A.update((/^https?:\/\//.test(apk)?apk:UPD_BASE+apk+'?v='+encodeURIComponent(v.versionName)));
     }else{
       $('#updMsg').textContent=T('updWeb');
       var done=function(){location.reload()};
