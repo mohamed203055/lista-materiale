@@ -1050,7 +1050,7 @@ function checkPeople(ver){
 }
 function shareApp(){
   var apk=settings.liveApk||'SiteNeeds.apk';
-  var t=L4(XT.shareAppMsg)+'\n\n'+L4(XT.shareAndroid)+'\n'+(/^https?:/.test(apk)?apk:UPD_BASE+apk)+'\n\n'+L4(XT.shareIos)+'\n'+UPD_BASE;
+  var t=L4(XT.shareAppMsg)+'\n\n'+L4(XT.shareAndroid)+'\n'+SITE+'SiteNeeds.apk'+'\n\n'+L4(XT.shareIos)+'\n'+SITE;
   ping('/usa/condividi-app','Invia app a un amico');
   if(A&&A.shareText)A.shareText(t);else if(navigator.share)navigator.share({text:t}).catch(function(){});else openUrl('https://wa.me/?text='+encodeURIComponent(t));
 }
@@ -2021,7 +2021,8 @@ function regScreen(){
    AGGIORNAMENTI / التحديثات
    version.json pubblico su GitHub Pages: {versionCode, versionName, apk, notes_ar, notes_it}
    ===================================================================== */
-var UPD_BASE='https://siteneeds.net/';
+var UPD_BASE='https://mohamed203055.github.io/lista-materiale-web/'; // dati (version.json, live, packs): niente redirect, CORS ok
+var SITE='https://siteneeds.net/'; // link visibili agli utenti
 function verNum(v){var m=String(v||'').match(/(\d+)\.(\d+)\.(\d+)/);return m?(+m[1])*1e6+(+m[2])*1e3+(+m[3]):0}
 function checkUpdate(manual){
   if(!window.fetch) return;
