@@ -7,11 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          a=$(curl -sSI -H "Origin: null" "https://mohamed203055.github.io/lista-materiale-web/version.json?t=1" | tr -d '\r' | grep -iE "^HTTP|^location|^access-control" | tr '\n' ' ')
-          echo "::notice::REDIR $a"
-          b=$(curl -sS -L "https://mohamed203055.github.io/lista-materiale-web/version.json?t=2" | python3 -c "import json,sys;v=json.load(sys.stdin);print(v['versionCode'],v['apk'],v['live']['ver'])")
-          echo "::notice::FOLLOW $b"
-          c=$(curl -sSI -H "Origin: null" "https://siteneeds.net/version.json?t=3" | tr -d '\r' | grep -iE "^HTTP|^access-control|^cache-control" | tr '\n' ' ')
-          echo "::notice::NEW $c"
-          d=$(curl -sSI "https://mohamed203055.github.io/lista-materiale-web/live/59/app.js" | tr -d '\r' | grep -iE "^HTTP|^location" | tr '\n' ' ')
-          echo "::notice::LIVE $d"
+          a=$(curl -sSI -H "Origin: null" "https://mohamed203055.github.io/lista-materiale-web/version.json?t=$RANDOM" | tr -d '\r' | grep -iE "^HTTP|^location|^access-control" | tr '\n' ' ')
+          echo "::notice::OLD $a"
+          b=$(curl -sS "https://mohamed203055.github.io/lista-materiale-web/version.json?t=$RANDOM" | python3 -c "import json,sys;v=json.load(sys.stdin);print(v['versionCode'],v['apk'],v['live']['ver'])")
+          echo "::notice::DATA $b"
