@@ -20,3 +20,8 @@ Per piccoli cambi alla parte web (icone, testi, cataloghi, correzioni JS/CSS) se
 3. Il proprietario preme «⚡ إرسال التحديث الصامت» nell'admin (`liveNext` → `live`).
 4. L'app (nativo ≥ `min`) scarica `live/N/*`, verifica firma e SHA-256, lo usa dal prossimo avvio; se non conferma `liveOk` entro 12 s torna alla versione interna.
 Regole: non cancellare `live/<ver>` di `live` o `liveNext`. Se cambia il ponte Android (metodi `Bridge`), alzare `LIVE_MIN` nel workflow.
+
+## siteneeds.net (repo `siteneeds-site`)
+Copia della web app servita su https://siteneeds.net (file `CNAME`). Il vecchio indirizzo github.io resta attivo.
+Dopo ogni aggiornamento web copiare anche lì: index.html, app.js, catalog.js, packs.js, lang.js, trades.js, sw.js
+(version.json, people.json, packs/ e live/ restano solo in `lista-materiale-web`, letti tramite UPD_BASE).
