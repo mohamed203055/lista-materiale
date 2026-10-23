@@ -22,5 +22,9 @@ Per piccoli cambi alla parte web (icone, testi, cataloghi, correzioni JS/CSS) se
 Regole: non cancellare `live/<ver>` di `live` o `liveNext`. Se cambia il ponte Android (metodi `Bridge`), alzare `LIVE_MIN` nel workflow.
 
 
-## Dominio
-Il repo `lista-materiale-web` è servito su https://siteneeds.net (file `CNAME`); github.io reindirizza lì. Non cancellare `CNAME`.
+
+## Dominio siteneeds.net
+- `lista-materiale-web` resta su github.io SENZA `CNAME`: le app leggono da lì version.json/live/packs (UPD_BASE).
+  Un redirect 301 di GitHub non ha CORS e blocca gli aggiornamenti delle app: non rimettere mai `CNAME` lì.
+- `siteneeds-site` (con `CNAME`) serve https://siteneeds.net: web app, SiteNeeds.apk, admin.
+  Dopo ogni pubblicazione: `tools/sync_site.sh <lista-materiale-web> <siteneeds-site>` poi commit e push.
