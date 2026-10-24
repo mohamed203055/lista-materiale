@@ -2094,6 +2094,34 @@ window.onUpdError=function(){var m=$('#updMsg');if(m)m.textContent=T('updErr');v
 
 reindex(); cur(); save(); applyLang(); render(); setTimeout(statsStart,1500); setTimeout(function(){checkUpdate(false)},3000);
 if(!regScreen()) setTimeout(function(){sendReg();sendSeen()},2500);
+
+// ---- web: invito a installare sull'iPhone/iPad (o scaricare l'APK su Android) ----
+function installHint(){
+  if(A) return;
+  var ua=navigator.userAgent||'', ios=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1), andr=/Android/.test(ua);
+  var standalone=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+  if(standalone||(!ios&&!andr)) return;
+  try{var t=+localStorage.getItem('lm_ihint')||0;if(Date.now()-t<3*864e5)return}catch(e){}
+  var safari=ios&&/Safari/.test(ua)&&!/CriOS|FxiOS|EdgiOS|OPiOS|GSA|Instagram|FBAN|FBAV|WhatsApp|Line\//.test(ua);
+  var ipad=/iPad/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var SH='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
+  var X={
+   t:{ar:'📲 ثبّت SiteNeeds على شاشتك',it:'📲 Installa SiteNeeds sulla schermata Home',en:'📲 Install SiteNeeds on your Home Screen',fr:'📲 Installez SiteNeeds sur l’écran d’accueil'},
+   s1:{ar:'اضغط زر المشاركة '+SH+(ipad?' في الأعلى':' في أسفل الشاشة'),it:'Tocca Condividi '+SH+(ipad?' in alto':' in basso'),en:'Tap Share '+SH+(ipad?' at the top':' at the bottom'),fr:'Touchez Partager '+SH+(ipad?' en haut':' en bas')},
+   s2:{ar:'اختر «إضافة إلى الشاشة الرئيسية» ➕',it:'Scegli «Aggiungi alla schermata Home» ➕',en:'Choose «Add to Home Screen» ➕',fr:'Choisissez «Sur l’écran d’accueil» ➕'},
+   s3:{ar:'اضغط «إضافة»، ثم افتح التطبيق من الأيقونة',it:'Tocca «Aggiungi», poi apri l’app dall’icona',en:'Tap «Add», then open the app from the icon',fr:'Touchez «Ajouter», puis ouvrez l’app depuis l’icône'},
+   sf:{ar:'افتح هذا الرابط في Safari أولاً (⋯ ثم «فتح في Safari»)، فالإضافة للشاشة لا تشتغل إلا منه.',it:'Apri prima questo link in Safari (⋯ → «Apri in Safari»): solo da Safari si può aggiungere alla Home.',en:'First open this link in Safari (⋯ → «Open in Safari»): only Safari can add it to the Home Screen.',fr:'Ouvrez d’abord ce lien dans Safari (⋯ → «Ouvrir dans Safari») : seul Safari peut l’ajouter à l’écran d’accueil.'},
+   at:{ar:'🤖 حمّل تطبيق أندرويد',it:'🤖 Scarica l’app Android',en:'🤖 Get the Android app',fr:'🤖 Téléchargez l’app Android'},
+   as:{ar:'التطبيق يشتغل أحسن وبدون إنترنت.',it:'L’app funziona meglio, anche senza internet.',en:'The app works better, even offline.',fr:'L’app fonctionne mieux, même hors ligne.'},
+   dl:{ar:'تحميل',it:'Scarica',en:'Download',fr:'Télécharger'},
+   ok:{ar:'لاحقاً',it:'Più tardi',en:'Later',fr:'Plus tard'}};
+  var d=document.createElement('div');d.className='ihint';
+  var body=ios?(safari?'<ol><li>'+L4(X.s1)+'</li><li>'+L4(X.s2)+'</li><li>'+L4(X.s3)+'</li></ol>':'<p>'+L4(X.sf)+'</p>'):'<p>'+L4(X.as)+'</p><a class="btn main" href="'+SITE+'SiteNeeds.apk">'+L4(X.dl)+'</a>';
+  d.innerHTML='<div class="ihc"><b>'+(ios?L4(X.t):L4(X.at))+'</b>'+body+'<button class="btn ghost" id="ihOk">'+L4(X.ok)+'</button></div>'+(ios&&safari&&!ipad?'<div class="iharr">▼</div>':'');
+  document.body.appendChild(d);
+  d.querySelector('#ihOk').onclick=function(){try{localStorage.setItem('lm_ihint',String(Date.now()))}catch(e){}d.remove()};
+}
+setTimeout(installHint,1200);
 // aggiornamento silenzioso: conferma che questa versione è partita bene
 try{if(A&&A.liveOk&&window.LM_JS_VER)setTimeout(function(){A.liveOk(String(window.LM_JS_VER))},1500)}catch(e){}
 })();
