@@ -1,5 +1,6 @@
 // Catalogo materiali — formato riga: "Nome italiano|الاسم بالعربية|unità|misure separate da ;"
-window.CATALOG_VER = 2; // aumentare quando cambia il catalogo italiano (aggiorna chi non ha modificato l'elenco)
+window.CATALOG_VER = 3;
+window.LM_IMG = "tubi_0 tubi_1 tubi_2 tubi_3 tubi_4 tubi_5 tubi_6 tubi_7 tubi_8 tubi_9 tubi_10 tubi_11 tubi_12 tubi_13 tubi_14 tubi_15 tubi_16 tubi_17 tubi_18 tubi_19 tubi_20 tubi_21 tubi_22 tubi_23 tubi_24 tubi_25 tubi_26 tubi_27 cavi_0 cavi_1 cavi_2 cavi_3 cavi_4 cavi_5 cavi_6 cavi_7 cavi_8 cavi_9 cavi_10 cavi_11 cavi_12 cavi_13 cavi_14 cavi_15 cavi_16 cavi_17 cavi_18 cavi_19 acc_0 acc_1 acc_2 acc_3 acc_4 acc_5 acc_6 acc_7 acc_8 acc_9 acc_10 acc_11 acc_12 acc_13 acc_14 acc_15 acc_16 acc_17 quadri_0 quadri_1 quadri_2 quadri_3 quadri_4 quadri_5 quadri_6 quadri_7 quadri_8 quadri_9 quadri_10 quadri_11 quadri_12 quadri_13 quadri_14 quadri_15 quadri_16 quadri_17 quadri_18 quadri_19 quadri_20 quadri_21 quadri_22 quadri_23 quadri_24 quadri_25 quadri_26 quadri_27 auto_0 auto_1 auto_2 auto_3 auto_4 auto_5 auto_6 auto_7 auto_8 auto_9 auto_10 auto_11 frutti_0 frutti_1 frutti_2 frutti_3 frutti_4 frutti_5 frutti_6 frutti_7 frutti_8 frutti_9 frutti_10 frutti_11 frutti_12 frutti_13 frutti_14 frutti_15 frutti_16 frutti_17 frutti_18 frutti_19 frutti_20 frutti_21 frutti_22 frutti_23 frutti_24 frutti_25 frutti_26 frutti_27 luce_0 luce_1 luce_2 luce_3 luce_4 luce_5 luce_6 luce_7 luce_8 luce_9 luce_10 luce_11 luce_12 luce_13 luce_14 led_0 led_1 led_2 led_3 led_4 led_5 led_6 led_7 led_8 led_9 led_10 terra_0 terra_1 terra_2 terra_3 terra_4 terra_5 terra_6 rete_0 rete_1 rete_2 rete_3 rete_4 rete_5 rete_6 rete_7 rete_8 rete_9 rete_10 rete_11 rete_12 rete_13 rete_14 rete_15 rete_16 cito_0 cito_1 cito_2 cito_3 cito_4 cito_5 cito_6 cito_7 cito_8 cito_9 tvcc_0 tvcc_1 tvcc_2 tvcc_3 tvcc_4 tvcc_5 tvcc_6 tvcc_7 tvcc_8 tvcc_9 tvcc_10 tvcc_11 allarme_0 allarme_1 allarme_2 allarme_3 allarme_4 allarme_5 allarme_6 allarme_7 allarme_8 allarme_9 allarme_10 allarme_11 fv_0 fv_1 fv_2 fv_3 fv_4 fv_5 fv_6 fiss_0 fiss_1 fiss_2 fiss_3 fiss_4 fiss_5 fiss_6 fiss_7 fiss_8 fiss_9 fiss_10 fiss_11 fiss_12 fiss_13 attrezzi_0 attrezzi_1 attrezzi_2 attrezzi_3 attrezzi_4 attrezzi_5 attrezzi_6 attrezzi_7 attrezzi_8 attrezzi_9 ma_cab_0 ma_cab_1 ma_cab_2 ma_cab_3 ma_cab_4 ma_cab_5 ma_cab_6 ma_cab_7 ma_cab_8 ma_cab_9 ma_cab_10 ma_cab_11 ma_cab_12 ma_cab_13 ma_gai_0 ma_gai_1 ma_gai_2 ma_gai_3 ma_gai_4 ma_gai_5 ma_gai_6 ma_gai_7 ma_gai_8 ma_gai_9 ma_gai_10 ma_gai_11 ma_gai_12 ma_gai_13 ma_gai_14 ma_app_0 ma_app_1 ma_app_2 ma_app_3 ma_app_4 ma_app_5 ma_app_6 ma_app_7 ma_app_8 ma_app_9 ma_app_10 ma_app_11 ma_app_12 ma_app_13 ma_app_14 ma_app_15 ma_app_16 ma_app_17 ma_app_18 ma_app_19 ma_app_20 ma_app_21 ma_app_22 ma_app_23 ma_app_24 ma_app_25 ma_app_26 ma_tab_0 ma_tab_1 ma_tab_2 ma_tab_3 ma_tab_4 ma_tab_5 ma_tab_6 ma_tab_7 ma_tab_8 ma_tab_9 ma_tab_10 ma_tab_11 ma_tab_12 ma_tab_13 ma_tab_14 ma_tab_15 ma_tab_16 ma_tab_17 ma_tab_18 ma_tab_19 ma_tab_20 ma_tab_21 ma_tab_22 ma_tab_23 ma_cpt_0 ma_cpt_1 ma_cpt_2 ma_cpt_3 ma_cpt_4 ma_ter_0 ma_ter_1 ma_ter_2 ma_ter_3 ma_ter_4 ma_ecl_0 ma_ecl_1 ma_ecl_2 ma_ecl_3 ma_ecl_4 ma_ecl_5 ma_ecl_6 ma_ecl_7 ma_ecl_8 ma_ecl_9 ma_ecl_10 ma_ecl_11 ma_ecl_12 ma_led_0 ma_led_1 ma_led_2 ma_led_3 ma_led_4 ma_cfa_0 ma_cfa_1 ma_cfa_2 ma_cfa_3 ma_cfa_4 ma_cfa_5 ma_cfa_6 ma_cfa_7 ma_cfa_8 ma_cfa_9 ma_cfa_10 ma_cfa_11 ma_cfa_12 ma_cfa_13 ma_cfa_14 ma_cfa_15 ma_cfa_16 ma_cfa_17 ma_acc_0 ma_acc_1 ma_acc_2 ma_acc_3 ma_acc_4 ma_acc_5 ma_acc_6 ma_acc_7 ma_acc_8 ma_acc_9 ma_acc_10 ma_acc_11 ma_acc_12 ma_acc_13 ma_acc_14 ma_acc_15 ma_acc_16 ma_pv_0 ma_pv_1 ma_pv_2 ma_pv_3 ma_pv_4 ma_pv_5 ma_pv_6"; // foto dei pezzi su <UPD_BASE>img/<id>.jpg (IT + MA/FR) // aumentare quando cambia il catalogo italiano (aggiorna chi non ha modificato l'elenco)
 // Unità: pz, m, conf, sacco, coppia
 window.UNITS = {
   pz:    { it: 'pz',    ar: 'قطعة',  step: 1 },
@@ -77,7 +78,10 @@ Cavo per strisce LED|كابل لشريط LED|m|2x0.5;2x0.75;2x1;4x0.5 RGB;5x0.5 
 Cavo videosorveglianza coax + alimentazione|كابل كاميرات (محوري + تغذية)|m|
 Cavo bus KNX|كابل KNX|m|
 Cavo fibra ottica|كابل ألياف ضوئية|m|
-Cavo solare|كابل طاقة شمسية|m|4 mm²;6 mm²` },
+Cavo solare|كابل طاقة شمسية|m|4 mm²;6 mm²
+Cavo unipolare H07V-K|سلك أحادي مرن H07V-K|m|1.5 mm²;2.5 mm²;4 mm²;6 mm²;10 mm²;16 mm²|C
+Cavo H07Z1-K|سلك أحادي بدون هالوجين H07Z1-K|m|1.5 mm²;2.5 mm²;4 mm²;6 mm²;10 mm²;16 mm²|C
+Cavo H07RN-F|كابل مطاطي للخارج H07RN-F|m|3G1.5;3G2.5;3G4;5G1.5;5G2.5;5G4` },
 
   { id: 'acc', ic: '🔩', it: 'Morsetti e accessori', ar: 'موصلات وملحقات', items: `
 Morsetto a leva Wago|موصل ضغط (واغو)|pz|2 poli;3 poli;5 poli
@@ -95,7 +99,9 @@ Segnafili|أرقام الأسلاك|conf|
 Sonda tirafili|سلك سحب (سوندا)|pz|10 m;20 m;30 m
 Lubrificante tirafili|مادة تزليق لسحب الكابلات|pz|
 Morsetto su guida DIN|طرفية على سكة DIN|pz|2.5 mm²;4 mm²;6 mm²;10 mm²;16 mm²
-Blocco ripartitore|كتلة توزيع|pz|4 poli 100A;4 poli 125A` },
+Blocco ripartitore|كتلة توزيع|pz|4 poli 100A;4 poli 125A
+Giunto resinato per cavi|وصلة كابلات بالراتنج|pz|
+Giunto in gel per cavi|وصلة كابلات بالجل|pz|` },
 
   { id: 'quadri', ic: '🗄️', it: 'Quadri e protezioni', ar: 'لوحات وقواطع', items: `
 Centralino da incasso|لوحة داخل الحائط|pz|4 moduli;8 moduli;12 moduli;24 moduli;36 moduli;54 moduli
@@ -121,7 +127,11 @@ Spia luminosa da quadro|لمبة إشارة للوحة|pz|
 Presa da quadro DIN|مقبس على سكة DIN|pz|
 Trasformatore per campanello|محول جرس|pz|12V;24V
 Copriforo per quadro|غطاء فراغات اللوحة|pz|
-UPS|جهاز UPS|pz|` },
+UPS|جهاز UPS|pz|
+Alimentatore 24V su guida DIN|محوّل تغذية 24V على سكة DIN|pz|30 W;60 W;100 W;150 W
+Trasformatore 230V 24V|محوّل 230V إلى 24V|pz|25 VA;50 VA;100 VA
+Selettore rotativo|مفتاح اختيار دوّار|pz|0-1;1-0-2;0-1-2
+Interruttore di emergenza a fungo|زر إيقاف طوارئ (فطر)|pz|` },
 
   { id: 'auto', ic: '⏱️', it: 'Relè, automazione e domotica', ar: 'مرحلات وتحكم وأتمتة', items: `
 Contattore modulare|كونتاكتور على سكة|pz|20A 2NA;25A 2NA;25A 4NA;40A 4NA
@@ -134,7 +144,8 @@ Relè controllo tensione / fasi|مرحل مراقبة الجهد أو الأطو
 Termostato / cronotermostato|ثرموستات|pz|da incasso;da parete;wifi
 Attuatore per tapparelle|وحدة تحكم ستائر|pz|
 Modulo smart wifi|وحدة ذكية واي فاي (Shelly / Sonoff)|pz|1 canale;2 canali;tapparella;dimmer
-Alimentatore su guida DIN|مزود طاقة على سكة DIN|pz|12V;24V` },
+Alimentatore su guida DIN|مزود طاقة على سكة DIN|pz|12V;24V
+Interruttore finecorsa|مفتاح نهاية الشوط|pz|` },
 
   { id: 'frutti', ic: '🔘', it: 'Frutti, prese e placche', ar: 'مفاتيح ومقابس وإطارات', items: `
 Interruttore 1P 16A|مفتاح إنارة|pz|
@@ -287,7 +298,19 @@ Staffa per passerella|كتيفة لحامل الكابلات|pz|
 Nastro biadesivo|شريط لاصق وجهين|pz|
 Disco da taglio|قرص قص|pz|115 mm;125 mm;230 mm
 Punta per trapano|ريشة دريل|pz|Ø6;Ø8;Ø10;Ø12;tazza 68 mm
-Sacchi per macerie|أكياس ردم|conf|` }
+Sacchi per macerie|أكياس ردم|conf|` },
+  { id: 'attrezzi', ic: '🛠️', it: 'Attrezzi e strumenti di misura', ar: 'أدوات وأجهزة قياس', items: `
+Multimetro digitale|ملتيميتر رقمي|pz|
+Pinza amperometrica|كلّاب أمبير|pz|
+Tester di tensione senza contatto|كاشف جهد بدون تلامس|pz|
+Cacciavite isolato|مفك معزول|pz|
+Pinza spelafili|زرادية تقشير الأسلاك|pz|
+Pinza crimpatrice|زرادية تثبيت الأطراف (كبّاسة)|pz|
+Tronchese da elettricista|قطّاعة كهربائي|pz|
+Tagliacavi|مقص كابلات|pz|
+Forbici da elettricista|مقص كهربائي|pz|
+Pistola termica|مسدس هواء ساخن|pz|` }
+
 ];
 
 // Kit pronti: [nome italiano articolo, misura, quantità per 1 kit, colore facoltativo]

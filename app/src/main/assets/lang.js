@@ -1,6 +1,27 @@
 // Traduzioni inglese / francese (+ testi nuovi in arabo/italiano per calcoli, collaudo, ore)
 // LM_NAMES: nome italiano → [inglese, francese]
 window.LM_NAMES = {
+  'Attrezzi e strumenti di misura':['Tools and test instruments','Outillage et appareils de mesure'],
+  'Cavo unipolare H07V-K':['Single-core cable H07V-K','Fil souple H07V-K'],
+  'Cavo H07Z1-K':['Halogen-free cable H07Z1-K','Câble sans halogène H07Z1-K'],
+  'Cavo H07RN-F':['Rubber cable H07RN-F','Câble caoutchouc H07RN-F'],
+  'Giunto resinato per cavi':['Resin cable joint','Jonction à résine'],
+  'Giunto in gel per cavi':['Gel cable joint','Jonction à gel'],
+  'Alimentatore 24V su guida DIN':['24V DIN-rail power supply','Alimentation 24V rail DIN'],
+  'Trasformatore 230V 24V':['230V/24V transformer','Transformateur 230V/24V'],
+  'Selettore rotativo':['Rotary selector switch','Commutateur rotatif'],
+  'Interruttore di emergenza a fungo':['Mushroom emergency stop','Arrêt d’urgence coup de poing'],
+  'Interruttore finecorsa':['Limit switch','Interrupteur de fin de course'],
+  'Multimetro digitale':['Digital multimeter','Multimètre numérique'],
+  'Pinza amperometrica':['Clamp meter','Pince ampèremétrique'],
+  'Tester di tensione senza contatto':['Non-contact voltage tester','Détecteur de tension sans contact'],
+  'Cacciavite isolato':['Insulated screwdriver','Tournevis isolé'],
+  'Pinza spelafili':['Wire stripper','Pince à dénuder'],
+  'Pinza crimpatrice':['Crimping tool','Pince à sertir'],
+  'Tronchese da elettricista':['Electrician’s side cutter','Pince coupante'],
+  'Tagliacavi':['Cable cutter','Coupe-câble'],
+  'Forbici da elettricista':['Electrician’s scissors','Ciseaux d’électricien'],
+  'Pistola termica':['Heat gun','Décapeur thermique'],
   // categorie
   'Tubi, canaline e scatole':['Conduits, trunking and boxes','Gaines, goulottes et boîtes'],
   'Cavi':['Cables','Câbles'],

@@ -187,7 +187,7 @@ function defaultSvc(){
 // ---- Mestiere (elettricista = 'ele', default; altri in trades.js → window.LM_TRADES) ----
 function tradeId(){var t=settings.trade||'ele';return t==='ele'||(window.LM_TRADES||{})[t]?t:'ele'}
 function tradeData(){return tradeId()==='ele'?null:(window.LM_TRADES||{})[tradeId()]}
-function tradePack(cc){var td=tradeData();if(!td)return null;return td.packs[cc||packId()]||td.packs.IT}
+function tradePack(cc){var td=tradeData();if(!td)return null;cc=cc||packId();return td.packs[cc]||(cc==='FR'&&td.packs.MA)||td.packs.IT}
 function tradeList(){var l=[['ele','⚡',{ar:'كهربائي',it:'Elettricista',en:'Electrician',fr:'Électricien'}]];var T_=window.LM_TRADES||{};Object.keys(T_).forEach(function(k){l.push([k,T_[k].ic,T_[k].name])});return l}
 function tradeLabel(id){var t=tradeList().find(function(x){return x[0]===(id||tradeId())})||tradeList()[0];return t[1]+' '+(t[2][settings.ui]||t[2].it)}
 function profKey(){return tradeId()==='ele'?packId():tradeId()+'_'+packId()}
@@ -221,7 +221,7 @@ function vatDef(){var p=packData();return p?p.vatDefault:22}
 function setCountry(cc){
   if(cc===packId())return;
   settings.country=cc; var p=packData(cc);
-  settings.out=p?((settings.ui==='ar'||settings.ui==='fr')?settings.ui:(p.outLang||'fr')):'it'; // Marocco: arabo o francese come il telefono
+  settings.out=p?(cc==='FR'?'fr':(settings.ui==='ar'||settings.ui==='fr')?settings.ui:(p.outLang||'fr')):'it'; // Marocco: arabo o francese come il telefono
   saveSettings(); DB=loadDB(); put(dbKey(),DB); reindex(); applyLang();
 }
 function setTrade(t){
@@ -267,7 +267,11 @@ var PACK_TXT={MA:{
   search:{ar:'ابحث… مثلاً بريزة، ديجونكتور، gaine',it:'Cerca… es. disjoncteur, gaine, prise',en:'Search… e.g. disjoncteur, gaine, socket',fr:'Rechercher… ex. disjoncteur, gaine, prise'},
   noteP:{ar:'مثلاً: Legrand Niloé أبيض',it:'es. serie Legrand Niloé bianca',en:'e.g. Legrand Niloé white',fr:'ex. série Legrand Niloé blanche'},
   itemNoteP:{ar:'مثلاً Ingelec أبيض',it:'es. Ingelec bianco',en:'e.g. Ingelec white',fr:'ex. Ingelec blanc'},
-  addrP:'Rue …, Casablanca'}};
+  addrP:'Rue …, Casablanca'},FR:{
+  search:{ar:'ابحث… مثلاً prise، disjoncteur، gaine',it:'Cerca… es. disjoncteur, gaine, prise',en:'Search… e.g. disjoncteur, gaine, prise',fr:'Rechercher… ex. disjoncteur, gaine, prise'},
+  noteP:{ar:'مثلاً: Legrand Céliane أبيض',it:'es. serie Legrand Céliane bianca',en:'e.g. Legrand Céliane white',fr:'ex. série Legrand Céliane blanche'},
+  itemNoteP:{ar:'مثلاً Schneider Odace أبيض',it:'es. Schneider Odace bianco',en:'e.g. Schneider Odace white',fr:'ex. Schneider Odace blanc'},
+  addrP:'Rue …, Paris'}};
 var TRADE_TXT={edi:{
   search:{ar:'ابحث عن قطعة، إسمنت، بلاط...',it:'Cerca pezzo, cemento, piastrelle...',en:'Search part, cement, tiles...',fr:'Chercher pièce, ciment, carrelage...'},
   noteP:{ar:'مثلاً: بلاط 60×60 رمادي، إسمنت 42,5',it:'es. gres 60x60 grigio, cemento 42,5',en:'e.g. grey 60x60 tiles, cement 42.5',fr:'ex. carrelage 60x60 gris, ciment 42,5'}}};
@@ -285,7 +289,10 @@ function num(v){return parseFloat(String(v).replace(',','.'))||0}
 function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(function(){t.classList.remove('show')},2200)}
 function dot(c){if(!c)return '';var C=COLBY[c];return '<span class="dot" style="background:'+(C?C.hex:'#ccc')+'"></span>'}
 function colName(c,lang){var C=COLBY[c];if(!C)return c||'';return lang==='both'?C.it+' / '+C.ar:trName(C,lang)}
-function thumb(id,cls){return IMGS[id]?'<img class="thumb'+(cls?' '+cls:'')+'" src="'+IMGS[id]+'">':''}
+var LMIMG={};String(window.LM_IMG||'').split(' ').forEach(function(x){if(x)LMIMG[x]=1});
+var IMG_BASE='https://mohamed203055.github.io/lista-materiale-web/img/';
+function hasImg(id){return !!(IMGS[id]||LMIMG[id])}
+function thumb(id,cls){if(IMGS[id])return '<img class="thumb'+(cls?' '+cls:'')+'" src="'+IMGS[id]+'">';if(!LMIMG[id])return '';return '<img class="thumb pimg'+(cls?' '+cls:'')+'" loading="lazy" alt="" src="'+IMG_BASE+id+'.jpg?v=1" onerror="this.remove()">'}
 function haveQty(it){var s=0;cur().lines.forEach(function(l){if(l.item===it.id)s+=l.qty});return s}
 function catIndex(id){var i=DB.cats.findIndex(function(c){return c.id===id});return i<0?999:i}
 function move(arr,i,d){var j=i+d;if(j<0||j>=arr.length)return;var x=arr[i];arr[i]=arr[j];arr[j]=x}
@@ -924,7 +931,7 @@ function itemSheet(it){
       return '<div class="crow" data-crow="'+c.id+'"><div class="cn">'+dot(c.id)+esc(N(c))+'</div>'+
        '<div class="stepper"><button data-cs="-" data-c="'+c.id+'">−</button><input inputmode="decimal" data-cq="'+c.id+'" value="0"><span class="u">'+N(U)+'</span><button data-cs="+" data-c="'+c.id+'">+</button></div></div>'}).join('');
   }
-  openSheet((IMGS[it.id]?'<div style="text-align:center;margin-bottom:8px">'+thumb(it.id,'big')+'</div>':'')+
+  openSheet((hasImg(it.id)?'<div style="text-align:center;margin-bottom:8px">'+thumb(it.id,'big')+'</div>':'')+
    '<h2>'+esc(N(it))+'</h2>'+sizes+
    '<div class="field"><label>'+(it.sizes.length?T('sizeOther'):T('sizeFree'))+'</label><input id="szc" placeholder="3 moduli, bianco…"></div>'+
    (it.colors?colorBlock:qtyBlock(it.unit,U.step))+
@@ -1012,7 +1019,7 @@ function openContact(k){
 /* ---- professionisti consigliati: gestiti dal proprietario (app admin) in people.json ---- */
 var PEOPLE=load(K.people,{ver:0,list:[]});
 // ogni professionista appare solo agli utenti dello stesso Paese ('ALL' = a tutti)
-function ccOf(txt){var t=String(txt||'').toLowerCase();if(/ital|إيطال/.test(t))return 'IT';if(/maroc|morocc|المغرب/.test(t))return 'MA';return t.trim()}
+function ccOf(txt){var t=String(txt||'').toLowerCase();if(/ital|إيطال/.test(t))return 'IT';if(/maroc|morocc|المغرب/.test(t))return 'MA';if(/fran|فرنس/.test(t))return 'FR';return t.trim()}
 function myCC(){var r=settings.reg&&settings.reg.paese;return r?ccOf(r):packId()}
 function proCC(p){return p.cc||ccOf(p.country)||'ALL'}
 function prosList(){
@@ -2009,7 +2016,7 @@ function regScreen(){
     if(n.length<2||!c){toast(regTxt('need'));return}
     settings.reg={nome:n,paese:c,citta:ov.querySelector('#rgCi').value.trim(),lavoro:job,mestiere:rtr,at:Date.now(),sent:0};
     if(!settings.tecnico) settings.tecnico=n;
-    if(c==='Marocco'&&(window.LM_PACKS||{}).MA) setCountry('MA');
+    var rcc={Marocco:'MA',Francia:'FR'}[c]; if(rcc&&(window.LM_PACKS||{})[rcc]) setCountry(rcc);
     saveSettings(); if(rtr!==tradeId()) setTrade(rtr); ov.remove();
     ping('/iscritto/'+c.replace(/[\/?#]/g,' '),'Nuovo iscritto (Paese)');
     sendReg(); render();

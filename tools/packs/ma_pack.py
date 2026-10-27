@@ -5,7 +5,7 @@ Genera: app/src/main/assets/packs.js (incluso nell'app) e, con build_web, packs/
 """
 import json, os
 
-VERSION = 1
+VERSION = 2
 
 CATS = [
  ('cab', '〰️', 'Câbles et fils', 'الكابلات والسلوك', 'Cavi e fili', 'Cables and wires', [
@@ -65,6 +65,10 @@ CATS = [
   ('Prise industrielle CEE', 'بريزة صناعية', 'Presa industriale CEE', 'CEE industrial socket', 'pz', '16A 2P+T;32A 2P+T;16A 3P+N+T;32A 3P+N+T', False),
   ('Détecteur de mouvement', 'الديتكتور / كابتور الحركة', 'Sensore di movimento', 'Motion sensor', 'pz', 'encastré;mural;plafond', False),
   ('Sonnette / carillon', 'السونيت', 'Campanello', 'Doorbell', 'pz', '', False),
+  ('Interrupteur triple allumage', 'فويت تريبل (3 ضوايات)', 'Interruttore triplo', 'Triple switch', 'pz', '', False),
+  ('Prise triple 2P+T', 'بريزة تريبل', 'Presa tripla', 'Triple socket', 'pz', '', False),
+  ('Prise connectée WiFi', 'بريزة WiFi ذكية', 'Presa smart WiFi', 'Smart WiFi socket', 'pz', '', False),
+  ('Interrupteur VMC', 'فويت ديال VMC (التهوية)', 'Interruttore VMC', 'Ventilation switch', 'pz', '', False),
  ]),
  ('tab', '🗄️', 'Tableau et protection', 'الطابلو والحماية', 'Quadri e protezioni', 'Panel and protection', [
   ('Coffret / tableau encastré', 'الطابلو (داخل الحيط)', 'Centralino da incasso', 'Flush panel', 'pz', '13 modules;18 modules;24 modules;36 modules;54 modules', False),
@@ -88,12 +92,16 @@ CATS = [
   ('Délesteur', 'الديليستور', 'Relè di distacco carichi', 'Load shedding relay', 'pz', '', False),
   ('Transformateur sonnerie / alimentation', 'الترانسفو', 'Trasformatore / alimentatore', 'Bell transformer / power supply', 'pz', '12V;24V', False),
   ('Obturateur de tableau', 'كاش ديال الطابلو', 'Copriforo per quadro', 'Panel blanking plate', 'pz', '', False),
+  ('Sonnerie modulaire', 'سونيري موديلير', 'Suoneria modulare', 'Modular bell', 'pz', '', False),
+  ('Interrupteur couteau / inverseur 63A', 'إنفرسور 63A (كوطو)', 'Commutatore 63A', '63A changeover switch', 'pz', '2P;4P', False),
+  ('Voyant / témoin lumineux', 'لامبة التيموان', 'Spia luminosa', 'Indicator light', 'pz', 'vert;rouge;orange', False),
  ]),
  ('cpt', '🔌', 'Comptage et branchement', 'العداد والاشتراك', 'Contatore e allacciamento', 'Metering and connection', [
   ('Coffret / boîtier de compteur', 'علبة الكونطور', 'Cassetta contatore', 'Meter box', 'pz', 'monophasé;triphasé', False),
   ('Socle de compteur', 'قاعدة الكونطور', 'Base contatore', 'Meter base', 'pz', '', False),
   ('Disjoncteur de branchement', 'ديجونكتور الاشتراك', 'Interruttore generale di fornitura', 'Supply main breaker', 'pz', '15/45A 500mA;30/60A 500mA;triphasé', False),
   ('Coffret de branchement extérieur', 'الكوفري ديال برا', 'Cassetta di allacciamento', 'Outdoor connection box', 'pz', '', False),
+  ('Sous-compteur modulaire', 'كونتور صغير موديلير', 'Contatore modulare', 'Modular sub-meter', 'pz', 'monophasé;triphasé', False),
  ]),
  ('ter', '⏚', 'Mise à la terre', 'الأرضي (التار)', 'Impianto di terra', 'Earthing', [
   ('Piquet de terre', 'بيكي ديال التار', 'Picchetto di terra', 'Earth rod', 'pz', '1 m;1.5 m;2 m', False),
@@ -115,6 +123,7 @@ CATS = [
   ('Bloc de secours', 'ضو الطوارئ', 'Lampada di emergenza', 'Emergency light', 'pz', '', False),
   ('Cellule crépusculaire', 'كابتور الليل', 'Interruttore crepuscolare', 'Twilight switch', 'pz', '', False),
   ('Ventilateur de plafond', 'فينطو السقف', 'Ventilatore da soffitto', 'Ceiling fan', 'pz', '132 cm;avec télécommande', False),
+  ('Hublot étanche', 'هوبلو ضد الما', 'Plafoniera stagna', 'Waterproof bulkhead light', 'pz', '', False),
  ]),
  ('led', '🌈', 'Ruban LED', 'شريط LED', 'Strisce LED', 'LED strip', [
   ('Ruban LED', 'شريط LED (روبان)', 'Striscia LED', 'LED strip', 'm', '12V;24V;24V RGB;220V', False),
@@ -169,6 +178,7 @@ CATS = [
   ('Connecteurs MC4', 'كونيكتور MC4', 'Connettori MC4', 'MC4 connectors', 'coppia', '', False),
   ('Coffret DC', 'كوفري DC', 'Quadro di campo DC', 'DC string box', 'pz', '', False),
   ('Borne de recharge voiture', 'شارجور الطوموبيل', 'Wallbox', 'EV charger', 'pz', '3.7 kW;7.4 kW;11 kW;22 kW', False),
+  ('Convertisseur 12V / 220V', 'كونفيرتيسور 12V إلى 220V', 'Inverter 12V/230V', '12V/230V inverter', 'pz', '300 W;600 W;1000 W;2000 W', False),
  ]),
 ]
 
@@ -280,14 +290,36 @@ def build():
             'cats': cats, 'kits': kits, 'svc': svc}
 
 
+
+def build_fr(ma):
+    """Francia 🇫🇷: stessi pezzi del Marocco (nomi francesi), euro, TVA francese, prezzi manodopera indicativi in €."""
+    import copy
+    fr = copy.deepcopy(ma)
+    fr.update({'pack': 'FR', 'name': {'ar': 'فرنسا', 'it': 'Francia', 'en': 'France', 'fr': 'France'}, 'flag': '🇫🇷',
+               'currency': '€', 'vat': [20, 10, 5.5], 'vatDefault': 20, 'outLang': 'fr', 'local': 'fr',
+               'priceNote': {'ar': 'أسعار العمل باليورو بدون TVA — تقريبية، عدّلها حسب منطقتك.', 'it': 'Prezzi manodopera in euro, IVA esclusa — indicativi, adattali alla tua zona.',
+                             'en': 'Labour prices in euro, VAT excluded — indicative, adapt them to your area.', 'fr': 'Prix main-d\'œuvre en euros HT — indicatifs, adaptez-les à votre région.'}})
+    FR_EUR = {'mas_luce1': 70, 'mas_luce2': 90, 'mas_presa': 70, 'mas_spec': 110, 'mas_rj45': 80, 'mas_m2': 90,
+              'mas_tab': 600, 'mas_disj': 60, 'mas_diff': 110, 'mas_cpt': 350, 'mas_terre': 350, 'mas_lustre': 60,
+              'mas_spot': 35, 'mas_ruban': 25, 'mas_vent': 120, 'mas_clim': 200, 'mas_visio': 300, 'mas_cam': 150,
+              'mas_nvr': 120, 'mas_alarme': 500, 'mas_h': 50, 'mas_j': 380, 'mas_panne': 90, 'mas_saignee': 20,
+              'mas_frutto': 40, 'mas_depl': 40, 'mas_urg': 150}
+    for g in fr['svc']:
+        for x in g['list']:
+            x['price'] = FR_EUR.get(x['id'], x['price'])
+    return fr
+
+
 if __name__ == '__main__':
     import sys
     p = build()
     n = sum(len(c['items']) for c in p['cats'])
     here = os.path.dirname(os.path.abspath(__file__))
     assets = os.path.join(here, '..', '..', 'app', 'src', 'main', 'assets')
-    open(os.path.join(assets, 'packs.js'), 'w').write('// Cataloghi per Paese inclusi nell\'app (generato da tools/packs/ma_pack.py)\nwindow.LM_PACKS = ' + json.dumps({'MA': p}, ensure_ascii=False) + ';\n')
+    fr = build_fr(p)
+    open(os.path.join(assets, 'packs.js'), 'w').write('// Cataloghi per Paese inclusi nell\'app (generato da tools/packs/ma_pack.py)\nwindow.LM_PACKS = ' + json.dumps({'MA': p, 'FR': fr}, ensure_ascii=False) + ';\n')
     if len(sys.argv) > 1:
         os.makedirs(sys.argv[1], exist_ok=True)
         json.dump(p, open(os.path.join(sys.argv[1], 'MA.json'), 'w'), ensure_ascii=False)
+        json.dump(fr, open(os.path.join(sys.argv[1], 'FR.json'), 'w'), ensure_ascii=False)
     print('MA:', len(p['cats']), 'categorie,', n, 'articoli,', len(p['kits']), 'kit,', sum(len(g['list']) for g in p['svc']), 'lavori')

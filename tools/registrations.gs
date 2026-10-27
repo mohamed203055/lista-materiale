@@ -4,7 +4,7 @@
  * 2) Esegui → "Distribuisci" → "Nuova distribuzione" → tipo "App web"
  *    Esegui come: Me · Chi ha accesso: Chiunque → Distribuisci → copia l'URL /exec
  */
-var KEY = 'mrXcZGidw1_tTXAjfnIkB-Ju'; // chiave segreta per leggere la lista dall'app admin
+var KEY = 'METTI_QUI_LA_CHIAVE_SEGRETA'; // chiave segreta (NON pubblicarla): la stessa va scritta nell'app admin
 
 var HEAD = ['Registrato il', 'Nome', 'Paese', 'Città', 'Lavoro', 'Codice', 'Versione', 'Dispositivo', 'Lingua', 'Ultimo accesso', 'Giorni di uso'];
 
@@ -42,6 +42,14 @@ function doPost(e) {
 function doGet(e) {
   var p = (e && e.parameter) || {};
   if (p.key !== KEY) return out_(JSON.stringify({ error: 'key' }), true);
+  if (p.del) {                          // elimina un utente dall'elenco (dall'app admin)
+    var lock = LockService.getScriptLock(); lock.waitLock(10000);
+    try {
+      var sh = sheet_(), all = sh.getDataRange().getValues(), n = 0;
+      for (var i = all.length - 1; i >= 1; i--) if (String(all[i][5]) === String(p.del)) { sh.deleteRow(i + 1); n++; }
+      return out_(JSON.stringify({ deleted: n }), true);
+    } finally { lock.releaseLock(); }
+  }
   var data = sheet_().getDataRange().getValues();
   var rows = data.slice(1).map(function (r) {
     return { reg: r[0], nome: r[1], paese: r[2], citta: r[3], lavoro: r[4], codice: r[5], versione: r[6],
