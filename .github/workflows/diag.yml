@@ -7,9 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          for u in "https://siteneeds.net/" "https://siteneeds.net/SiteNeeds.apk" "https://siteneeds.net/admin.html" "https://www.siteneeds.net/" "https://mohamed203055.github.io/lista-materiale-web/version.json?t=$RANDOM"; do
-            a=$(curl -sSI -H "Origin: null" "$u" | tr -d '\r' | grep -iE "^HTTP|^location|^access-control|^content-length" | tr '\n' ' ')
+          sleep 30
+          for u in "https://mohamed203055.github.io/lista-materiale-web/img/cavi_0.jpg" "https://mohamed203055.github.io/lista-materiale-web/img/ma_pv_6.jpg" "https://siteneeds.net/img/attrezzi_0.jpg" "https://siteneeds.net/admin.html" "https://mohamed203055.github.io/lista-materiale-web/version.json?t=$RANDOM"; do
+            a=$(curl -sSI "$u" | tr -d '\r' | grep -iE "^HTTP|^content-length|^location" | tr '\n' ' ')
             echo "::notice::$u => $a"
           done
-          t=$(curl -sS https://siteneeds.net/ | grep -o "<title>[^<]*")
-          echo "::notice::TITLE $t"
+          b=$(curl -sS "https://mohamed203055.github.io/lista-materiale-web/version.json?t=$RANDOM" | python3 -c "import json,sys;v=json.load(sys.stdin);print(v['live']['ver'],v['packs'])")
+          echo "::notice::DATA $b"
+          c=$(curl -sS "https://siteneeds.net/admin.html?t=$RANDOM" | grep -c "data-udel")
+          echo "::notice::ADMIN udel $c"
