@@ -326,7 +326,7 @@ function addLine(o){
   save(); refreshCounts();
 }
 function lineFromItem(it,size,qty,color,note){return {item:it.id,it:it.it,ar:it.ar,fr:it.fr,en:it.en,cat:it.cat,unit:it.unit,size:size||'',color:color||'',qty:qty,note:note||''}}
-function refreshCounts(){var n=view.tab==='price'?cur().quote.lines.length:cur().lines.length;$('#badge').textContent=cur().lines.length;$('#cnt').textContent=n;['#btnWa','#btnCopy','#btnPdf'].forEach(function(b){$(b).disabled=!n})}
+function refreshCounts(){var n=view.tab==='price'?cur().quote.lines.length:view.tab==='mlist'?(cur().man||[]).filter(function(r){return String(r.n||'').trim()}).length:cur().lines.length;$('#badge').textContent=cur().lines.length;$('#cnt').textContent=n;['#btnWa','#btnCopy','#btnPdf'].forEach(function(b){$(b).disabled=!n})}
 
 /* =====================================================================
    LINGUA
@@ -365,7 +365,7 @@ function render(){
   var inAdmin=view.tab==='admin', inProj=view.tab==='projects', inPrice=view.tab==='price', inCalc=view.tab==='calc';
   $('#tabs').style.display=inAdmin?'none':'';
   $('#searchBox').style.display=(inAdmin||inProj||inPrice||inCalc)?'none':'';
-  var showBar=view.tab==='cart'||view.tab==='price'||(view.tab==='mat'&&cur().lines.length>0);
+  var showBar=view.tab==='cart'||view.tab==='price'||view.tab==='mlist'||(view.tab==='mat'&&cur().lines.length>0);
   $('#bar').style.display=showBar?'':'none';
   document.body.style.paddingBottom=inAdmin?'24px':(showBar?'170px':'100px');
   document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',(t.dataset.tab||t.dataset.nav)===view.tab&&!view.q)});
@@ -1047,7 +1047,8 @@ var MLD={more:{ar:'سطور إضافية',it:'Altre righe',en:'More lines',fr:'P
  ph:{ar:'مثلاً أنبوب مرن 25',it:'es. tubo corrugato 25',en:'e.g. flexible conduit 25',fr:'ex. gaine ICTA 25'},
  site:{ar:'الورشة',it:'Cantiere',en:'Site',fr:'Chantier'},by:{ar:'طلب من',it:'Richiesta di',en:'Requested by',fr:'Demandé par'},
  how:{ar:'كيف تريد إرسالها؟',it:'Come vuoi inviarla?',en:'How do you want to send it?',fr:'Comment l’envoyer ?'},sure:{ar:'مسح كل السطور؟',it:'Svuotare tutte le righe?',en:'Clear all lines?',fr:'Effacer toutes les lignes ?'}};
-function manDoc(){var p=cur();if(!p.man||!p.man.length){p.man=[];for(var i=0;i<12;i++)p.man.push({n:'',q:'',u:'pz'})}return p.man}
+function manRow(){return {n:'',q:'',u:'pz'}}
+function manDoc(){var p=cur();if(!p.man||!p.man.length){p.man=[];for(var i=0;i<12;i++)p.man.push(manRow())}return p.man}
 function renderMList(){
   var p=cur(), rows=manDoc(), lang=settings.out==='both'?'it':settings.out;
   var lg=settings.logo&&/^data:image\//.test(settings.logo)?'<img src="'+settings.logo+'" alt="">':'<img src="'+ASSET_BASE+'brand/logo.webp" alt="" onerror="this.remove()">';
@@ -1060,19 +1061,20 @@ function renderMList(){
    rows.map(function(r,i){return '<div class="prw"><span class="pn">'+(i+1)+'</span><input class="pin" data-pm="'+i+'" dir="auto" value="'+esc(r.n)+'"'+(i===0?' placeholder="'+esc(L4(MLD.ph))+'"':'')+'><input class="pq" data-pq="'+i+'" inputmode="decimal" placeholder="0" value="'+esc(r.q)+'"><select class="pu" data-pu="'+i+'">'+uo(r.u)+'</select></div>'}).join('')+
    '<div class="pbt"><button data-act="mlmore">➕ '+esc(L4(MLD.more))+'</button><button data-act="mlclear">🗑 '+esc(L4(MLD.clear))+'</button></div>'+
    '<div class="mini" style="margin-top:8px">'+esc(L4(MLD.noPrice))+'</div></div>'+
-   '<button class="btn main psend" data-act="mlsend">📤 '+esc(L4(MLD.send))+'</button>';
+''; 
 }
-function manSync(){var p=cur(),m=manDoc();
-  document.querySelectorAll('[data-pm]').forEach(function(x){m[+x.dataset.pm].n=x.value});
-  document.querySelectorAll('[data-pq]').forEach(function(x){m[+x.dataset.pq].q=x.value});
-  document.querySelectorAll('[data-pu]').forEach(function(x){m[+x.dataset.pu].u=x.value});
-  save();}
-function manSend(){
-  manSync(); var p=cur(), m=manDoc().filter(function(r){return r.n.trim()});
-  if(!m.length){toast(L4(MLT.none));return}
+function manSync(){var rows=document.querySelectorAll('.paper .prw');if(!rows.length)return;var out=[];
+  for(var i=0;i<rows.length;i++){var r=rows[i],a=r.querySelector('.pin'),b=r.querySelector('.pq'),c=r.querySelector('.pu');out.push({n:a?a.value:'',q:b?b.value:'',u:c?c.value:'pz'})}
+  cur().man=out;save();}
+function manApply(){
+  manSync(); var p=cur(), m=manDoc().filter(function(r){return String(r.n||'').trim()});
+  if(!m.length){toast(L4(MLT.none));return false}
   p.lines=p.lines.filter(function(l){return !l.man});
   m.forEach(function(r){p.lines.push({item:null,it:r.n.trim(),ar:r.n.trim(),cat:'x',unit:r.u||'pz',size:'',color:'',qty:num(r.q)||1,note:'',man:1})});
-  save(); refreshCounts&&refreshCounts();
+  save(); refreshCounts(); return true;
+}
+function manSend(){
+  if(!manApply()) return;
   openSheet('<h2>📤 '+esc(L4(MLD.how))+'</h2><div class="sendopts"><button class="btn wa" id="moWa">WhatsApp</button><button class="btn pdf" id="moPdf">PDF</button><button class="btn cp" id="moCp">'+esc(T('copy'))+'</button></div>');
   $('#moWa').onclick=function(){closeSheet();doWa()};$('#moPdf').onclick=function(){closeSheet();doPdf()};$('#moCp').onclick=function(){closeSheet();doCopy()};
 }
@@ -1753,14 +1755,14 @@ function fileName(isQuote){
   var d=new Date(), base=isQuote?(settings.out==='ar'?'عرض_سعر':'Preventivo'):(settings.out==='ar'?'طلب_مواد':'Richiesta_materiale');
   return base+(c?'_'+c:'')+'_'+d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)+'.pdf';
 }
-function doWa(){ping('/usa/whatsapp'+(view.tab==='price'?'-preventivo':''),'Uso WhatsApp');if(view.tab==='price'){var tq=buildQuoteText(true);if(A&&A.whatsapp)A.whatsapp(tq,'');else openUrl('https://wa.me/?text='+encodeURIComponent(tq));return}var t=buildText(true),n=settings.waNum.replace(/[^\d]/g,'');if(A&&A.whatsapp)A.whatsapp(t,n);else openUrl('https://wa.me/'+n+'?text='+encodeURIComponent(t))}
-function doCopy(){ping('/usa/copia'+(view.tab==='price'?'-preventivo':''),'Uso copia');
+function doWa(){if(view.tab==='mlist'&&!manApply())return;ping('/usa/whatsapp'+(view.tab==='price'?'-preventivo':''),'Uso WhatsApp');if(view.tab==='price'){var tq=buildQuoteText(true);if(A&&A.whatsapp)A.whatsapp(tq,'');else openUrl('https://wa.me/?text='+encodeURIComponent(tq));return}var t=buildText(true),n=settings.waNum.replace(/[^\d]/g,'');if(A&&A.whatsapp)A.whatsapp(t,n);else openUrl('https://wa.me/'+n+'?text='+encodeURIComponent(t))}
+function doCopy(){if(view.tab==='mlist'&&!manApply())return;ping('/usa/copia'+(view.tab==='price'?'-preventivo':''),'Uso copia');
   var t=view.tab==='price'?buildQuoteText(false):buildText(false);
   if(A&&A.copy){A.copy(t);toast(T('copied'));return}
   function legacy(){var ta=document.createElement('textarea');ta.value=t;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,t.length);var ok=false;try{ok=document.execCommand('copy')}catch(e){}document.body.removeChild(ta);toast(ok?T('copied'):'✗')}
   if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function(){toast(T('copied'))},legacy); else legacy();
 }
-function doPdf(){ping('/usa/pdf'+(view.tab==='price'?'-preventivo':''),'Uso PDF');
+function doPdf(){if(view.tab==='mlist'&&!manApply())return;ping('/usa/pdf'+(view.tab==='price'?'-preventivo':''),'Uso PDF');
   var q=view.tab==='price';
   if(A&&A.pdf){toast(T('pdfWait'));A.pdf(q?buildQuoteReport():buildReport(),fileName(q))}
   else webPdf(q);
@@ -1850,7 +1852,7 @@ document.addEventListener('click',function(e){
    case 'custom': customSheet(v||'');break;
    case 'mlist': view.tab='mlist';view.cat=null;clearSearch();render();window.scrollTo(0,0);break;
    case 'mlback': manSync();view.tab='mat';render();break;
-   case 'mlmore': manSync();for(var mi=0;mi<6;mi++)manDoc().push({n:'',q:'',u:'pz'});save();render();break;
+   case 'mlmore': manSync();for(var mi=0;mi<6;mi++)manDoc().push(manRow());save();render();break;
    case 'mlclear': if(confirm(L4(MLD.sure))){cur().man=null;cur().lines=cur().lines.filter(function(l){return !l.man});save();render()}break;
    case 'mlsend': manSend();break;
    case 'siteopen': cur().site.open=true;save();render();break;
@@ -2033,7 +2035,7 @@ function lineMenu(i){
 })();
 main.addEventListener('change',function(e){if(e.target.dataset&&e.target.dataset.pu!=null)manSync()});
 main.addEventListener('input',function(e){
-  if(e.target.dataset&&(e.target.dataset.pm!=null||e.target.dataset.pq!=null)){clearTimeout(manSync._t);manSync._t=setTimeout(manSync,400);return}
+  if(e.target.dataset&&(e.target.dataset.pm!=null||e.target.dataset.pq!=null)){clearTimeout(manSync._t);manSync._t=setTimeout(function(){manSync();refreshCounts()},400);return}
   var t=e.target;
   if(t.dataset.cf){calcSet(t.dataset.cf,t.value);return}
   if(t.dataset.f){cur().site[t.dataset.f]=t.value;save()}

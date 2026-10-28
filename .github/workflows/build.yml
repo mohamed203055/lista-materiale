@@ -43,7 +43,7 @@ jobs:
             --split-strings true --split-strings-chunk-length 8 \
             --control-flow-flattening true --control-flow-flattening-threshold 0.3 \
             --dead-code-injection true --dead-code-injection-threshold 0.1 \
-            --transform-object-keys true --numbers-to-expressions true \
+            --transform-object-keys false --numbers-to-expressions true \
             --self-defending true --disable-console-output false
           mkdir -p "$GITHUB_WORKSPACE/out"
           cp app.js "$GITHUB_WORKSPACE/out/web-app.js"
