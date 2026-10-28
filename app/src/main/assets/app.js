@@ -549,6 +549,7 @@ function renderFavs(){
 function renderCats(){
   var n=cur().lines.length, pl=prosList();
   return '<div class="banner"><small>'+esc(L4(XT.bnSmall))+'</small><b>'+esc(L4(XT.bnTitle))+'</b><button class="bbtn" data-tab="cart">'+esc(L4(XT.bnBtn))+(n?' ('+n+')':'')+'</button><img class="bimg" alt="" src="'+ASSET_BASE+'ic/worker.webp" onerror="this.remove()"></div>'+
+   '<button class="mlcard" data-act="mlist">'+icH('📝')+'<span><b>'+esc(L4(MLT.home))+'</b><small>'+esc(L4(MLT.homeS))+'</small></span><i>'+(settings.ui==='ar'?'‹':'›')+'</i></button>'+
    '<div class="h2"><b>'+esc(L4(XT.catsT))+'</b></div>'+
    '<div class="grid">'+(tplList().length?'<button class="cat" data-act="cat" data-v="__tpl"><span class="ic">'+icH('📋')+'</span><b>'+esc(L4(XT.tpls).replace('📋 ',''))+'</b><span>'+tplList().length+'</span></button>':'')+'<button class="cat" data-act="cat" data-v="__fav"><span class="ic">'+icH('⭐')+'</span><b>'+esc(L4(XT.favs).replace('⭐ ',''))+'</b><span>'+liveItems(favBox().fav).length+' '+T('items')+'</span></button>'+DB.cats.filter(function(c){return !c.hidden}).map(function(c){
     return '<button class="cat" data-act="cat" data-v="'+c.id+'"><span class="ic">'+icH(c.ic,'📦')+'</span><b>'+esc(N(c))+'</b><span>'+visibleItems(c).length+' '+T('items')+'</span></button>'}).join('')+
@@ -592,7 +593,7 @@ function chkCount(){var p=cur(),n=Object.keys(p.check||{}).filter(function(k){re
 function hoursCount(){var t=(cur().hours||[]).reduce(function(a,h){return a+(+h.h||0)},0);return t?'('+n2(t,1)+' h)':''}
 function renderCart(){
   var L=cur().lines;
-  if(!L.length) return '<div class="empty"><div class="big">🧺</div>'+T('emptyCart')+'</div>';
+  if(!L.length) return '<div class="empty"><div class="big">🧺</div>'+T('emptyCart')+'</div><button class="mlcard" data-act="mlist">'+icH('📝')+'<span><b>'+esc(L4(MLT.home))+'</b><small>'+esc(L4(MLT.homeS))+'</small></span><i>'+(settings.ui==='ar'?'‹':'›')+'</i></button>';
   var groups={}, order=[];
   L.forEach(function(l,i){var g=l.cat||'x';if(!groups[g]){groups[g]=[];order.push(g)}groups[g].push(i)});
   order.sort(function(a,b){return catIndex(a)-catIndex(b)});
@@ -1023,6 +1024,45 @@ function customSheet(name){
     if(!n){toast(T('needName'));return} if(qty<=0){toast(T('needQty'));return}
     addLine({it:n,ar:n,cat:'x',unit:u,qty:qty,note:$('#sn').value.trim()});
     closeSheet();toast(T('added')+' '+n);render();
+  };
+}
+// lista scritta a mano: più pezzi in una volta (righe o testo libero)
+var MLT={t:{ar:'قائمة يدوية',it:'Lista a mano',en:'Write your list',fr:'Liste manuelle'},
+ sub:{ar:'اكتب القطع التي تحتاجها بنفسك، سطراً لكل قطعة',it:'Scrivi tu i pezzi che ti servono, una riga per pezzo',en:'Type the parts you need yourself, one line per part',fr:'Écrivez vous-même les pièces, une ligne par pièce'},
+ home:{ar:'اكتب قائمتك يدوياً',it:'Scrivi la tua lista a mano',en:'Write your list by hand',fr:'Écrivez votre liste à la main'},
+ homeS:{ar:'لم تجد القطع؟ اكتبها بنفسك بسرعة',it:'Non trovi i pezzi? Scrivili tu, veloce',en:'Can’t find the parts? Type them quickly',fr:'Pièces introuvables ? Écrivez-les vite'},
+ row:{ar:'سطر جديد',it:'Nuova riga',en:'New line',fr:'Nouvelle ligne'},
+ nm:{ar:'اسم القطعة',it:'Nome del pezzo',en:'Part name',fr:'Nom de la pièce'},
+ txt:{ar:'أو الصق قائمة كنص',it:'Oppure incolla una lista di testo',en:'Or paste a text list',fr:'Ou collez une liste en texte'},
+ txtP:{ar:'مثال:\n10 m كابل 2.5\n5 علبة 503\nقاطع 16A',it:'Esempio:\n10 m cavo 2,5\n5 scatole 503\ninterruttore 16A',en:'Example:\n10 m cable 2.5\n5 boxes 503\nbreaker 16A',fr:'Exemple :\n10 m câble 2,5\n5 boîtes\ndisjoncteur 16A'},
+ add:{ar:'أضف الكل إلى طلبي',it:'Aggiungi tutto alla richiesta',en:'Add all to my order',fr:'Tout ajouter à la demande'},
+ none:{ar:'اكتب قطعة واحدة على الأقل',it:'Scrivi almeno un pezzo',en:'Write at least one part',fr:'Écrivez au moins une pièce'},
+ ok:{ar:'تمت إضافة',it:'Aggiunti',en:'Added',fr:'Ajoutés'}};
+function manualList(){
+  var rows=[{n:'',q:'1',u:'pz'},{n:'',q:'1',u:'pz'},{n:'',q:'1',u:'pz'}];
+  function uOpts(sel){return Object.keys(UNITS).map(function(k){return '<option value="'+k+'"'+(k===sel?' selected':'')+'>'+esc(N(UNITS[k]))+'</option>'}).join('')}
+  function rowsHtml(){return rows.map(function(r,i){return '<div class="mlrow"><input class="mln" data-mn="'+i+'" placeholder="'+esc(L4(MLT.nm))+'" value="'+esc(r.n)+'"><input class="mlq" data-mq="'+i+'" inputmode="decimal" value="'+esc(r.q)+'"><select class="mlu" data-mu="'+i+'">'+uOpts(r.u)+'</select><button class="mldel" data-md="'+i+'">✕</button></div>'}).join('')}
+  function sync(){sheet.querySelectorAll('[data-mn]').forEach(function(x){rows[+x.dataset.mn].n=x.value});sheet.querySelectorAll('[data-mq]').forEach(function(x){rows[+x.dataset.mq].q=x.value});sheet.querySelectorAll('[data-mu]').forEach(function(x){rows[+x.dataset.mu].u=x.value})}
+  function draw(){
+    var box=$('#mlRows'); box.innerHTML=rowsHtml();
+    box.querySelectorAll('[data-md]').forEach(function(b){b.onclick=function(){sync();rows.splice(+b.dataset.md,1);if(!rows.length)rows.push({n:'',q:'1',u:'pz'});draw()}});
+  }
+  openSheet('<h2>'+icH('📝')+' '+esc(L4(MLT.t))+'</h2><div class="mini" style="margin-bottom:10px">'+esc(L4(MLT.sub))+'</div><div id="mlRows"></div>'+
+   '<button class="btn ghost" id="mlAdd" style="width:100%;margin-top:6px">➕ '+esc(L4(MLT.row))+'</button>'+
+   '<details class="mltxt"><summary>📋 '+esc(L4(MLT.txt))+'</summary><textarea id="mlT" dir="auto" rows="5" placeholder="'+esc(L4(MLT.txtP))+'"></textarea></details>'+
+   '<button class="btn main" id="mlGo">✓ '+esc(L4(MLT.add))+'</button>');
+  draw();
+  $('#mlAdd').onclick=function(){sync();rows.push({n:'',q:'1',u:'pz'});draw();var l=sheet.querySelectorAll('.mln');l[l.length-1].focus()};
+  $('#mlGo').onclick=function(){
+    sync(); var out=rows.filter(function(r){return r.n.trim()}).map(function(r){return {n:r.n.trim(),q:num(r.q)||1,u:r.u}});
+    ($('#mlT').value||'').split('\n').forEach(function(l){l=l.trim();if(!l)return;
+      var m=l.match(/^(\d+(?:[.,]\d+)?)\s*(m|mt|metri|metres?|متر|pz|pezzi|قطعة|kg|كغ)?\s+(.+)$/i)||null, q=1, u='pz', n=l;
+      if(m){q=num(m[1])||1;n=m[3];if(m[2])u=/^(m|mt|metri|metres?|متر)$/i.test(m[2])?'m':/^(kg|كغ)$/i.test(m[2])?'kg':'pz'}
+      else{var e=l.match(/^(.+?)\s*[x×*]\s*(\d+(?:[.,]\d+)?)$/i);if(e){n=e[1];q=num(e[2])||1}}
+      out.push({n:n.trim(),q:q,u:u})});
+    if(!out.length){toast(L4(MLT.none));return}
+    out.forEach(function(o){addLine({it:o.n,ar:o.n,cat:'x',unit:o.u,qty:o.q,note:''})});
+    closeSheet();toast(L4(MLT.ok)+' '+out.length);render();
   };
 }
 function partItem(p){return (p.item&&IBY[p.item])||{id:null,it:p.name,ar:p.name,unit:'pz',cat:'x'}}
@@ -1736,6 +1776,7 @@ document.addEventListener('click',function(e){
    case 'fav': var y=window.scrollY;toast(L4(toggleFav(v)?XT.favAdd:XT.favDel));render();window.scrollTo(0,y);break;
    case 'kit': kitSheet(DB.kits.find(function(k){return k.id===v}));break;
    case 'custom': customSheet(v||'');break;
+   case 'mlist': manualList();break;
    case 'siteopen': cur().site.open=true;save();render();break;
    case 'siteclose': cur().site.open=false;save();render();break;
    case 'place': cur().site.luogo=cur().site.luogo===v?'':v;save();render();break;
