@@ -2,22 +2,14 @@ name: diag
 on:
   push:
     branches: [diag]
-permissions:
-  contents: write
 jobs:
   d:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - run: |
-          mkdir -p icons3d && cd icons3d
-          B="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets"
-          while IFS='|' read -r key name; do
-            [ -z "$key" ] && continue
-            n=$(echo "$name" | tr 'A-Z' 'a-z' | sed 's/ /_/g; s/-/_/g')
-            u1="$B/$(echo "$name" | sed 's/ /%20/g')/3D/${n}_3d.png"
-            u2="$B/$(echo "$name" | sed 's/ /%20/g')/Default/3D/${n}_3d_default.png"
-            curl -sfL "$u1" -o "$key.png" || curl -sfL "$u2" -o "$key.png" || echo "::warning::miss $key $name"
-          done < ../icons.txt
-          ls | wc -l
-          cd .. && git config user.name bot && git config user.email bot@x && git add icons3d && git commit -qm icons && git push -q origin HEAD:icons3d -f
+          sleep 40
+          b=$(curl -sS "https://mohamed203055.github.io/lista-materiale-web/version.json?t=$RANDOM" | python3 -c "import json,sys;v=json.load(sys.stdin);print(v['versionCode'],v['apk'],v['send'],v['live']['ver'])")
+          echo "::notice::DATA $b"
+          for u in "https://mohamed203055.github.io/lista-materiale-web/SiteNeeds-1.0.68.apk" "https://siteneeds.net/SiteNeeds.apk" "https://mohamed203055.github.io/lista-materiale-web/live/68/app.js" "https://mohamed203055.github.io/lista-materiale-web/ic/house.webp" "https://mohamed203055.github.io/lista-materiale-web/brand/logo.webp"; do
+            a=$(curl -sSI "$u" | tr -d '\r' | grep -iE "^HTTP|^content-length" | tr '\n' ' '); echo "::notice::$u => $a"; done
+          c=$(curl -sS "https://siteneeds.net/?t=$RANDOM" | grep -c 'id="splash"'); echo "::notice::SITE splash $c"
