@@ -374,6 +374,7 @@ function render(){
   else if(inProj) h=renderProjects();
   else if(inCalc) h=renderCalc();
   else if(inPrice) h=renderPrice();
+  else if(view.tab==='mlist') h=renderMList();
   else if(view.q) h=renderSearch();
   else if(view.tab==='mat') h=(view.cat?'':quickRow()+renderSite())+(view.cat==='__fav'?renderFavs():view.cat==='__tpl'?renderTpls():view.cat&&CBY[view.cat]?renderCat(view.cat):renderCats());
   else if(view.tab==='kit'){view.tab='mat';h=quickRow()+renderSite()+renderCats()}
@@ -1038,6 +1039,43 @@ var MLT={t:{ar:'قائمة يدوية',it:'Lista a mano',en:'Write your list',fr
  add:{ar:'أضف الكل إلى طلبي',it:'Aggiungi tutto alla richiesta',en:'Add all to my order',fr:'Tout ajouter à la demande'},
  none:{ar:'اكتب قطعة واحدة على الأقل',it:'Scrivi almeno un pezzo',en:'Write at least one part',fr:'Écrivez au moins une pièce'},
  ok:{ar:'تمت إضافة',it:'Aggiunti',en:'Added',fr:'Ajoutés'}};
+// pagina "foglio" per scrivere la lista a mano (stile documento, poi PDF professionale)
+var MLD={more:{ar:'سطور إضافية',it:'Altre righe',en:'More lines',fr:'Plus de lignes'},clear:{ar:'مسح',it:'Svuota',en:'Clear',fr:'Effacer'},
+ send:{ar:'حفظ وإرسال',it:'Salva e invia',en:'Save & send',fr:'Enregistrer et envoyer'},back:{ar:'رجوع',it:'Indietro',en:'Back',fr:'Retour'},
+ hint:{ar:'اكتب بنفسك القطع والكمية والوحدة. تبقى محفوظة في الهاتف حتى ترسلها.',it:'Scrivi tu pezzi, quantità e unità. Resta salvata sul telefono finché la invii.',en:'Type parts, quantity and unit. It stays saved on your phone until you send it.',fr:'Écrivez pièces, quantités et unités. La liste reste enregistrée jusqu’à l’envoi.'},
+ noPrice:{ar:'قطع وكميات فقط، بدون أسعار.',it:'Solo pezzi e quantità, senza prezzi.',en:'Parts and quantities only, no prices.',fr:'Pièces et quantités uniquement, sans prix.'},
+ ph:{ar:'مثلاً أنبوب مرن 25',it:'es. tubo corrugato 25',en:'e.g. flexible conduit 25',fr:'ex. gaine ICTA 25'},
+ site:{ar:'الورشة',it:'Cantiere',en:'Site',fr:'Chantier'},by:{ar:'طلب من',it:'Richiesta di',en:'Requested by',fr:'Demandé par'},
+ how:{ar:'كيف تريد إرسالها؟',it:'Come vuoi inviarla?',en:'How do you want to send it?',fr:'Comment l’envoyer ?'},sure:{ar:'مسح كل السطور؟',it:'Svuotare tutte le righe?',en:'Clear all lines?',fr:'Effacer toutes les lignes ?'}};
+function manDoc(){var p=cur();if(!p.man||!p.man.length){p.man=[];for(var i=0;i<12;i++)p.man.push({n:'',q:'',u:'pz'})}return p.man}
+function renderMList(){
+  var p=cur(), rows=manDoc(), lang=settings.out==='both'?'it':settings.out;
+  var lg=settings.logo&&/^data:image\//.test(settings.logo)?'<img src="'+settings.logo+'" alt="">':'<img src="'+ASSET_BASE+'brand/logo.webp" alt="" onerror="this.remove()">';
+  var co=[settings.ditta,settings.coSub].filter(Boolean).join(' ');
+  function uo(sel){return Object.keys(UNITS).map(function(k){return '<option value="'+k+'"'+(k===sel?' selected':'')+'>'+esc(unitOut(lang,k)||k)+'</option>'}).join('')}
+  return '<button class="back" data-act="mlback">'+(settings.ui==='ar'?'→ ':'← ')+esc(L4(MLD.back))+'</button><div class="mini" style="margin:0 4px 10px">'+esc(L4(MLD.hint))+'</div>'+
+   '<div class="paper"><div class="ph"><div class="pl">'+lg+'</div><div class="pt">'+(co?'<small dir="auto">'+esc(co)+'</small>':'')+'<b>'+esc(OUT[lang].titleL)+'</b></div></div><div class="pr"></div>'+
+   '<div class="pm"><div>'+esc(L4(MLD.site))+': <b dir="auto">'+esc(p.name||p.site.cliente||'—')+'</b></div><div>'+esc(L4(MLD.by))+': <b dir="auto">'+esc(settings.tecnico||(settings.reg&&settings.reg.nome)||'—')+'</b> · <span dir="ltr">'+dateTxt()+'</span></div></div>'+
+   '<div class="pth"><span>#</span><span>'+esc(lang==='ar'?OUT.ar.mat:OUT.it.mat||'Materiale')+'</span><span>'+esc(lang==='ar'?OUT.ar.qty:OUT.it.qty)+'</span><span></span></div>'+
+   rows.map(function(r,i){return '<div class="prw"><span class="pn">'+(i+1)+'</span><input class="pin" data-pm="'+i+'" dir="auto" value="'+esc(r.n)+'"'+(i===0?' placeholder="'+esc(L4(MLD.ph))+'"':'')+'><input class="pq" data-pq="'+i+'" inputmode="decimal" placeholder="0" value="'+esc(r.q)+'"><select class="pu" data-pu="'+i+'">'+uo(r.u)+'</select></div>'}).join('')+
+   '<div class="pbt"><button data-act="mlmore">➕ '+esc(L4(MLD.more))+'</button><button data-act="mlclear">🗑 '+esc(L4(MLD.clear))+'</button></div>'+
+   '<div class="mini" style="margin-top:8px">'+esc(L4(MLD.noPrice))+'</div></div>'+
+   '<button class="btn main psend" data-act="mlsend">📤 '+esc(L4(MLD.send))+'</button>';
+}
+function manSync(){var p=cur(),m=manDoc();
+  document.querySelectorAll('[data-pm]').forEach(function(x){m[+x.dataset.pm].n=x.value});
+  document.querySelectorAll('[data-pq]').forEach(function(x){m[+x.dataset.pq].q=x.value});
+  document.querySelectorAll('[data-pu]').forEach(function(x){m[+x.dataset.pu].u=x.value});
+  save();}
+function manSend(){
+  manSync(); var p=cur(), m=manDoc().filter(function(r){return r.n.trim()});
+  if(!m.length){toast(L4(MLT.none));return}
+  p.lines=p.lines.filter(function(l){return !l.man});
+  m.forEach(function(r){p.lines.push({item:null,it:r.n.trim(),ar:r.n.trim(),cat:'x',unit:r.u||'pz',size:'',color:'',qty:num(r.q)||1,note:'',man:1})});
+  save(); refreshCounts&&refreshCounts();
+  openSheet('<h2>📤 '+esc(L4(MLD.how))+'</h2><div class="sendopts"><button class="btn wa" id="moWa">WhatsApp</button><button class="btn pdf" id="moPdf">PDF</button><button class="btn cp" id="moCp">'+esc(T('copy'))+'</button></div>');
+  $('#moWa').onclick=function(){closeSheet();doWa()};$('#moPdf').onclick=function(){closeSheet();doPdf()};$('#moCp').onclick=function(){closeSheet();doCopy()};
+}
 function manualList(){
   var rows=[{n:'',q:'1',u:'pz'},{n:'',q:'1',u:'pz'},{n:'',q:'1',u:'pz'}];
   function uOpts(sel){return Object.keys(UNITS).map(function(k){return '<option value="'+k+'"'+(k===sel?' selected':'')+'>'+esc(N(UNITS[k]))+'</option>'}).join('')}
@@ -1810,7 +1848,11 @@ document.addEventListener('click',function(e){
    case 'fav': var y=window.scrollY;toast(L4(toggleFav(v)?XT.favAdd:XT.favDel));render();window.scrollTo(0,y);break;
    case 'kit': kitSheet(DB.kits.find(function(k){return k.id===v}));break;
    case 'custom': customSheet(v||'');break;
-   case 'mlist': manualList();break;
+   case 'mlist': view.tab='mlist';view.cat=null;clearSearch();render();window.scrollTo(0,0);break;
+   case 'mlback': manSync();view.tab='mat';render();break;
+   case 'mlmore': manSync();for(var mi=0;mi<6;mi++)manDoc().push({n:'',q:'',u:'pz'});save();render();break;
+   case 'mlclear': if(confirm(L4(MLD.sure))){cur().man=null;cur().lines=cur().lines.filter(function(l){return !l.man});save();render()}break;
+   case 'mlsend': manSend();break;
    case 'siteopen': cur().site.open=true;save();render();break;
    case 'siteclose': cur().site.open=false;save();render();break;
    case 'place': cur().site.luogo=cur().site.luogo===v?'':v;save();render();break;
@@ -1989,7 +2031,9 @@ function lineMenu(i){
   main.addEventListener('contextmenu',function(e){if(e.target.closest&&e.target.closest('.line[data-li]'))e.preventDefault()});
   main.addEventListener('click',function(e){if(fired){fired=false;e.stopPropagation();e.preventDefault()}},true);
 })();
+main.addEventListener('change',function(e){if(e.target.dataset&&e.target.dataset.pu!=null)manSync()});
 main.addEventListener('input',function(e){
+  if(e.target.dataset&&(e.target.dataset.pm!=null||e.target.dataset.pq!=null)){clearTimeout(manSync._t);manSync._t=setTimeout(manSync,400);return}
   var t=e.target;
   if(t.dataset.cf){calcSet(t.dataset.cf,t.value);return}
   if(t.dataset.f){cur().site[t.dataset.f]=t.value;save()}
