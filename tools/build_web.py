@@ -76,6 +76,8 @@ def icon(size):
     return im.resize((size, size), Image.LANCZOS)
 for s in (180, 192, 512):
     icon(s).save(os.path.join(dst, 'icon-%d.png' % s))
+    _b = os.path.join(os.path.dirname(__file__), 'brand', 'icon-%d.png' % s)
+    if os.path.exists(_b): shutil.copy(_b, os.path.join(dst, 'icon-%d.png' % s))  # logo ufficiale
 # aggiornamenti: APK pubblico + version.json
 if len(sys.argv) > 3:
     import json

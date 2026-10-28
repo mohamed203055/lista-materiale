@@ -261,7 +261,7 @@ function reindex(){
 }
 
 // ---- progetti ----
-function blankProj(){return {id:uid('p'),trade:tradeId(),name:'',site:{cliente:'',indirizzo:'',luogo:'',note:'',open:true},lines:[],created:Date.now(),updated:Date.now()}}
+function blankProj(){return {id:uid('p'),trade:tradeId(),name:'',site:{cliente:'',indirizzo:'',luogo:'',note:'',open:false},lines:[],created:Date.now(),updated:Date.now()}}
 var P=load(K.proj,null);
 if(!P){
   P={cur:null,list:[]};
@@ -334,12 +334,18 @@ function refreshCounts(){var n=view.tab==='price'?cur().quote.lines.length:cur()
 function applyLang(){
   var ar=settings.ui==='ar';
   document.documentElement.lang=settings.ui; document.documentElement.dir=ar?'rtl':'ltr';
-  document.title='SiteNeeds – '+T('title'); $('#ttl').textContent=(packId()!=='IT'&&packData()?packData().flag+' ':'')+'SiteNeeds';
+  document.title='SiteNeeds – '+T('title');
+  var nm=((settings.reg&&settings.reg.nome)||settings.tecnico||'').trim().split(/\s+/)[0]||'';
+  $('#ttl').textContent=nm||'SiteNeeds';
   var sm=document.createElement('small');sm.textContent=tradeId()!=='ele'?tradeLabel():T('title');$('#ttl').appendChild(sm);
+  $('#helloT').textContent=L4(XT.hello)+' 👋'+(packId()!=='IT'&&packData()?'  '+packData().flag:'');
+  var av=$('#btnMe'); if(av){ if(settings.logo&&/^data:image\//.test(settings.logo)) av.innerHTML='<img src="'+settings.logo+'" alt="">'; else if(nm) av.textContent=nm.charAt(0).toUpperCase(); else av.innerHTML='<img class="lg" src="'+ASSET_BASE+'brand/logo.webp" alt="">'; }
+  if($('#splTag'))$('#splTag').textContent=L4(XT.tagline);
   $('#btnLang').textContent='🌐 '+settings.ui.toUpperCase();
   $('#q').placeholder=T('search');
-  $('#btnCalc').innerHTML='🧮 <span>'+L4(XT.calcBtn)+'</span>';$('#btnCalc').title=CT('calc');
-  $('#tMat').textContent=T('mat');$('#tPrice').textContent='💶 '+T('price'); $('#tCart').textContent=T('cart');
+  $('#tCalc').textContent=L4(XT.calcBtn);$('#btnCalc').title=CT('calc');
+  $('#tMat').textContent=L4(XT.home);$('#tPriceT').textContent=T('price'); $('#tCart').textContent=L4(XT.myOrder); $('#tProj').textContent=L4(XT.projs);
+  ic3nav();
   $('#cntL').textContent=T('items'); $('#btnCopyT').textContent=T('copy');
   $('#btnWaT').textContent=ar?'واتساب':'WhatsApp';
   if($('#tCalc'))$('#tCalc').title=T('calc');
@@ -357,18 +363,19 @@ function rcUI(){
 function render(){
   rcUI();
   var inAdmin=view.tab==='admin', inProj=view.tab==='projects', inPrice=view.tab==='price', inCalc=view.tab==='calc';
-  $('#tabs').style.display=(inAdmin||inProj||inCalc)?'none':'';
+  $('#tabs').style.display=inAdmin?'none':'';
   $('#searchBox').style.display=(inAdmin||inProj||inPrice||inCalc)?'none':'';
-  $('#bar').style.display=(inAdmin||inCalc)?'none':'';
-  document.body.style.paddingBottom=(inAdmin||inCalc)?'24px':'';
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.tab===view.tab&&!view.q)});
+  var showBar=view.tab==='cart'||view.tab==='price'||(view.tab==='mat'&&cur().lines.length>0);
+  $('#bar').style.display=showBar?'':'none';
+  document.body.style.paddingBottom=inAdmin?'24px':(showBar?'170px':'100px');
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',(t.dataset.tab||t.dataset.nav)===view.tab&&!view.q)});
   var h='';
   if(inAdmin) h=renderAdmin();
   else if(inProj) h=renderProjects();
   else if(inCalc) h=renderCalc();
   else if(inPrice) h=renderPrice();
   else if(view.q) h=renderSearch();
-  else if(view.tab==='mat') h=quickRow()+renderSite()+(view.cat==='__fav'?renderFavs():view.cat==='__tpl'?renderTpls():view.cat&&CBY[view.cat]?renderCat(view.cat):renderCats());
+  else if(view.tab==='mat') h=(view.cat?'':quickRow()+renderSite())+(view.cat==='__fav'?renderFavs():view.cat==='__tpl'?renderTpls():view.cat&&CBY[view.cat]?renderCat(view.cat):renderCats());
   else if(view.tab==='kit'){view.tab='mat';h=quickRow()+renderSite()+renderCats()}
   else h=renderCart();
   main.innerHTML=h; refreshCounts();
@@ -446,6 +453,17 @@ var XT={
   uiHint:{ar:'تغيّر لغة القوائم والأزرار في التطبيق.',it:'Cambia la lingua di menu e pulsanti dell’app.',en:'Changes the language of the app’s menus and buttons.',fr:'Change la langue des menus et boutons de l’appli.'},
   outHint:{ar:'لغة الرسائل وملفات PDF التي ترسلها للمدير أو للزبون.',it:'Lingua dei messaggi e dei PDF che invii al responsabile o al cliente.',en:'Language of the messages and PDFs you send to the manager or client.',fr:'Langue des messages et PDF envoyés au responsable ou au client.'},
   calcBtn:{ar:'حاسبة',it:'Calcoli',en:'Calc',fr:'Calculs'},
+  hello:{ar:'مرحباً',it:'Ciao',en:'Hello',fr:'Bonjour'},
+  home:{ar:'الرئيسية',it:'Home',en:'Home',fr:'Accueil'},
+  myOrder:{ar:'طلبي',it:'Richiesta',en:'My order',fr:'Ma demande'},
+  projs:{ar:'مشاريعي',it:'Progetti',en:'Projects',fr:'Projets'},
+  tagline:{ar:'كل احتياجات مشروعك في مكان واحد',it:'Tutto ciò che serve al cantiere, in un unico posto',en:'All your project needs in one place',fr:'Tous les besoins de votre chantier, au même endroit'},
+  bnSmall:{ar:'سريع وسهل ✨',it:'Facile e veloce ✨',en:'Quick and easy ✨',fr:'Simple et rapide ✨'},
+  bnTitle:{ar:'اختر القطع وأرسل الطلب للمدير في دقيقة',it:'Scegli i pezzi e invia la richiesta in un minuto',en:'Pick the parts and send your order in a minute',fr:'Choisissez les pièces et envoyez la demande en une minute'},
+  bnBtn:{ar:'📋 طلبي',it:'📋 La mia richiesta',en:'📋 My order',fr:'📋 Ma demande'},
+  catsT:{ar:'الأقسام',it:'Categorie',en:'Categories',fr:'Catégories'},
+  seeAll:{ar:'عرض الكل',it:'Vedi tutto',en:'See all',fr:'Voir tout'},
+  addOwn:{ar:'أضف قطعة غير موجودة',it:'Aggiungi un pezzo non presente',en:'Add an item that is not listed',fr:'Ajouter une pièce absente'},
   searchCl:{ar:'ابحث عن زبون…',it:'Cerca un cliente…',en:'Search a client…',fr:'Rechercher un client…'},
   dupLine:{ar:'⧉ تكرار السطر',it:'⧉ Duplica riga',en:'⧉ Duplicate line',fr:'⧉ Dupliquer la ligne'},
   delLine:{ar:'🗑 حذف السطر',it:'🗑 Elimina riga',en:'🗑 Delete line',fr:'🗑 Supprimer la ligne'},
@@ -482,7 +500,7 @@ function dupProj(v){
   var cp=JSON.parse(JSON.stringify(src));cp.id=uid('p');cp.name=(projTitle(src))+' (2)';cp.created=cp.updated=Date.now();P.list.unshift(cp);save();toast(T('dupDone'));return true;
 }
 function quickRow(){
-  return '<div class="row2" style="margin-bottom:12px"><button class="btn main" style="margin:0;flex:1.3" data-act="newproj">'+L4(XT.newP)+'</button><button class="btn ghost" style="flex:1;background:var(--card);box-shadow:0 1px 2px rgba(20,25,60,.06)" data-act="clients">'+L4(XT.myCl)+'</button></div>';
+  return '<div class="qrow"><button class="pri" data-act="newproj">'+L4(XT.newP)+'</button><button data-act="clients">'+L4(XT.myCl)+'</button></div>';
 }
 function startNew(){
   var p=cur(), had=!isEmpty(p);
@@ -507,7 +525,11 @@ function renderSite(){
 var SVGIC={'🌈':'<svg class="svgic" viewBox="1 6 46 33" aria-hidden="true"><rect x="3" y="17" width="42" height="14" rx="3" fill="#EEF1F7" stroke="#8C95A8" stroke-width="2"/>'+
   [9,21,33].map(function(x){return '<g><path d="M'+(x+3)+' 9v4M'+(x-1)+' 11l2 3M'+(x+7)+' 11l-2 3" stroke="#FFB31A" stroke-width="2" stroke-linecap="round"/><rect x="'+x+'" y="20" width="7" height="8" rx="1.5" fill="#FFC83D" stroke="#C98A00" stroke-width="1.2"/></g>'}).join('')+
   '<path d="M3 37h42" stroke="#C4CAD6" stroke-width="2" stroke-dasharray="3 3"/></svg>'};
-function icH(ic,fb){ic=ic||fb||'';return SVGIC[ic]||esc(ic)}
+var ASSET_BASE='https://mohamed203055.github.io/lista-materiale-web/';
+var IC3={'🧵':'package','〰️':'plug','🔩':'bolt','🗄️':'cabinet','⏱️':'stopwatch','🔘':'radio','💡':'bulb','⏚':'shield','🌐':'globe','🔔':'bell','📹':'camera','🚨':'siren','☀️':'sun','🧰':'toolbox','🛠️':'tools','🔌':'volt','🧱':'brick','📐':'triruler','🎨':'palette','🛡️':'shield','🧴':'lotion','🔲':'square','⚡':'volt','🪵':'wood','🦺':'vest','🏗️':'crane','🚪':'door','🌳':'tree','📏':'ruler','⭐':'star','📋':'clipboard','🤝':'handshake','🧮':'abacus','📁':'folder','⚙️':'gear','💶':'euro','💧':'drop','📦':'package','👷':'worker','🏠':'house','👤':'user','💬':'chat','➕':'memo','🧩':'package','📡':'satellite','🔧':'wrench','🔨':'hammer','📝':'memo','👋':'wave'};
+function ic3(key,em,cls){return '<img class="i3'+(cls?' '+cls:'')+'" alt="'+esc(em||'')+'" src="'+ASSET_BASE+'ic/'+key+'.webp" onerror="this.outerHTML=this.alt">'}
+function icH(ic,fb){ic=ic||fb||'';if(SVGIC[ic])return SVGIC[ic];var k=IC3[ic];return k?ic3(k,ic):esc(ic)}
+function ic3nav(){document.querySelectorAll('.nav .ni[data-ic]').forEach(function(n){if(!n.firstElementChild){var em=n.textContent;n.innerHTML=ic3(n.dataset.ic,em)}})}
 function visibleItems(c){return c.items.filter(function(i){return !i.hidden&&!i._rdel})}
 /* ---- preferiti e usati di recente (salvati a parte, per paese) ---- */
 var FAV=load(K.fav,{});
@@ -525,10 +547,14 @@ function renderFavs(){
    (f.length?'<div class="list">'+f.map(itemRow).join('')+'</div>':'<div class="empty"><div class="big">☆</div>'+L4(XT.favEmpty)+'</div>');
 }
 function renderCats(){
-  return '<div class="grid">'+(tplList().length?'<button class="cat" data-act="cat" data-v="__tpl"><span class="ic">📋</span><b>'+esc(L4(XT.tpls).replace('📋 ',''))+'</b><span>'+tplList().length+'</span></button>':'')+'<button class="cat" data-act="cat" data-v="__fav"><span class="ic">⭐</span><b>'+esc(L4(XT.favs).replace('⭐ ',''))+'</b><span>'+liveItems(favBox().fav).length+' '+T('items')+'</span></button>'+DB.cats.filter(function(c){return !c.hidden}).map(function(c){
+  var n=cur().lines.length, pl=prosList();
+  return '<div class="banner"><small>'+esc(L4(XT.bnSmall))+'</small><b>'+esc(L4(XT.bnTitle))+'</b><button class="bbtn" data-tab="cart">'+esc(L4(XT.bnBtn))+(n?' ('+n+')':'')+'</button><img class="bimg" alt="" src="'+ASSET_BASE+'ic/worker.webp" onerror="this.remove()"></div>'+
+   '<div class="h2"><b>'+esc(L4(XT.catsT))+'</b></div>'+
+   '<div class="grid">'+(tplList().length?'<button class="cat" data-act="cat" data-v="__tpl"><span class="ic">'+icH('📋')+'</span><b>'+esc(L4(XT.tpls).replace('📋 ',''))+'</b><span>'+tplList().length+'</span></button>':'')+'<button class="cat" data-act="cat" data-v="__fav"><span class="ic">'+icH('⭐')+'</span><b>'+esc(L4(XT.favs).replace('⭐ ',''))+'</b><span>'+liveItems(favBox().fav).length+' '+T('items')+'</span></button>'+DB.cats.filter(function(c){return !c.hidden}).map(function(c){
     return '<button class="cat" data-act="cat" data-v="'+c.id+'"><span class="ic">'+icH(c.ic,'📦')+'</span><b>'+esc(N(c))+'</b><span>'+visibleItems(c).length+' '+T('items')+'</span></button>'}).join('')+
    '<button class="cat" data-act="custom"><span class="ic">➕</span><b>'+T('custom')+'</b></button></div>'+
-   (prosList().length?'<button class="contact prosbtn" data-act="pros"><span class="ci" style="background:#F5A400">🤝</span><div><b>'+L4(XT.pros).replace('🤝 ','')+' ('+prosList().length+')</b><span>'+L4(XT.prosHint)+'</span></div></button>':'');
+   (pl.length?'<div class="h2"><b>'+esc(L4(XT.pros).replace('🤝 ',''))+'</b><button class="prosbtn" data-act="pros">'+esc(L4(XT.seeAll))+' '+(settings.ui==='ar'?'‹':'›')+'</button></div><div class="pcar">'+pl.slice(0,12).map(function(p){
+     return '<button class="pcard" data-act="pro" data-v="'+esc(p.id)+'">'+proPic(p)+'<b>'+esc(p.name)+'</b><span>'+esc(p.job||'')+'</span>'+(p.city?'<span>📍 '+esc(p.city)+'</span>':'')+'</button>'}).join('')+'</div>':'');
 }
 function itemRow(it){
   var h=haveQty(it);
@@ -539,7 +565,8 @@ function itemRow(it){
 }
 function renderCat(id){
   var c=CBY[id];
-  return '<button class="back" data-act="back">'+(settings.ui==='ar'?'→ ':'← ')+T('allCats')+'</button><div class="sec">'+icH(c.ic)+' '+esc(N(c))+'</div><div class="list">'+visibleItems(c).map(itemRow).join('')+'</div>';
+  return '<button class="back" data-act="back">'+(settings.ui==='ar'?'→ ':'← ')+T('allCats')+'</button><div class="sec">'+icH(c.ic)+' '+esc(N(c))+'</div>'+
+   '<button class="addown" data-act="custom">'+icH('📝')+'<span>'+esc(L4(XT.addOwn))+'</span></button><div class="list">'+visibleItems(c).map(itemRow).join('')+'</div>';
 }
 function renderSearch(){
   var words=norm(view.q).split(' ').filter(Boolean);
@@ -1467,6 +1494,7 @@ function O(lang,k){return lang==='both'?OUT.it[k]+' / '+OUT.ar[k]:OUT[lang][k]}
 function nameOut(lang,o){if(lang==='both')return o.it+(o.ar&&o.ar!==o.it?' / '+o.ar:'');return trName(o,lang)}
 function unitOut(lang,u){var U=unit(u);return U[lang]||U.it}
 function placeOut(lang){var p=placeOf(cur().site.luogo);return p?nameOut(lang,p):''}
+function wmImg(){return settings.logo&&/^data:image\//.test(settings.logo)?'<img class="wm" src="'+settings.logo+'" alt="">':''}
 function logoImg(){return settings.logo&&/^data:image\//.test(settings.logo)?'<img class="logo" src="'+settings.logo+'" style="max-height:56px;max-width:160px;display:block;margin-bottom:4px;margin-inline-start:auto">':''}
 function dateTxt(){var d=new Date();function z(n){return (n<10?'0':'')+n}return z(d.getDate())+'/'+z(d.getMonth()+1)+'/'+d.getFullYear()}
 var OUTF=null; // 'miss' = solo ciò che manca
@@ -1529,7 +1557,7 @@ function buildReport(lang){
    '.cd{display:inline-block;width:11px;height:11px;border-radius:50%;border:1px solid rgba(0,0,0,.3);vertical-align:-1px;margin:0 4px}'+
    '.cat{margin-top:12px;padding:6px 8px;font-weight:800;color:#1F4FD8;font-size:13px;border-bottom:2px solid #E4EBFF}.cat span{margin-inline-start:8px;color:#646A80;font-weight:600}'+
    '.foot{margin-top:16px;display:flex;justify-content:space-between;font-size:13px;color:#646A80}.notes{margin-top:14px;padding:10px 12px;background:#FFF6E8;border-radius:8px;font-size:13px}'+
-   '.sp{height:0}</style></head><body><div class="wrap"><div class="pad"></div>'+
+   '.sp{height:0}.wm{position:fixed;top:50%;left:50%;width:58%;max-height:60%;object-fit:contain;transform:translate(-50%,-50%);opacity:.08;z-index:5;pointer-events:none;mix-blend-mode:multiply}</style></head><body>'+wmImg()+'<div class="wrap"><div class="pad"></div>'+
    '<div class="blk hd"><h1>'+title+'</h1><div class="co">'+logoImg()+esc(settings.ditta)+'</div></div>'+
    '<div class="blk info">'+info+'</div>'+
    '<div class="blk th"><div>#</div><div>'+lab('mat')+'</div><div>'+lab('size')+'</div><div class="q">'+(lang==='ar'?OUT.ar.qty:OUT.it.qty)+'</div></div>'+
@@ -1599,7 +1627,7 @@ function buildQuoteReport(lang){
    '.r{border-bottom:1px solid #EEF0F4}.r.alt{background:#F7F8FB}.r .n{color:#646A80}.r .ar{color:#4A5068;font-size:13px;text-align:start}.r .b{font-weight:800}'+
    '.tots{margin-top:14px;margin-inline-start:auto;width:340px}.tr{display:flex;justify-content:space-between;padding:6px 8px;border-bottom:1px solid #EEF0F4}.tr span{color:#4A5068}'+
    '.tr.big{background:#1F4FD8;color:#fff;border-radius:6px;font-size:17px;margin-top:6px;padding:10px 8px}.tr.big span{color:#fff;font-weight:700}'+
-   '.foot{margin-top:18px;font-size:12.5px;color:#646A80}.sp{height:0}</style></head><body><div class="wrap"><div class="pad"></div>'+
+   '.foot{margin-top:18px;font-size:12.5px;color:#646A80}.sp{height:0}.wm{position:fixed;top:50%;left:50%;width:58%;max-height:60%;object-fit:contain;transform:translate(-50%,-50%);opacity:.08;z-index:5;pointer-events:none;mix-blend-mode:multiply}</style></head><body>'+wmImg()+'<div class="wrap"><div class="pad"></div>'+
    '<div class="blk hd"><h1>'+title+'</h1><div class="co">'+logoImg()+esc(settings.ditta)+'</div></div>'+
    '<div class="blk info">'+info+'</div>'+
    '<div class="blk th"><div>#</div><div>'+lab('descr')+'</div><div class="c">'+lab('qty')+'</div><div class="c">'+lab('price')+'</div><div class="c">'+lab('tot')+'</div></div>'+
@@ -1639,6 +1667,7 @@ function webPdf(isQuote){
       setTimeout(function(){
         var doc=ifr.contentDocument, H=doc.body.scrollHeight, P=W*297/210, n=Math.max(1,Math.ceil((H-2)/P)), pages=[], i=0;
         ifr.style.height=H+'px';
+        var wm=doc.querySelector('.wm'); if(wm){for(var k=0;k<n;k++){var c=wm.cloneNode();c.style.position='absolute';c.style.top=Math.round(k*P+P/2)+'px';doc.body.appendChild(c)}wm.remove()}
         (function next(){
           if(i>=n){document.body.removeChild(ifr);var blob=pdfFromJpegs(pages);fileReadySheet(new File([blob],fileName(isQuote),{type:'application/pdf'}));return}
           window.html2canvas(doc.body,{x:0,y:Math.round(i*P),width:W,height:Math.round(P),scale:2,windowWidth:W,windowHeight:Math.round(P),backgroundColor:'#ffffff',logging:false,scrollX:0,scrollY:0})
@@ -1699,6 +1728,7 @@ document.addEventListener('click',function(e){
    case 'item': itemSheet(IBY[v]);break;
    case 'arrived': arrivedSheet();break;
    case 'pros': prosPage();break;
+   case 'pro': proSheet(v);break;
    case 'tplsave': tplSaveSheet();break;
    case 'tpluse': useTpl(v);break;
    case 'tpldel': confirmSheet(L4(XT.tplDelQ),T('del'),function(){TPL[profKey()]=tplList().filter(function(t){return t.id!==v});saveTpl();render()});break;
@@ -2010,41 +2040,83 @@ function sendSeen(){
   postReg({tipo:'visto',codice:anonId(),versione:appVersion(),giorni:settings.days||1})
    .then(function(){settings.seenSent=today;saveSettings()},function(){});
 }
+var WZ={
+ lang:{ar:'اختر لغتك',it:'Scegli la lingua',en:'Choose your language',fr:'Choisissez votre langue'},
+ trade:{ar:'ما هو مجالك؟',it:'Qual è il tuo mestiere?',en:'What is your trade?',fr:'Quel est votre métier ?'},
+ tradeS:{ar:'اختر نوع العمل الذي تزاوله',it:'Scegli il lavoro che fai',en:'Choose the work you do',fr:'Choisissez votre activité'},
+ plumb:{ar:'سبّاك',it:'Idraulico',en:'Plumber',fr:'Plombier'},
+ soon:{ar:'قريباً',it:'Presto',en:'Soon',fr:'Bientôt'},
+ eleS:{ar:'أدوات ومواد كهربائية',it:'Materiale elettrico',en:'Electrical materials',fr:'Matériel électrique'},
+ ediS:{ar:'مواد البناء والإنشاءات',it:'Materiali edili',en:'Building materials',fr:'Matériaux de construction'},
+ idrS:{ar:'أدوات ومواد السباكة',it:'Materiale idraulico',en:'Plumbing materials',fr:'Matériel de plomberie'},
+ cty:{ar:'اختر بلدك',it:'Scegli il tuo Paese',en:'Choose your country',fr:'Choisissez votre pays'},
+ ctyS:{ar:'البلد الذي تعمل فيه',it:'Il Paese dove lavori',en:'The country where you work',fr:'Le pays où vous travaillez'},
+ other:{ar:'بلد آخر',it:'Altro Paese',en:'Other country',fr:'Autre pays'},
+ me:{ar:'عرّفنا بنفسك',it:'Presentati',en:'About you',fr:'Présentez-vous'},
+ next:{ar:'التالي',it:'Avanti',en:'Next',fr:'Suivant'},
+ prep:{ar:'جاري إعداد حسابك…',it:'Stiamo preparando il tuo account…',en:'Setting up your account…',fr:'Préparation de votre compte…'}
+};
 function regScreen(){
   if(settings.reg) return false;
-  var ov=document.createElement('div');
-  ov.id='regOv';
-  ov.setAttribute('style','position:fixed;inset:0;z-index:90;background:var(--bg);overflow:auto;padding:24px 16px calc(24px + env(safe-area-inset-bottom))');
-  var cOpts='<option value="">—</option>'+COUNTRIES.map(function(c){return '<option value="'+c[0]+'">'+(settings.ui==='ar'?c[1]+' · '+c[0]:c[0])+'</option>'}).join('');
-  ov.innerHTML='<div style="max-width:520px;margin:0 auto">'+
-   '<div style="text-align:center;margin:10px 0 18px"><img src="'+(window.LM_ICON||'')+'" onerror="this.remove()" style="width:72px;height:72px;border-radius:18px"><h2 style="margin:10px 0 4px;font-size:21px">'+regTxt('title')+'</h2><div class="mini">'+regTxt('sub')+'</div></div>'+
-   '<div class="seg" style="margin-bottom:6px;flex-wrap:wrap">'+LANGS.map(function(l){return '<button class="chip'+(settings.ui===l[0]?' on':'')+'" data-rl="'+l[0]+'">'+l[1]+'</button>'}).join('')+'</div>'+
-   '<div class="card"><div class="field"><label>'+regTxt('name')+' *</label><input id="rgN" autocomplete="name"></div>'+
-   '<div class="field"><label>'+regTxt('country')+' *</label><select id="rgC" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--field);font:inherit">'+cOpts+'</select></div>'+
-   '<div class="field" id="rgOW" style="display:none"><label>'+regTxt('other')+'</label><input id="rgO"></div>'+
-   '<div class="field"><label>'+regTxt('city')+'</label><input id="rgCi"></div>'+
-   '<div class="field"><label>'+L4(XT.tradeT)+'</label><div class="chips">'+tradeList().map(function(t){return '<button class="chip'+(t[0]===tradeId()?' on':'')+'" data-rt="'+t[0]+'">'+t[1]+' '+esc(t[2][settings.ui]||t[2].it)+'</button>'}).join('')+'</div></div>'+
-   '<div class="field"><label>'+regTxt('job')+'</label><div class="chips" id="rgJobs"></div></div>'+
-   '<button class="btn main" id="rgGo">'+regTxt('go')+'</button></div></div>';
-  document.body.appendChild(ov);
-  var job='dipendente', rtr=tradeId();
-  function jobs(){var w=ov.querySelector('#rgJobs');w.innerHTML=JOBS.map(function(j){return '<button class="chip'+(j[0]===job?' on':'')+'" data-rj="'+j[0]+'">'+jobName(j,rtr)+'</button>'}).join('');
-    w.querySelectorAll('[data-rj]').forEach(function(b){b.onclick=function(){job=b.dataset.rj;w.querySelectorAll('[data-rj]').forEach(function(x){x.classList.toggle('on',x===b)})}})}
-  jobs();
-  ov.querySelectorAll('[data-rt]').forEach(function(b){b.onclick=function(){rtr=b.dataset.rt;ov.querySelectorAll('[data-rt]').forEach(function(x){x.classList.toggle('on',x===b)});jobs()}});
-  ov.querySelectorAll('[data-rl]').forEach(function(b){b.onclick=function(){settings.ui=b.dataset.rl;settings.uiPicked=1;saveSettings();applyLang();render();ov.remove();regScreen()}});
-  ov.querySelector('#rgC').onchange=function(){ov.querySelector('#rgOW').style.display=this.value==='Altro'?'block':'none'};
-  ov.querySelector('#rgGo').onclick=function(){
-    var n=ov.querySelector('#rgN').value.trim(), c=ov.querySelector('#rgC').value;
-    if(c==='Altro') c=ov.querySelector('#rgO').value.trim();
-    if(n.length<2||!c){toast(regTxt('need'));return}
-    settings.reg={nome:n,paese:c,citta:ov.querySelector('#rgCi').value.trim(),lavoro:job,mestiere:rtr,at:Date.now(),sent:0};
-    if(!settings.tecnico) settings.tecnico=n;
-    var rcc={Marocco:'MA',Francia:'FR'}[c]; if(rcc&&(window.LM_PACKS||{})[rcc]&&rcFlag(rcc)) setCountry(rcc);
-    saveSettings(); if(rtr!==tradeId()) setTrade(rtr); ov.remove();
-    ping('/iscritto/'+c.replace(/[\/?#]/g,' '),'Nuovo iscritto (Paese)');
-    sendReg(); render();
-  };
+  var ov=document.createElement('div'); ov.id='regOv'; ov.className='wz';
+  var st={step:0,tr:tradeId(),cc:'',c:'',job:'dipendente',n:'',ci:''};
+  var FL={ar:'🇲🇦',it:'🇮🇹',fr:'🇫🇷',en:'🇬🇧'};
+  function W(k){return L4(WZ[k])}
+  function head(){return (st.step?'<button class="wzback" id="wzB">'+(settings.ui==='ar'?'→':'←')+'</button>':'')+'<div class="wzdots">'+[0,1,2,3].map(function(i){return '<i'+(i===st.step?' class="on"':i<st.step?' class="ok"':'')+'></i>'}).join('')+'</div>'}
+  function draw(){
+    var h='';
+    if(st.step===0){
+      h='<div class="wzlogo"><img src="'+ASSET_BASE+'brand/logo.webp" alt="" onerror="this.remove()"><div class="wzname">SiteNeeds<span>.net</span></div><div class="mini">'+esc(L4(XT.tagline))+'</div></div>'+
+        '<h2>'+W('lang')+'</h2><div class="mini wzs">Please choose your language</div>'+
+        LANGS.map(function(l){return '<button class="wzopt'+(settings.ui===l[0]?' on':'')+'" data-rl="'+l[0]+'"><span class="wzf">'+(FL[l[0]]||'🌐')+'</span><b>'+l[1]+'</b><span class="wzr"></span></button>'}).join('');
+    } else if(st.step===1){
+      var tl=tradeList(), trs=[['ele','volt','⚡',W('eleS'),{ar:'كهربائي',it:'Elettricista',en:'Electrician',fr:'Électricien'}]];
+      if(tl.some(function(t){return t[0]==='edi'})) trs.push(['edi','brick','🧱',W('ediS'),(window.LM_TRADES.edi||{}).name]);
+      h='<h2>'+W('trade')+'</h2><div class="mini wzs">'+W('tradeS')+'</div>'+
+        trs.map(function(t){return '<button class="wzopt big'+(st.tr===t[0]?' on':'')+'" data-rt="'+t[0]+'"><span class="wzi">'+ic3(t[1],t[2])+'</span><span class="wzt"><b>'+esc((t[4]||{})[settings.ui]||(t[4]||{}).it||t[0])+'</b><small>'+esc(t[3])+'</small></span><span class="wzr"></span></button>'}).join('')+
+        '<div class="wzopt big dis"><span class="wzi">'+ic3('drop','💧')+'</span><span class="wzt"><b>'+W('plumb')+' <em class="soon">'+W('soon')+'</em></b><small>'+W('idrS')+'</small></span></div>';
+    } else if(st.step===2){
+      var cs=[['MA','🇲🇦','Marocco'],['IT','🇮🇹','Italia'],['FR','🇫🇷','Francia']].filter(function(c){return c[0]==='IT'||((window.LM_PACKS||{})[c[0]]&&rcFlag(c[0]))});
+      var cOpts='<option value="">—</option>'+COUNTRIES.map(function(c){return '<option value="'+c[0]+'">'+(settings.ui==='ar'?c[1]+' · '+c[0]:c[0])+'</option>'}).join('');
+      h='<h2>'+W('cty')+'</h2><div class="mini wzs">'+W('ctyS')+'</div>'+
+        cs.map(function(c){var nm=(COUNTRIES.find(function(x){return x[0]===c[2]})||[c[2],c[2]]);return '<button class="wzopt'+(st.c===c[2]?' on':'')+'" data-cty="'+c[2]+'"><span class="wzf">'+c[1]+'</span><b>'+esc(settings.ui==='ar'?nm[1]:(packList().find(function(x){return x.id===c[0]})||{name:{}}).name[settings.ui]||c[2])+'</b><span class="wzr"></span></button>'}).join('')+
+        '<div class="field"><label>🌍 '+W('other')+'</label><select id="rgC" class="wzsel">'+cOpts+'</select></div><div class="field" id="rgOW" style="display:none"><label>'+regTxt('other')+'</label><input id="rgO"></div>'+
+        '<button class="btn main" id="wzN">'+W('next')+' '+(settings.ui==='ar'?'←':'→')+'</button>';
+    } else if(st.step===3){
+      h='<h2>'+W('me')+'</h2><div class="mini wzs">'+regTxt('sub')+'</div><div class="card">'+
+        '<div class="field"><label>'+regTxt('name')+' *</label><input id="rgN" autocomplete="name" value="'+esc(st.n)+'"></div>'+
+        '<div class="field"><label>'+regTxt('city')+'</label><input id="rgCi" value="'+esc(st.ci)+'"></div>'+
+        '<div class="field"><label>'+regTxt('job')+'</label><div class="chips" id="rgJobs">'+JOBS.map(function(j){return '<button class="chip'+(j[0]===st.job?' on':'')+'" data-rj="'+j[0]+'">'+jobName(j,st.tr)+'</button>'}).join('')+'</div></div></div>'+
+        '<button class="btn main" id="rgGo">'+regTxt('go')+'</button>';
+    } else {
+      h='<div class="wzprep"><img src="'+ASSET_BASE+'brand/logo.webp" alt="" onerror="this.remove()"><div class="wzname">SiteNeeds<span>.net</span></div><div class="spin"></div><div>'+W('prep')+'</div></div>';
+    }
+    ov.innerHTML='<div class="wzin">'+(st.step<4?head():'')+h+'</div>';
+    wire();
+  }
+  function go(n){st.step=n;draw();ov.scrollTop=0}
+  function wire(){
+    var b=ov.querySelector('#wzB'); if(b) b.onclick=function(){if(st.step===3){var nn=ov.querySelector('#rgN');if(nn)st.n=nn.value;var cc=ov.querySelector('#rgCi');if(cc)st.ci=cc.value}go(st.step-1)};
+    ov.querySelectorAll('[data-rl]').forEach(function(x){x.onclick=function(){settings.ui=x.dataset.rl;settings.uiPicked=1;saveSettings();applyLang();render();go(1)}});
+    ov.querySelectorAll('[data-rt]').forEach(function(x){x.onclick=function(){st.tr=x.dataset.rt;go(2)}});
+    ov.querySelectorAll('[data-cty]').forEach(function(x){x.onclick=function(){st.c=x.dataset.cty;go(3)}});
+    var sel=ov.querySelector('#rgC'); if(sel) sel.onchange=function(){ov.querySelector('#rgOW').style.display=this.value==='Altro'?'block':'none'};
+    var nx=ov.querySelector('#wzN'); if(nx) nx.onclick=function(){var c=sel.value;if(c==='Altro')c=(ov.querySelector('#rgO').value||'').trim();if(!c){toast(regTxt('need'));return}st.c=c;go(3)};
+    ov.querySelectorAll('[data-rj]').forEach(function(x){x.onclick=function(){st.job=x.dataset.rj;ov.querySelectorAll('[data-rj]').forEach(function(y){y.classList.toggle('on',y===x)})}});
+    var g=ov.querySelector('#rgGo'); if(g) g.onclick=function(){
+      var n=ov.querySelector('#rgN').value.trim(), c=st.c;
+      if(n.length<2||!c){toast(regTxt('need'));return}
+      settings.reg={nome:n,paese:c,citta:ov.querySelector('#rgCi').value.trim(),lavoro:st.job,mestiere:st.tr,at:Date.now(),sent:0};
+      if(!settings.tecnico) settings.tecnico=n;
+      var rcc={Marocco:'MA',Francia:'FR'}[c]; if(rcc&&(window.LM_PACKS||{})[rcc]&&rcFlag(rcc)) setCountry(rcc);
+      saveSettings(); if(st.tr!==tradeId()) setTrade(st.tr);
+      go(4);
+      setTimeout(function(){ov.classList.add('out');setTimeout(function(){ov.remove()},350);applyLang();render()},1300);
+      ping('/iscritto/'+c.replace(/[\/?#]/g,' '),'Nuovo iscritto (Paese)');
+      sendReg();
+    };
+  }
+  document.body.appendChild(ov); draw();
   return true;
 }
 
@@ -2154,6 +2226,10 @@ function installHint(){
   d.querySelector('#ihOk').onclick=function(){try{localStorage.setItem('lm_ihint',String(Date.now()))}catch(e){}d.remove()};
 }
 setTimeout(installHint,1200);
+// splash all'avvio (solo la prima apertura della sessione)
+(function(){var sp=$('#splash');if(!sp)return;var seen=false;try{seen=sessionStorage.getItem('lm_spl')==='1';sessionStorage.setItem('lm_spl','1')}catch(e){}
+  if(seen){sp.classList.add('gone');return}
+  setTimeout(function(){sp.classList.add('off');setTimeout(function(){sp.classList.add('gone')},500)},1400)})();
 // aggiornamento silenzioso: conferma che questa versione è partita bene
 try{if(A&&A.liveOk&&window.LM_JS_VER)setTimeout(function(){A.liveOk(String(window.LM_JS_VER))},1500)}catch(e){}
 })();
