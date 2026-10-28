@@ -442,6 +442,7 @@ var XT={
   badF:{ar:'هذا الملف غير صالح',it:'File non valido',en:'Invalid file',fr:'Fichier non valide'},
   logo:{ar:'🖼️ شعار الشركة (يظهر في PDF)',it:'🖼️ Logo ditta (compare nel PDF)',en:'🖼️ Company logo (shown in the PDF)',fr:'🖼️ Logo de l’entreprise (dans le PDF)'},
   logoAdd:{ar:'اختر صورة',it:'Scegli immagine',en:'Choose image',fr:'Choisir une image'},
+  logoTip:{ar:'💡 الأفضل: صورة PNG بخلفية شفافة (بدون خلفية بيضاء أو ملونة)، حتى يظهر الشعار نظيفاً في أعلى الورقة وفي وسطها.',it:'💡 Meglio un’immagine PNG con sfondo trasparente (senza sfondo bianco o colorato): il logo apparirà pulito in alto e al centro del foglio.',en:'💡 Best: a PNG with a transparent background (no white or coloured background) so the logo looks clean at the top and in the middle of the page.',fr:'💡 Idéal : une image PNG à fond transparent (sans fond blanc ou coloré) pour un logo net en haut et au centre de la page.'},
   myPhone:{ar:'هاتفك (يظهر في عرض السعر، اختياري)',it:'Il tuo telefono (nel preventivo, facoltativo)',en:'Your phone (on the quote, optional)',fr:'Votre téléphone (sur le devis, facultatif)'},
   secProfile:{ar:'👤 الملف المهني',it:'👤 Profilo professionale',en:'👤 Professional profile',fr:'👤 Profil professionnel'},
   secPrefs:{ar:'🎨 تفضيلات التطبيق',it:'🎨 Preferenze dell’app',en:'🎨 App preferences',fr:'🎨 Préférences de l’appli'},
@@ -1241,7 +1242,7 @@ function profileSheet(keep){
    '<h3>'+L4(XT.tradeT)+'</h3>'+segChips('tr',tr,tradeList().map(function(t){return [t[0],t[1]+' '+(t[2][settings.ui]||t[2].it)]}))+'<div class="mini">'+L4(XT.tradeHint)+'</div>'+
    '<div class="field"><label>'+T('tecnico')+'</label><input id="st" value="'+esc(val('st',settings.tecnico))+'"></div>'+
    '<div class="field"><label>'+T('ditta')+'</label><input id="sd" value="'+esc(val('sd',settings.ditta))+'" placeholder="'+T('dittaP')+'"></div>'+
-   '<div class="field"><label>'+L4(XT.logo)+'</label><div class="logorow">'+(settings.logo?'<img src="'+settings.logo+'" alt="">':'')+'<button class="btn ghost" id="slogo">'+L4(XT.logoAdd)+'</button>'+(settings.logo?'<button class="del" id="slogoDel">🗑</button>':'')+'</div></div>'+
+   '<div class="field"><label>'+L4(XT.logo)+'</label><div class="logorow">'+(settings.logo?'<img src="'+settings.logo+'" alt="">':'')+'<button class="btn ghost" id="slogo">'+L4(XT.logoAdd)+'</button>'+(settings.logo?'<button class="del" id="slogoDel">🗑</button>':'')+'</div><div class="mini" style="margin-top:6px">'+L4(XT.logoTip)+'</div></div>'+
    '<div class="field"><label>'+L4(XT.myPhone)+'</label><input id="sph" class="ltr" inputmode="tel" value="'+esc(val('sph',settings.myPhone||''))+'" placeholder="+39 3xx xxx xxxx"></div>'+
    '<div class="field"><label>'+T('waNum')+'</label><input id="sw" class="ltr" inputmode="tel" value="'+esc(val('sw',settings.waNum))+'" placeholder="'+T('waNumP')+'"></div>'+
    '<div class="mini">'+T('waHint')+'</div>'+
@@ -1257,8 +1258,8 @@ function profileSheet(keep){
   sheet.querySelectorAll('[data-cc]').forEach(function(b){b.onclick=function(){cc=b.dataset.cc;sheet.querySelectorAll('[data-cc]').forEach(function(x){x.classList.toggle('on',x.dataset.cc===cc)})}});
   function typed(){return {cc:cc,tr:tr,st:$('#st').value,sd:$('#sd').value,sph:$('#sph').value,sw:$('#sw').value,cSub:$('#cSub').value,cAddr:$('#cAddr').value,cMail:$('#cMail').value,cVat:$('#cVat').value,cSrv:$('#cSrv').value,cPay:$('#cPay').value}}
   $('#slogo').onclick=function(){var t=typed();pickPhoto(function(d){
-    var im=new Image();im.onload=function(){var M=300,q=Math.min(1,M/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=Math.round(im.width*q);cv.height=Math.round(im.height*q);var g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);g.drawImage(im,0,0,cv.width,cv.height);
-      settings.logo=cv.toDataURL('image/jpeg',0.85);saveSettings();profileSheet(t);sheet.scrollTop=300};im.src=d})};
+    var im=new Image();im.onload=function(){var M=300,q=Math.min(1,M/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=Math.round(im.width*q);cv.height=Math.round(im.height*q);var g=cv.getContext('2d');g.drawImage(im,0,0,cv.width,cv.height);
+      settings.logo=cv.toDataURL('image/png');saveSettings();profileSheet(t);sheet.scrollTop=300};im.src=d})};
   var ld=$('#slogoDel'); if(ld) ld.onclick=function(){var t=typed();settings.logo='';saveSettings();profileSheet(t);sheet.scrollTop=300};
   $('#ssave').onclick=function(){
     var ch=cc!==packId(),tch=tr!==tradeId();
@@ -1749,7 +1750,7 @@ function buildQuoteReport(lang){
    docFoot(lang,lab('nb'))+'<div class="pad"></div></div>'+
    '<script>'+PAGINATE+'<\/script></body></html>';
 }
-var PAGINATE="(function(){function go(){var W=document.documentElement.clientWidth||794,P=W*297/210,M=36,b=document.querySelectorAll('.blk');for(var i=0;i<b.length;i++){var e=b[i],r=e.getBoundingClientRect(),t=r.top+window.scrollY,h=r.height,pg=Math.floor(t/P),end=(pg+1)*P-M;if(t+h>end&&h<P-2*M){var sp=document.createElement('div');sp.className='sp';sp.style.height=((pg+1)*P+M-t)+'px';e.parentNode.insertBefore(sp,e)}}var H=document.body.scrollHeight;if(window.Report)Report.ready(H,W);}if(document.readyState==='complete')setTimeout(go,60);else window.addEventListener('load',function(){setTimeout(go,60)})})();";
+var PAGINATE="(function(){function go(){var W=document.documentElement.clientWidth||794,P=W*297/210,M=36,b=document.querySelectorAll('.blk');for(var i=0;i<b.length;i++){var e=b[i],r=e.getBoundingClientRect(),t=r.top+window.scrollY,h=r.height,pg=Math.floor(t/P),end=(pg+1)*P-M;if(t+h>end&&h<P-2*M){var sp=document.createElement('div');sp.className='sp';sp.style.height=((pg+1)*P+M-t)+'px';e.parentNode.insertBefore(sp,e)}}var wm=document.querySelector('.wm');if(wm){var HH=document.body.scrollHeight,nP=Math.max(1,Math.ceil((HH-2)/P));for(var k=0;k<nP;k++){var c=wm.cloneNode(true);c.style.position='absolute';c.style.top=Math.round(k*P+P/2)+'px';c.style.left='50%';c.style.transform='translate(-50%,-50%)';document.body.appendChild(c)}wm.parentNode.removeChild(wm)}var H=document.body.scrollHeight;if(window.Report)Report.ready(H,W);}if(document.readyState==='complete')setTimeout(go,60);else window.addEventListener('load',function(){setTimeout(go,60)})})();";
 function fileName(isQuote){
   var p=cur(), c=(p.name||p.site.cliente||'').replace(/[^\w؀-ۿ -]+/g,'').trim().replace(/\s+/g,'_');
   var d=new Date(), base=isQuote?(settings.out==='ar'?'عرض_سعر':'Preventivo'):(settings.out==='ar'?'طلب_مواد':'Richiesta_materiale');
@@ -1781,7 +1782,6 @@ function webPdf(isQuote){
       setTimeout(function(){
         var doc=ifr.contentDocument, H=doc.body.scrollHeight, P=W*297/210, n=Math.max(1,Math.ceil((H-2)/P)), pages=[], i=0;
         ifr.style.height=H+'px';
-        var wm=doc.querySelector('.wm'); if(wm){for(var k=0;k<n;k++){var c=wm.cloneNode(true);c.style.position='absolute';c.style.top=Math.round(k*P+P/2)+'px';doc.body.appendChild(c)}wm.remove()}
         (function next(){
           if(i>=n){document.body.removeChild(ifr);var blob=pdfFromJpegs(pages);fileReadySheet(new File([blob],fileName(isQuote),{type:'application/pdf'}));return}
           window.html2canvas(doc.body,{x:0,y:Math.round(i*P),width:W,height:Math.round(P),scale:2,windowWidth:W,windowHeight:Math.round(P),backgroundColor:'#ffffff',logging:false,scrollX:0,scrollY:0})
