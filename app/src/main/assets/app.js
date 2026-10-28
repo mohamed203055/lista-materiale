@@ -146,6 +146,9 @@ function phoneLang(){
 }
 if(!A&&!settings.reg&&!settings.uiPicked){settings.ui=phoneLang();if(settings.ui==='ar')settings.ui='en'} // web (iPhone/browser): mai arabo automatico
 if(!settings.ui) settings.ui=phoneLang();
+// ---- controllo remoto dall'admin (version.json → rc): interruttori + modifiche al catalogo per tutti ----
+var RC=settings.rc||{};
+function rcFlag(k){return !(RC.flags&&RC.flags[k]===false)}
 if(!settings.out) settings.out='it';
 function saveSettings(){put(K.set,settings)}
 // ---- tema chiaro / scuro ----
@@ -188,13 +191,13 @@ function defaultSvc(){
 function tradeId(){var t=settings.trade||'ele';return t==='ele'||(window.LM_TRADES||{})[t]?t:'ele'}
 function tradeData(){return tradeId()==='ele'?null:(window.LM_TRADES||{})[tradeId()]}
 function tradePack(cc){var td=tradeData();if(!td)return null;cc=cc||packId();return td.packs[cc]||(cc==='FR'&&td.packs.MA)||td.packs.IT}
-function tradeList(){var l=[['ele','⚡',{ar:'كهربائي',it:'Elettricista',en:'Electrician',fr:'Électricien'}]];var T_=window.LM_TRADES||{};Object.keys(T_).forEach(function(k){l.push([k,T_[k].ic,T_[k].name])});return l}
+function tradeList(){var l=[['ele','⚡',{ar:'كهربائي',it:'Elettricista',en:'Electrician',fr:'Électricien'}]];var T_=window.LM_TRADES||{};Object.keys(T_).forEach(function(k){if(rcFlag(k)||settings.trade===k)l.push([k,T_[k].ic,T_[k].name])});return l}
 function tradeLabel(id){var t=tradeList().find(function(x){return x[0]===(id||tradeId())})||tradeList()[0];return t[1]+' '+(t[2][settings.ui]||t[2].it)}
 function profKey(){return tradeId()==='ele'?packId():tradeId()+'_'+packId()}
 // ---- Paese / catalogo per Paese ----
 function packId(){return settings.country||'IT'}
 function packData(cc){cc=cc||packId();if(cc==='IT')return null;var cached=load('lm_pack_'+cc,null),b=(window.LM_PACKS||{})[cc];if(cached&&(!b||cached.version>b.version))return cached;return b||cached}
-function packList(){var l=[{id:'IT',flag:'🇮🇹',name:{ar:'إيطاليا',it:'Italia',en:'Italy',fr:'Italie'}}];var P_=window.LM_PACKS||{};Object.keys(P_).forEach(function(k){l.push({id:k,flag:P_[k].flag,name:P_[k].name})});return l}
+function packList(){var l=[{id:'IT',flag:'🇮🇹',name:{ar:'إيطاليا',it:'Italia',en:'Italy',fr:'Italie'}}];var P_=window.LM_PACKS||{};Object.keys(P_).forEach(function(k){if(rcFlag(k)||settings.country===k)l.push({id:k,flag:P_[k].flag,name:P_[k].name})});return l}
 function dbKey(){if(tradeId()!=='ele')return 'lm_db_'+profKey();return packId()==='IT'?K.db:'lm_db_'+packId()}
 function clone(o){return JSON.parse(JSON.stringify(o))}
 function defaultDBFor(cc){
@@ -237,7 +240,21 @@ function saveDB(clean){DB.edited=!clean;reindex();return put(dbKey(),DB)}
 function saveImgs(){return put(K.img,IMGS)}
 
 var ITEMS=[],IBY={},CBY={},SBY={},GBY={};
+function rcKey(){var p=packId();return tradeId()+'_'+(p==='FR'?'MA':p)}
+function rcApply(){
+  var ov=RC.over||{}, adds=(RC.add||{})[rcKey()]||[], by={};
+  DB.cats.forEach(function(c){by[c.id]=c;c.items=c.items.filter(function(i){return !i._rcadd})});
+  adds.forEach(function(a){var c=by[a.cat];if(c&&a.id)c.items.push({id:a.id,it:a.it||'',ar:a.ar||a.it||'',fr:a.fr||'',unit:a.unit||'pz',sizes:a.sizes||[],colors:!!a.colors,hidden:false,_rcadd:1})});
+  DB.cats.forEach(function(c){c.items.forEach(function(i){
+    if(i._orig){['it','ar','fr','unit','sizes'].forEach(function(k){if(i._orig[k]===undefined)delete i[k];else i[k]=i._orig[k]});delete i._orig}
+    delete i._rdel; var o=ov[i.id]; if(!o) return;
+    if(o.del){i._rdel=1;return}
+    i._orig={it:i.it,ar:i.ar,fr:i.fr,unit:i.unit,sizes:i.sizes};
+    ['it','ar','fr','unit','sizes'].forEach(function(k){if(o[k]!==undefined&&o[k]!=='')i[k]=o[k]});
+  })});
+}
 function reindex(){
+  try{rcApply()}catch(e){}
   ITEMS=[];IBY={};CBY={};SBY={};GBY={};
   (DB.svc||[]).forEach(function(g){GBY[g.id]=g;g.list.forEach(function(x){x.grp=g.id;SBY[x.id]=x})});
   DB.cats.forEach(function(c){CBY[c.id]=c;c.items.forEach(function(i){i.cat=c.id;IBY[i.id]=i;ITEMS.push(i);i._s=norm(i.it+' '+i.ar+' '+trName(i,'en')+' '+trName(i,'fr')+' '+i.sizes.join(' '))})});
@@ -291,8 +308,8 @@ function dot(c){if(!c)return '';var C=COLBY[c];return '<span class="dot" style="
 function colName(c,lang){var C=COLBY[c];if(!C)return c||'';return lang==='both'?C.it+' / '+C.ar:trName(C,lang)}
 var LMIMG={};String(window.LM_IMG||'').split(' ').forEach(function(x){if(x)LMIMG[x]=1});
 var IMG_BASE='https://mohamed203055.github.io/lista-materiale-web/img/';
-function hasImg(id){return !!(IMGS[id]||LMIMG[id])}
-function thumb(id,cls){if(IMGS[id])return '<img class="thumb'+(cls?' '+cls:'')+'" src="'+IMGS[id]+'">';if(!LMIMG[id])return '';return '<img class="thumb pimg'+(cls?' '+cls:'')+'" loading="lazy" alt="" src="'+IMG_BASE+id+'.jpg?v=1" onerror="this.remove()">'}
+function hasImg(id){return rcFlag('photos')&&!!(IMGS[id]||LMIMG[id])}
+function thumb(id,cls){if(!rcFlag('photos'))return '';if(IMGS[id])return '<img class="thumb'+(cls?' '+cls:'')+'" src="'+IMGS[id]+'">';if(!LMIMG[id])return '';return '<img class="thumb pimg'+(cls?' '+cls:'')+'" loading="lazy" alt="" src="'+IMG_BASE+id+'.jpg?v=1" onerror="this.remove()">'}
 function haveQty(it){var s=0;cur().lines.forEach(function(l){if(l.item===it.id)s+=l.qty});return s}
 function catIndex(id){var i=DB.cats.findIndex(function(c){return c.id===id});return i<0?999:i}
 function move(arr,i,d){var j=i+d;if(j<0||j>=arr.length)return;var x=arr[i];arr[i]=arr[j];arr[j]=x}
@@ -331,7 +348,14 @@ function applyLang(){
 /* =====================================================================
    RENDER PRINCIPALE
    ===================================================================== */
+function rcUI(){
+  if(view.tab==='price'&&!rcFlag('prices'))view.tab='mat';
+  if(view.tab==='calc'&&!rcFlag('calc'))view.tab='mat';
+  var tp=$('#tPrice');if(tp)tp.style.display=rcFlag('prices')?'':'none';
+  var bc=$('#btnCalc');if(bc)bc.style.display=rcFlag('calc')?'':'none';
+}
 function render(){
+  rcUI();
   var inAdmin=view.tab==='admin', inProj=view.tab==='projects', inPrice=view.tab==='price', inCalc=view.tab==='calc';
   $('#tabs').style.display=(inAdmin||inProj||inCalc)?'none':'';
   $('#searchBox').style.display=(inAdmin||inProj||inPrice||inCalc)?'none':'';
@@ -484,7 +508,7 @@ var SVGIC={'🌈':'<svg class="svgic" viewBox="1 6 46 33" aria-hidden="true"><re
   [9,21,33].map(function(x){return '<g><path d="M'+(x+3)+' 9v4M'+(x-1)+' 11l2 3M'+(x+7)+' 11l-2 3" stroke="#FFB31A" stroke-width="2" stroke-linecap="round"/><rect x="'+x+'" y="20" width="7" height="8" rx="1.5" fill="#FFC83D" stroke="#C98A00" stroke-width="1.2"/></g>'}).join('')+
   '<path d="M3 37h42" stroke="#C4CAD6" stroke-width="2" stroke-dasharray="3 3"/></svg>'};
 function icH(ic,fb){ic=ic||fb||'';return SVGIC[ic]||esc(ic)}
-function visibleItems(c){return c.items.filter(function(i){return !i.hidden})}
+function visibleItems(c){return c.items.filter(function(i){return !i.hidden&&!i._rdel})}
 /* ---- preferiti e usati di recente (salvati a parte, per paese) ---- */
 var FAV=load(K.fav,{});
 var PH=load('lm_ph_v1',{}); function savePh(){return put('lm_ph_v1',PH)}
@@ -493,7 +517,7 @@ function favBox(){var k=profKey();if(!FAV[k])FAV[k]={fav:[],rec:[]};return FAV[k
 function isFav(id){return favBox().fav.indexOf(id)>=0}
 function toggleFav(id){var f=favBox().fav,i=f.indexOf(id);if(i>=0)f.splice(i,1);else f.unshift(id);put(K.fav,FAV);return i<0}
 function addRecent(id){if(!id)return;var r=favBox().rec,i=r.indexOf(id);if(i>=0)r.splice(i,1);r.unshift(id);if(r.length>8)r.length=8;put(K.fav,FAV)}
-function liveItems(ids){return ids.map(function(id){return IBY[id]}).filter(function(it){return it&&!it.hidden&&!(CBY[it.cat]&&CBY[it.cat].hidden)})}
+function liveItems(ids){return ids.map(function(id){return IBY[id]}).filter(function(it){return it&&!it.hidden&&!it._rdel&&!(CBY[it.cat]&&CBY[it.cat].hidden)})}
 function renderRecent(){var r=liveItems(favBox().rec).slice(0,5);return r.length?'<div class="sec">'+L4(XT.recent)+'</div><div class="list" style="margin-bottom:12px">'+r.map(itemRow).join('')+'</div>':''}
 function renderFavs(){
   var f=liveItems(favBox().fav);
@@ -519,7 +543,7 @@ function renderCat(id){
 }
 function renderSearch(){
   var words=norm(view.q).split(' ').filter(Boolean);
-  var res=ITEMS.filter(function(i){return !i.hidden&&!(CBY[i.cat]&&CBY[i.cat].hidden)&&words.every(function(w){return i._s.indexOf(w)>=0})});
+  var res=ITEMS.filter(function(i){return !i.hidden&&!i._rdel&&!(CBY[i.cat]&&CBY[i.cat].hidden)&&words.every(function(w){return i._s.indexOf(w)>=0})});
   var kits=DB.kits.filter(function(k){var s=norm(k.it+' '+k.ar);return !k.hidden&&words.every(function(w){return s.indexOf(w)>=0})});
   var h='';
   if(res.length) h+='<div class="sec">'+T('materials')+' ('+res.length+')</div><div class="list">'+res.slice(0,80).map(itemRow).join('')+'</div>';
@@ -1022,7 +1046,7 @@ var PEOPLE=load(K.people,{ver:0,list:[]});
 function ccOf(txt){var t=String(txt||'').toLowerCase();if(/ital|إيطال/.test(t))return 'IT';if(/maroc|morocc|المغرب/.test(t))return 'MA';if(/fran|فرنس/.test(t))return 'FR';return t.trim()}
 function myCC(){var r=settings.reg&&settings.reg.paese;return r?ccOf(r):packId()}
 function proCC(p){return p.cc||ccOf(p.country)||'ALL'}
-function prosList(){
+function prosList(){if(!rcFlag('pros'))return [];
   var me=myCC();
   return (PEOPLE.list||[]).filter(function(p){if(!p||p.hidden||!p.name)return false;var c=proCC(p);return c==='ALL'||c===me});
 }
@@ -1075,7 +1099,7 @@ function settingsSheet(){
    '</div><div class="mlist">'+
    mrow('goAdmin','🔒','var(--dark)',T('admin').replace('🔒 ',''),T('adminSub'))+
    '</div><div class="mlist">'+
-   mrow('shareApp','📤','var(--brand)',L4(XT.shareApp),'')+
+   (rcFlag('share')?mrow('shareApp','📤','var(--brand)',L4(XT.shareApp),''):'')+
    mrow('mBug','✉','#1DA851',T('report'),'')+
    mrow('updChk','🔄','#F59E0B',T('updCheck').replace(/^\S+\s/,''),'')+
    '</div><div class="mini" style="text-align:center;margin-top:14px" dir="ltr">v'+appVersion()+' · '+esc(anonId())+'<br>© 2026 SiteNeeds</div>');
@@ -1083,7 +1107,7 @@ function settingsSheet(){
   $('#mLang').onclick=langSheet; $('#mTheme').onclick=themeSheet; $('#mData').onclick=dataSheet;
   $('#mBug').onclick=function(){openContact('wa')};
   $('#updChk').onclick=function(){checkUpdate(true)};
-  $('#shareApp').onclick=shareApp;
+  if($('#shareApp'))$('#shareApp').onclick=shareApp;
   $('#goAdmin').onclick=function(){if(adminOK){closeSheet();enterAdmin()}else pwSheet()};
 }
 function backTo(){SHEET_BACK=settingsSheet;return ''}
@@ -2016,7 +2040,7 @@ function regScreen(){
     if(n.length<2||!c){toast(regTxt('need'));return}
     settings.reg={nome:n,paese:c,citta:ov.querySelector('#rgCi').value.trim(),lavoro:job,mestiere:rtr,at:Date.now(),sent:0};
     if(!settings.tecnico) settings.tecnico=n;
-    var rcc={Marocco:'MA',Francia:'FR'}[c]; if(rcc&&(window.LM_PACKS||{})[rcc]) setCountry(rcc);
+    var rcc={Marocco:'MA',Francia:'FR'}[c]; if(rcc&&(window.LM_PACKS||{})[rcc]&&rcFlag(rcc)) setCountry(rcc);
     saveSettings(); if(rtr!==tradeId()) setTrade(rtr); ov.remove();
     ping('/iscritto/'+c.replace(/[\/?#]/g,' '),'Nuovo iscritto (Paese)');
     sendReg(); render();
@@ -2035,6 +2059,7 @@ function checkUpdate(manual){
   if(!window.fetch) return;
   fetch(UPD_BASE+'version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){
     if(v.reg_url&&v.reg_url!==settings.regUrl){settings.regUrl=v.reg_url;saveSettings()}
+    try{var nrc=v.rc||{};if(JSON.stringify(nrc)!==JSON.stringify(settings.rc||{})){settings.rc=nrc;RC=nrc;saveSettings();reindex();if(!sheetOpen)render()}}catch(e){}
     sendReg();sendSeen();
     if(v.packs) checkPacks(v.packs);
     checkPeople(v.people_ver);
@@ -2104,7 +2129,7 @@ if(!regScreen()) setTimeout(function(){sendReg();sendSeen()},2500);
 
 // ---- web: invito a installare sull'iPhone/iPad (o scaricare l'APK su Android) ----
 function installHint(){
-  if(A) return;
+  if(A||!rcFlag('install')) return;
   var ua=navigator.userAgent||'', ios=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1), andr=/Android/.test(ua);
   var standalone=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
   if(standalone||(!ios&&!andr)) return;
