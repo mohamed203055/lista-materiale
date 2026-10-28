@@ -18,61 +18,7 @@ jobs:
             u1="$B/$(echo "$name" | sed 's/ /%20/g')/3D/${n}_3d.png"
             u2="$B/$(echo "$name" | sed 's/ /%20/g')/Default/3D/${n}_3d_default.png"
             curl -sfL "$u1" -o "$key.png" || curl -sfL "$u2" -o "$key.png" || echo "::warning::miss $key $name"
-          done <<'LIST'
-spool|Spool of thread
-plug|Electric plug
-bolt|Nut and bolt
-cabinet|File cabinet
-stopwatch|Stopwatch
-radio|Radio button
-bulb|Light bulb
-rainbow|Rainbow
-globe|Globe with meridians
-bell|Bell
-camera|Video camera
-siren|Police car light
-sun|Sun
-toolbox|Toolbox
-tools|Hammer and wrench
-brick|Brick
-triruler|Triangular ruler
-palette|Artist palette
-shield|Shield
-lotion|Lotion bottle
-square|Black square button
-volt|High voltage
-wood|Wood
-vest|Safety vest
-crane|Building construction
-door|Door
-tree|Deciduous tree
-ruler|Straight ruler
-wave|Waving hand
-worker|Construction worker
-house|House
-clipboard|Clipboard
-user|Bust in silhouette
-chat|Speech balloon
-star|Star
-handshake|Handshake
-abacus|Abacus
-folder|File folder
-gear|Gear
-euro|Euro banknote
-drop|Droplet
-package|Package
-phone|Mobile phone with arrow
-earth|Globe showing Europe-Africa
-search|Magnifying glass tilted left
-page|Page facing up
-check|Check mark button
-rocket|Rocket
-satellite|Satellite antenna
-wrench|Wrench
-hammer|Hammer
-memo|Memo
-camera2|Camera with flash
-LIST
+          done < ../icons.txt
           sudo apt-get install -y -qq webp >/dev/null 2>&1 || true
           for f in *.png; do convert "$f" -resize 160x160 -strip "${f%.png}.tmp.png" && cwebp -quiet -q 82 -alpha_q 90 "${f%.png}.tmp.png" -o "${f%.png}.webp" && rm "${f%.png}.tmp.png"; done
           rm -f *.png; ls | wc -l; du -sh .
