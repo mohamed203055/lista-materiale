@@ -1,4 +1,3 @@
-spool|Spool of thread
 plug|Electric plug
 bolt|Nut and bolt
 cabinet|File cabinet

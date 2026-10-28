@@ -19,7 +19,5 @@ jobs:
             u2="$B/$(echo "$name" | sed 's/ /%20/g')/Default/3D/${n}_3d_default.png"
             curl -sfL "$u1" -o "$key.png" || curl -sfL "$u2" -o "$key.png" || echo "::warning::miss $key $name"
           done < ../icons.txt
-          sudo apt-get install -y -qq webp >/dev/null 2>&1 || true
-          for f in *.png; do convert "$f" -resize 160x160 -strip "${f%.png}.tmp.png" && cwebp -quiet -q 82 -alpha_q 90 "${f%.png}.tmp.png" -o "${f%.png}.webp" && rm "${f%.png}.tmp.png"; done
-          rm -f *.png; ls | wc -l; du -sh .
+          ls | wc -l
           cd .. && git config user.name bot && git config user.email bot@x && git add icons3d && git commit -qm icons && git push -q origin HEAD:icons3d -f
