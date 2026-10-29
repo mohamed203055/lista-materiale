@@ -599,7 +599,7 @@ function renderCart(){
   var groups={}, order=[];
   L.forEach(function(l,i){var g=l.cat||'x';if(!groups[g]){groups[g]=[];order.push(g)}groups[g].push(i)});
   order.sort(function(a,b){return catIndex(a)-catIndex(b)});
-  var h='';
+  var h=whenRow();
   order.forEach(function(g){
     var c=CBY[g];
     h+='<div class="sec">'+(c?icH(c.ic)+' '+esc(N(c)):'➕ '+T('other'))+'</div><div class="list">';
@@ -1041,6 +1041,11 @@ var MLT={t:{ar:'قائمة يدوية',it:'Lista a mano',en:'Write your list',fr
  none:{ar:'اكتب قطعة واحدة على الأقل',it:'Scrivi almeno un pezzo',en:'Write at least one part',fr:'Écrivez au moins une pièce'},
  ok:{ar:'تمت إضافة',it:'Aggiunti',en:'Added',fr:'Ajoutés'}};
 // pagina "foglio" per scrivere la lista a mano (stile documento, poi PDF professionale)
+var WHEN=[['oggi',{ar:'⚡ عاجل اليوم',it:'⚡ Urgente, oggi',en:'⚡ Urgent, today',fr:'⚡ Urgent, aujourd’hui'}],['domani',{ar:'📅 غداً',it:'📅 Domani',en:'📅 Tomorrow',fr:'📅 Demain'}],['sett',{ar:'🗓️ هذا الأسبوع',it:'🗓️ Questa settimana',en:'🗓️ This week',fr:'🗓️ Cette semaine'}]];
+var WHT={ar:'⏰ متى تحتاجها؟',it:'⏰ Quando serve?',en:'⏰ When is it needed?',fr:'⏰ Pour quand ?'};
+var WHO={ar:'مطلوب',it:'Serve',en:'Needed',fr:'Pour'};
+function whenTxt(lang,k){var w=WHEN.find(function(x){return x[0]===k});return w?(w[1][lang==='both'?'it':lang]||w[1].it):''}
+function whenRow(){var k=cur().site.when||'';return '<div class="when"><span>'+esc(L4(WHT))+'</span><div class="chips">'+WHEN.map(function(w){return '<button class="chip'+(k===w[0]?' on':'')+'" data-act="when" data-v="'+w[0]+'">'+esc(L4(w[1]))+'</button>'}).join('')+'</div></div>'}
 var MLD={more:{ar:'سطور إضافية',it:'Altre righe',en:'More lines',fr:'Plus de lignes'},clear:{ar:'مسح',it:'Svuota',en:'Clear',fr:'Effacer'},
  send:{ar:'حفظ وإرسال',it:'Salva e invia',en:'Save & send',fr:'Enregistrer et envoyer'},back:{ar:'رجوع',it:'Indietro',en:'Back',fr:'Retour'},
  hint:{ar:'اكتب بنفسك القطع والكمية والوحدة. تبقى محفوظة في الهاتف حتى ترسلها.',it:'Scrivi tu pezzi, quantità e unità. Resta salvata sul telefono finché la invii.',en:'Type parts, quantity and unit. It stays saved on your phone until you send it.',fr:'Écrivez pièces, quantités et unités. La liste reste enregistrée jusqu’à l’envoi.'},
@@ -1060,7 +1065,7 @@ function renderMList(){
    '<div class="pm"><div>'+esc(L4(MLD.site))+': <b dir="auto">'+esc(p.name||p.site.cliente||'—')+'</b></div><div>'+esc(L4(MLD.by))+': <b dir="auto">'+esc(settings.tecnico||(settings.reg&&settings.reg.nome)||'—')+'</b> · <span dir="ltr">'+dateTxt()+'</span></div></div>'+
    '<div class="pth"><span>#</span><span>'+esc(lang==='ar'?OUT.ar.mat:OUT.it.mat||'Materiale')+'</span><span>'+esc(lang==='ar'?OUT.ar.qty:OUT.it.qty)+'</span><span></span></div>'+
    rows.map(function(r,i){return '<div class="prw"><span class="pn">'+(i+1)+'</span><input class="pin" data-pm="'+i+'" dir="auto" value="'+esc(r.n)+'"'+(i===0?' placeholder="'+esc(L4(MLD.ph))+'"':'')+'><input class="pq" data-pq="'+i+'" inputmode="decimal" placeholder="0" value="'+esc(r.q)+'"><select class="pu" data-pu="'+i+'">'+uo(r.u)+'</select></div>'}).join('')+
-   '<div class="pbt"><button data-act="mlmore">➕ '+esc(L4(MLD.more))+'</button><button data-act="mlclear">🗑 '+esc(L4(MLD.clear))+'</button></div>'+
+   whenRow()+'<div class="pbt"><button data-act="mlmore">➕ '+esc(L4(MLD.more))+'</button><button data-act="mlclear">🗑 '+esc(L4(MLD.clear))+'</button></div>'+
    '<div class="mini" style="margin-top:8px">'+esc(L4(MLD.noPrice))+'</div></div>'+
 ''; 
 }
@@ -1242,7 +1247,7 @@ function profileSheet(keep){
    '<h3>'+L4(XT.tradeT)+'</h3>'+segChips('tr',tr,tradeList().map(function(t){return [t[0],t[1]+' '+(t[2][settings.ui]||t[2].it)]}))+'<div class="mini">'+L4(XT.tradeHint)+'</div>'+
    '<div class="field"><label>'+T('tecnico')+'</label><input id="st" value="'+esc(val('st',settings.tecnico))+'"></div>'+
    '<div class="field"><label>'+T('ditta')+'</label><input id="sd" value="'+esc(val('sd',settings.ditta))+'" placeholder="'+T('dittaP')+'"></div>'+
-   '<div class="field"><label>'+L4(XT.logo)+'</label><div class="logorow">'+(settings.logo?'<img src="'+settings.logo+'" alt="">':'')+'<button class="btn ghost" id="slogo">'+L4(XT.logoAdd)+'</button>'+(settings.logo?'<button class="del" id="slogoDel">🗑</button>':'')+'</div><div class="mini" style="margin-top:6px">'+L4(XT.logoTip)+'</div></div>'+
+   '<div class="field"><label>'+L4(XT.logo)+'</label><div class="logorow">'+(settings.logo?'<img src="'+settings.logo+'" alt="">':'')+'<button class="btn ghost" id="slogo">'+L4(XT.logoAdd)+'</button>'+(settings.logo?'<button class="del" id="slogoDel">🗑</button>':'')+'</div><div class="mini" style="margin-top:6px">'+L4(XT.logoTip)+'</div>'+(settings.logo?'<label class="tgl"><span>'+L4(LGT.pdf)+'</span><input type="checkbox" id="lgPdf"'+(settings.logoPdfOff?'':' checked')+'></label>':'')+'<label class="tgl"><span>'+L4(LGT.wm)+'</span><input type="checkbox" id="lgWm"'+(settings.wmOff?'':' checked')+'></label></div>'+
    '<div class="field"><label>'+L4(XT.myPhone)+'</label><input id="sph" class="ltr" inputmode="tel" value="'+esc(val('sph',settings.myPhone||''))+'" placeholder="+39 3xx xxx xxxx"></div>'+
    '<div class="field"><label>'+T('waNum')+'</label><input id="sw" class="ltr" inputmode="tel" value="'+esc(val('sw',settings.waNum))+'" placeholder="'+T('waNumP')+'"></div>'+
    '<div class="mini">'+T('waHint')+'</div>'+
@@ -1259,11 +1264,11 @@ function profileSheet(keep){
   function typed(){return {cc:cc,tr:tr,st:$('#st').value,sd:$('#sd').value,sph:$('#sph').value,sw:$('#sw').value,cSub:$('#cSub').value,cAddr:$('#cAddr').value,cMail:$('#cMail').value,cVat:$('#cVat').value,cSrv:$('#cSrv').value,cPay:$('#cPay').value}}
   $('#slogo').onclick=function(){var t=typed();pickPhoto(function(d){
     var im=new Image();im.onload=function(){var M=300,q=Math.min(1,M/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=Math.round(im.width*q);cv.height=Math.round(im.height*q);var g=cv.getContext('2d');g.drawImage(im,0,0,cv.width,cv.height);
-      settings.logo=cv.toDataURL('image/png');saveSettings();profileSheet(t);sheet.scrollTop=300};im.src=d})};
+      cleanLogo(cv.toDataURL('image/png'),function(c){settings.logo=c;settings.logoClean=1;saveSettings();applyLang();profileSheet(t);sheet.scrollTop=300})};im.src=d})};
   var ld=$('#slogoDel'); if(ld) ld.onclick=function(){var t=typed();settings.logo='';saveSettings();profileSheet(t);sheet.scrollTop=300};
   $('#ssave').onclick=function(){
     var ch=cc!==packId(),tch=tr!==tradeId();
-    settings.statsOff=false;settings.tecnico=$('#st').value.trim();settings.ditta=$('#sd').value.trim();settings.myPhone=$('#sph').value.trim();settings.waNum=$('#sw').value.trim();settings.coSub=$('#cSub').value.trim();settings.coAddr=$('#cAddr').value.trim();settings.coMail=$('#cMail').value.trim();settings.coVat=$('#cVat').value.trim();settings.coSrv=$('#cSrv').value.trim();settings.coPay=$('#cPay').value.trim();saveSettings();
+    settings.statsOff=false;settings.tecnico=$('#st').value.trim();settings.ditta=$('#sd').value.trim();settings.myPhone=$('#sph').value.trim();settings.waNum=$('#sw').value.trim();settings.coSub=$('#cSub').value.trim();settings.coAddr=$('#cAddr').value.trim();settings.coMail=$('#cMail').value.trim();settings.coVat=$('#cVat').value.trim();settings.coSrv=$('#cSrv').value.trim();settings.coPay=$('#cPay').value.trim();var lp=$('#lgPdf');if(lp)settings.logoPdfOff=!lp.checked;var lw=$('#lgWm');if(lw)settings.wmOff=!lw.checked;saveSettings();
     if(ch){setCountry(cc);view.cat=null} if(tch)setTrade(tr);
     closeSheet();applyLang();render();window.scrollTo(0,0);toast(tch?L4(XT.tradeOn)+' '+tradeLabel():T('saved'));
   };
@@ -1582,6 +1587,8 @@ function O(lang,k){return lang==='both'?OUT.it[k]+' / '+OUT.ar[k]:OUT[lang][k]}
 function nameOut(lang,o){if(lang==='both')return o.it+(o.ar&&o.ar!==o.it?' / '+o.ar:'');return trName(o,lang)}
 function unitOut(lang,u){var U=unit(u);return U[lang]||U.it}
 function placeOut(lang){var p=placeOf(cur().site.luogo);return p?nameOut(lang,p):''}
+var LGT={pdf:{ar:'🖼️ إظهار شعاري في أعلى PDF',it:'🖼️ Mostra il mio logo in alto nel PDF',en:'🖼️ Show my logo at the top of the PDF',fr:'🖼️ Afficher mon logo en haut du PDF'},
+ wm:{ar:'💧 الشعار والاسم شفافان في وسط الورقة',it:'💧 Logo e nome trasparenti al centro del foglio',en:'💧 Faint logo and name in the middle of the page',fr:'💧 Logo et nom en filigrane au centre'}};
 var CO={sec:{ar:'بيانات الشركة في الفاتورة وPDF',it:'Dati azienda su PDF e preventivi',en:'Company details on PDFs',fr:'Infos entreprise sur les PDF'},
  secH:{ar:'تظهر في أعلى وأسفل الورقة مع الشعار. كلها اختيارية.',it:'Appaiono in alto e in basso nel documento, con il logo. Tutto facoltativo.',en:'Shown at the top and bottom of the document with your logo. All optional.',fr:'Affichées en haut et en bas du document avec le logo. Tout est facultatif.'},
  sub:{ar:'سطر تحت اسم الشركة (مثلاً: di الاسم)',it:'Riga sotto il nome (es. di Nome Cognome)',en:'Line under the name',fr:'Ligne sous le nom'},
@@ -1617,7 +1624,7 @@ var DOC_CSS='*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans","Noto
  '.bar{margin-top:18px;background:#0E2A5C;color:#fff;border-radius:8px;padding:9px 14px;font-size:11.5px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;border-top:3px solid #F5B700}'+
  '.sp{height:0}.wm{position:fixed;top:52%;left:50%;width:56%;transform:translate(-50%,-50%);opacity:.09;z-index:5;pointer-events:none;mix-blend-mode:multiply;text-align:center}.wm img{width:62%;max-height:300px;object-fit:contain}.wm b{display:block;font-size:44px;font-weight:900;font-style:italic;color:#0E2A5C;line-height:1.05;text-transform:uppercase}.wm i{display:block;font-size:26px;font-weight:700;color:#0E2A5C}';
 function docHead(lang,title,boxRows){
-  var lg=settings.logo&&/^data:image\//.test(settings.logo)?'<img src="'+settings.logo+'" alt="">':'';
+  var lg=settings.logo&&/^data:image\//.test(settings.logo)&&!settings.logoPdfOff?'<img src="'+settings.logo+'" alt="">':'';
   var ct=[settings.coAddr?'📍 '+esc(settings.coAddr):'',settings.myPhone?'📞 <span dir="ltr">'+esc(settings.myPhone)+'</span>':'',settings.coMail?'✉️ <span dir="ltr">'+esc(settings.coMail)+'</span>':''].filter(Boolean).map(function(x){return '<div>'+x+'</div>'}).join('')+(settings.coSrv?'<em dir="auto">'+esc(settings.coSrv)+'</em>':'');
   var nm=(settings.ditta||settings.tecnico)?'<div class="nm"><b dir="auto">'+esc(settings.ditta||settings.tecnico)+'</b>'+(settings.coSub?'<i dir="auto">'+esc(settings.coSub)+'</i>':'')+'</div>':'';
   return '<div class="blk bh"><div class="co">'+lg+nm+'</div><div class="ct">'+ct+'</div></div><div class="blk rule"></div>'+
@@ -1625,9 +1632,27 @@ function docHead(lang,title,boxRows){
 }
 function docFoot(lang,withSign){
   var parts=[settings.ditta?esc(settings.ditta)+(settings.coSub?' '+esc(settings.coSub):''):'',settings.coVat?DL(lang,'vat')+' '+esc(settings.coVat):'',settings.coAddr?esc(settings.coAddr):''].filter(Boolean);
-  return (withSign?'<div class="blk sg"><span class="nb">'+withSign+'</span><span class="ln">'+DL(lang,'sign')+'</span></div>':'')+(parts.length?'<div class="blk bar">'+parts.join('<span>|</span>')+'</div>':'');
+  var mk='<div class="blk" style="text-align:center;font-size:10.5px;color:#9AA3B8;margin-top:8px" dir="ltr">'+(settings.ui==='ar'?'SiteNeeds.net':'SiteNeeds.net')+'</div>';
+  return (withSign?'<div class="blk sg"><span class="nb">'+withSign+'</span><span class="ln">'+DL(lang,'sign')+'</span></div>':'')+(parts.length?'<div class="blk bar">'+parts.join('<span>|</span>')+'</div>':'')+mk;
 }
-function wmImg(){var lg=settings.logo&&/^data:image\//.test(settings.logo);if(!lg&&!settings.ditta)return '';return '<div class="wm">'+(lg?'<img src="'+settings.logo+'" alt="">':'')+(settings.ditta?'<b>'+esc(settings.ditta)+'</b>'+(settings.coSub?'<i>'+esc(settings.coSub)+'</i>':''):'')+'</div>'}
+// toglie lo sfondo uniforme del logo (bianco, nero, colorato) partendo dai bordi → PNG trasparente
+function cleanLogo(src,cb){
+  var im=new Image();im.onload=function(){try{
+    var w=im.width,h=im.height,cv=document.createElement('canvas');cv.width=w;cv.height=h;var g=cv.getContext('2d');g.drawImage(im,0,0);
+    var d=g.getImageData(0,0,w,h),a=d.data;function px(x,y){var i=(y*w+x)*4;return [a[i],a[i+1],a[i+2],a[i+3]]}
+    var cs=[px(0,0),px(w-1,0),px(0,h-1),px(w-1,h-1)];
+    if(cs.every(function(c){return c[3]<20})){cb(src);return}
+    var seen=new Uint8Array(w*h),st=[];
+    function near(i){if(a[i+3]<20)return true;for(var k=0;k<4;k++){var c=cs[k];if(Math.abs(a[i]-c[0])+Math.abs(a[i+1]-c[1])+Math.abs(a[i+2]-c[2])<60)return true}return false}
+    for(var x=0;x<w;x++){st.push(x,0,x,h-1)}for(var y=0;y<h;y++){st.push(0,y,w-1,y)}
+    var cnt=0;
+    while(st.length){var yy=st.pop(),xx=st.pop();if(xx<0||yy<0||xx>=w||yy>=h)continue;var j=yy*w+xx;if(seen[j])continue;seen[j]=1;var i=j*4;if(!near(i))continue;a[i+3]=0;cnt++;st.push(xx+1,yy,xx-1,yy,xx,yy+1,xx,yy-1)}
+    if(cnt>w*h*0.85){cb(src);return}
+    g.putImageData(d,0,0);cb(cv.toDataURL('image/png'))}catch(e){cb(src)}};
+  im.onerror=function(){cb(src)};im.src=src;
+}
+if(settings.logo&&!settings.logoClean&&/^data:image\//.test(settings.logo)){setTimeout(function(){cleanLogo(settings.logo,function(c){settings.logo=c;settings.logoClean=1;saveSettings();try{applyLang()}catch(e){}})},800)}
+function wmImg(){if(settings.wmOff)return '';var lg=settings.logo&&/^data:image\//.test(settings.logo)&&!settings.logoPdfOff;if(!lg&&!settings.ditta)return '';return '<div class="wm">'+(lg?'<img src="'+settings.logo+'" alt="">':'')+(settings.ditta?'<b>'+esc(settings.ditta)+'</b>'+(settings.coSub?'<i>'+esc(settings.coSub)+'</i>':''):'')+'</div>'}
 function wmImgOld(){return settings.logo&&/^data:image\//.test(settings.logo)?'<img class="wm" src="'+settings.logo+'" alt="">':''}
 function logoImg(){return settings.logo&&/^data:image\//.test(settings.logo)?'<img class="logo" src="'+settings.logo+'" style="max-height:56px;max-width:160px;display:block;margin-bottom:4px;margin-inline-start:auto">':''}
 function dateTxt(){var d=new Date();function z(n){return (n<10?'0':'')+n}return z(d.getDate())+'/'+z(d.getMonth()+1)+'/'+d.getFullYear()}
@@ -1646,6 +1671,7 @@ function buildText(wa,lang){
   if(s.indirizzo) out.push('📍 '+O(lang,'indirizzo')+': '+s.indirizzo);
   if(s.luogo) out.push('🏠 '+O(lang,'luogo')+': '+placeOut(lang));
   out.push('📅 '+O(lang,'data')+': '+dateTxt());
+  if(s.when) out.push(B+whenTxt(lang,s.when)+B);
   if(settings.tecnico) out.push('👷 '+O(lang,'tecnico')+': '+settings.tecnico);
   var last=null, n=0;
   sortedLines().forEach(function(l){
@@ -1676,7 +1702,7 @@ function buildReport(lang){
     rows+='<div class="blk r'+(n%2?'':' alt')+'"><div class="n">'+n+'</div><div class="d">'+nm+ph+(l.note?'<div class="nt">📝 <span dir="auto">'+esc(l.note)+'</span></div>':'')+'</div><div class="s">'+(spec||'—')+'</div><div class="q"><span dir="ltr">'+fmt(l.qty)+'</span> <small>'+unitOut(lang==='both'?'it':lang,l.unit)+'</small></div></div>';
   });
   var title=lang==='both'?'RICHIESTA MATERIALE <small style="display:block;font-size:16px;color:#646A80" dir="rtl">'+OUT.ar.title+'</small>':esc(OUT[lang].titleL).toUpperCase();
-  var box=[[DL(lang,'date'),dateTxt()]]; if(settings.tecnico) box.push([DL(lang,'tech'),settings.tecnico]);
+  var box=[[DL(lang,'date'),dateTxt()]]; if(settings.tecnico) box.push([DL(lang,'tech'),settings.tecnico]); if(s.when) box.push([(WHO[lang==='both'?'it':lang]||WHO.it),whenTxt(lang,s.when).replace(/^\S+\s/,'')]);
   var pl=placeOut(lang), cli=(s.cliente||s.indirizzo)?'<div class="box"><b class="h">'+DL(lang,'client')+'</b>'+(s.cliente?'<div dir="auto">'+esc(s.cliente)+'</div>':'')+(s.indirizzo?'<div dir="auto">📍 '+esc(s.indirizzo)+'</div>':'')+'</div>':'<div></div>';
   var rb=(pl||cur().name)?'<div class="box">'+(pl?'<b class="h">'+DL(lang,'place')+'</b><div dir="auto">'+esc(pl)+'</div>':'')+(cur().name?'<div dir="auto">'+DL(lang,'ref')+': '+esc(cur().name)+'</div>':'')+'</div>':'<div></div>';
   return '<!doctype html><html dir="'+(rtl?'rtl':'ltr')+'"><head><meta charset="utf-8"><meta name="viewport" content="width=794"><style>'+DOC_CSS+
@@ -1750,7 +1776,7 @@ function buildQuoteReport(lang){
    docFoot(lang,lab('nb'))+'<div class="pad"></div></div>'+
    '<script>'+PAGINATE+'<\/script></body></html>';
 }
-var PAGINATE="(function(){function go(){var W=document.documentElement.clientWidth||794,P=W*297/210,M=36,b=document.querySelectorAll('.blk');for(var i=0;i<b.length;i++){var e=b[i],r=e.getBoundingClientRect(),t=r.top+window.scrollY,h=r.height,pg=Math.floor(t/P),end=(pg+1)*P-M;if(t+h>end&&h<P-2*M){var sp=document.createElement('div');sp.className='sp';sp.style.height=((pg+1)*P+M-t)+'px';e.parentNode.insertBefore(sp,e)}}var wm=document.querySelector('.wm');if(wm){var HH=document.body.scrollHeight,nP=Math.max(1,Math.ceil((HH-2)/P));for(var k=0;k<nP;k++){var c=wm.cloneNode(true);c.style.position='absolute';c.style.top=Math.round(k*P+P/2)+'px';c.style.left='50%';c.style.transform='translate(-50%,-50%)';document.body.appendChild(c)}wm.parentNode.removeChild(wm)}var H=document.body.scrollHeight;if(window.Report)Report.ready(H,W);}if(document.readyState==='complete')setTimeout(go,60);else window.addEventListener('load',function(){setTimeout(go,60)})})();";
+var PAGINATE="(function(){function go(){var W=document.documentElement.clientWidth||794,P=W*297/210,M=36,b=document.querySelectorAll('.blk');for(var i=0;i<b.length;i++){var e=b[i],r=e.getBoundingClientRect(),t=r.top+window.scrollY,h=r.height,pg=Math.floor(t/P),end=(pg+1)*P-M;if(t+h>end&&h<P-2*M){var sp=document.createElement('div');sp.className='sp';sp.style.height=((pg+1)*P+M-t)+'px';e.parentNode.insertBefore(sp,e)}}var wm=document.querySelector('.wm');if(wm){var HH=document.body.scrollHeight,nP=Math.max(1,Math.ceil((HH-2)/P));document.body.style.minHeight=Math.floor(nP*P-2)+'px';for(var k=0;k<nP;k++){var c=wm.cloneNode(true);c.style.position='absolute';c.style.top=Math.round(k*P+P/2)+'px';c.style.left='50%';c.style.transform='translate(-50%,-50%)';document.body.appendChild(c)}wm.parentNode.removeChild(wm)}var H=document.body.scrollHeight;if(window.Report)Report.ready(H,W);}if(document.readyState==='complete')setTimeout(go,60);else window.addEventListener('load',function(){setTimeout(go,60)})})();";
 function fileName(isQuote){
   var p=cur(), c=(p.name||p.site.cliente||'').replace(/[^\w؀-ۿ -]+/g,'').trim().replace(/\s+/g,'_');
   var d=new Date(), base=isQuote?(settings.out==='ar'?'عرض_سعر':'Preventivo'):(settings.out==='ar'?'طلب_مواد':'Richiesta_materiale');
@@ -1855,6 +1881,7 @@ document.addEventListener('click',function(e){
    case 'mlmore': manSync();for(var mi=0;mi<6;mi++)manDoc().push(manRow());save();render();break;
    case 'mlclear': if(confirm(L4(MLD.sure))){cur().man=null;cur().lines=cur().lines.filter(function(l){return !l.man});save();render()}break;
    case 'mlsend': manSend();break;
+   case 'when': {var st=cur().site;st.when=st.when===v?'':v;save();render();}break;
    case 'siteopen': cur().site.open=true;save();render();break;
    case 'siteclose': cur().site.open=false;save();render();break;
    case 'place': cur().site.luogo=cur().site.luogo===v?'':v;save();render();break;
