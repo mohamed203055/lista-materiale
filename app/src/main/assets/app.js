@@ -270,7 +270,7 @@ if(!P){
 }
 function ofTrade(p){return (p.trade||'ele')===tradeId()}
 function cur(){var p=P.list.find(function(x){return x.id===P.cur});if(!p||!ofTrade(p)){p=P.list.filter(ofTrade).sort(function(a,b){return b.updated-a.updated})[0];if(p)P.cur=p.id}if(!p){p=blankProj();P.list.unshift(p);P.cur=p.id}if(!p.quote)p.quote={lines:[],sconto:0,iva:false,rate:0};return p}
-function isEmpty(p){return !p.lines.length&&!(p.quote&&p.quote.lines.length)&&!p.site.cliente&&!p.site.indirizzo&&!p.site.note&&!p.name}
+function isEmpty(p){return !(p.panel&&p.panel.mods&&p.panel.mods.length)&&!p.lines.length&&!(p.quote&&p.quote.lines.length)&&!p.site.cliente&&!p.site.indirizzo&&!p.site.note&&!p.name}
 function save(){var p=cur();p.updated=Date.now();put(K.proj,{cur:P.cur,list:P.list})}
 function prune(){P.list=P.list.filter(function(p){return p.id===P.cur||!isEmpty(p)})}
 
@@ -362,6 +362,7 @@ function rcUI(){
 }
 function render(){
   rcUI();
+  var inStu=view.tab==='mat'&&view.cat==='__panel';document.body.classList.toggle('studio',inStu);if(inStu)pnCommit();
   var inAdmin=view.tab==='admin', inProj=view.tab==='projects', inPrice=view.tab==='price', inCalc=view.tab==='calc';
   $('#tabs').style.display=inAdmin?'none':'';
   $('#searchBox').style.display=(inAdmin||inProj||inPrice||inCalc)?'none':'';
@@ -376,7 +377,7 @@ function render(){
   else if(inPrice) h=renderPrice();
   else if(view.tab==='mlist') h=renderMList();
   else if(view.q) h=renderSearch();
-  else if(view.tab==='mat') h=(view.cat?'':quickRow()+renderSite())+(view.cat==='__fav'?renderFavs():view.cat==='__tpl'?renderTpls():view.cat==='__tech'?renderTech():view.cat==='__panel'?renderPanel():view.cat&&CBY[view.cat]?renderCat(view.cat):renderCats());
+  else if(view.tab==='mat') h=(view.cat?'':quickRow()+renderSite())+(view.cat==='__fav'?renderFavs():view.cat==='__tpl'?renderTpls():view.cat==='__tech'?renderTech():view.cat==='__panel'?renderStudio():view.cat&&CBY[view.cat]?renderCat(view.cat):renderCats());
   else if(view.tab==='kit'){view.tab='mat';h=quickRow()+renderSite()+renderCats()}
   else h=renderCart();
   main.innerHTML=h; refreshCounts();
@@ -1157,7 +1158,7 @@ var PTPL=[['app',{ar:'شقة',it:'Appartamento',en:'Apartment',fr:'Appartement'}
  ['shop',{ar:'محل تجاري',it:'Negozio',en:'Shop',fr:'Commerce'},{sys:'1',A:40,prot:'E',spd:1,c:{luci:2,prese:3,clima:1,est:1}}],
  ['villa',{ar:'فيلا ثلاثي الطور',it:'Villetta trifase',en:'Three-phase house',fr:'Maison triphasée'},{sys:'3',A:32,prot:'2',spd:1,c:{luci:3,prese:3,cucina:1,induz:1,lav:1,clima:2,boiler:1,est:1,pompa:1}}]];
 function pnL(o){return L4(o)}
-function pnl(){var p=cur();return p.panel||null}
+function pnl(){var p=cur();return p.panel?pnMig(p.panel):null}
 function pnPh(sys){return sys==='3'?['L1','L2','L3']:['L']}
 function pnFix(m,sys){ // poli validi secondo tipo e sistema
   var tri=sys==='3',t=m.t,ok;
@@ -1205,7 +1206,7 @@ function pnLayout(P){
     else if(m.t==='rcd'){it.src=lastMain>=0?lastMain:'feed';head=i}
     else if(m.t==='spd'){it.src=lastMain>=0?lastMain:'feed'}
     else if(m.t!=='gap'){it.head=head<0?'feed':head}
-    if(m.t!=='gap')it.q=++q;
+    if(m.t!=='gap')it.q=m.n||++q;
     items.push(it)});
   items.forEach(function(it,j){
     var row=rows[rows.length-1],prev=row.length?row[row.length-1]:null;
@@ -1332,9 +1333,12 @@ function pnSVG(P,opt){
         sg.its.forEach(function(it){var cs=pnCond(it.m,P.sys),n=cs.length;cs.forEach(function(cc,j){if(cc!==c)return;var xx=X+it.x+(j+0.5)*it.w/n;last=Math.max(last,xx);drops+=pnWire('M'+xx+' '+by_+'V'+(ty-8),pnCol(P,c))+pnFer(xx,ty-17)})});
         wires+=pnWire('M'+fx+' '+(dy-PNSP)+'V'+by_+'H'+last,pnCol(P,c))+drops});
     })});
-  h+=wires;
+  if(!opt.nw)h+=wires;
   // moduli
   L.items.forEach(function(it){h+=pnDev(it,X,top0+it.r*PNRH+PND+PNSP,P,opt.sel===it.i)});
+  L.rows.forEach(function(row,r){var ry=top0+r*PNRH+PND/2;h+='<circle cx="'+(X+2)+'" cy="'+ry+'" r="9" fill="#14213D" stroke="#fff" stroke-width="1.5"/><text x="'+(X+2)+'" y="'+(ry+4)+'" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#fff">'+(r+1)+'</text>'});
+  if(opt.lbl)L.items.forEach(function(it){var m=it.m;if(!m.l||m.t==='gap')return;var dy=top0+it.r*PNRH+PND+PNSP,w=it.w,x=X+it.x,n=Math.max(3,Math.floor((w-6)/4.9)),t=m.l.length>n?m.l.slice(0,n-1)+'…':m.l;
+    h+='<rect x="'+(x+2)+'" y="'+(dy+PNDH+6)+'" width="'+(w-4)+'" height="15" rx="3" fill="#fffbe6" stroke="#c9a227" stroke-width=".8"/><text x="'+(x+w/2)+'" y="'+(dy+PNDH+16.5)+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="8.5" font-weight="700" fill="#212529">'+esc(t)+'</text>'});
   // barra di terra e tubi
   var pbY=botD+PND+22,pbX=X+W/2-110;
   for(var k2=0;k2<6;k2++){var px=pbX+20+k2*36;h+=pnWire('M'+px+' '+(botD+PND)+'V'+(pbY+4),pnCol(P,'PE'),1)}
@@ -1414,7 +1418,7 @@ function pnEdit(i){
   function upd(){pnFix(m,P.sys);save();render()}
   function draw(){
     var tri=P.sys==='3',polesBy=pnPolesOk(m.t,tri),hasA=!/^(spd|gap|term|crep|lamp|sock|trf|meter|rel|tmr)$/.test(m.t);
-    var h='<h2>Q'+(pnLayout(P).items[+i].q||'')+' · '+esc(pnL(PN.types[m.t]))+'</h2>'+
+    var h='<h2>'+(m.n?'Q'+m.n:'')+(m.lock?' 🔒':'')+' · '+esc(pnL(PN.types[m.t]))+'</h2>'+
      (m.ref?'<div class="pnref"><b dir="ltr">'+esc(m.ref.b+' · '+m.ref.r)+'</b><button class="chip" id="pnUnref">✕</button></div>':'')+
      (PNCAT_R[m.t]?'<button class="btn ghost" id="pnReal" style="width:100%;margin:4px 0 6px">'+esc(pnL(PN.real))+'</button>':'')+
      pnChips('t',PNTALL.map(function(k){return [k,pnL(PN.types[k])]}),m.t,pnL(PN.type));
@@ -1428,7 +1432,8 @@ function pnEdit(i){
       if(m.t==='rcd'||m.t==='rcbo'){h+=pnChips('mA',[[10,'10mA'],[30,'30mA'],[300,'300mA']],m.mA||30,pnL(PN.sens))+pnChips('rt',['AC','A','F','B'],m.rt||'A',pnL(PN.rt))}
       if(m.t==='mcb'||m.t==='rcbo')h+=pnChips('s',['1,5','2,5','4','6','10','16'].map(function(s){return [s,s+' mm²']}),m.s||'',pnL(PN.sec));
     }
-    h+='<div class="pngo" style="margin-top:14px"><button class="btn ghost" id="pnL">'+esc(pnL(PN.left))+'</button><button class="btn ghost" id="pnR">'+esc(pnL(PN.right))+'</button></div>'+
+    h+='<button class="btn ghost" id="pnLk" style="width:100%;margin-top:12px">'+(m.lock?'🔓 ':'🔒 ')+esc(pnL(STX.lock))+'</button>';
+    h+='<div class="pngo" style="margin-top:8px"><button class="btn ghost" id="pnL">'+esc(pnL(PN.left))+'</button><button class="btn ghost" id="pnR">'+esc(pnL(PN.right))+'</button></div>'+
      '<div class="pngo" style="margin-top:8px"><button class="btn ghost" id="pnD">'+esc(pnL(PN.dup))+'</button><button class="btn ghost" id="pnX" style="color:var(--danger)">'+esc(pnL(PN.del))+'</button></div>'+
      '<button class="btn main" id="pnOk" style="margin-top:8px">'+esc(pnL(PN.ok))+'</button>';
     openSheet(h);sheet._onclose=function(){view.pSel=null;render()};
@@ -1442,10 +1447,11 @@ function pnEdit(i){
     var rb=$('#pnReal');if(rb)rb.onclick=function(){pnRealSheet(P,function(x){pnApplyReal(m,x,P);save();render();draw()})};
     var ub=$('#pnUnref');if(ub)ub.onclick=function(){delete m.ref;delete m.wm;upd();draw()};
     var li=$('#pnLbl');if(li)li.oninput=function(){m.l=li.value;save();var sv=document.querySelector('.pnin');if(sv)sv.innerHTML=pnSVG(P,{sel:view.pSel})};
-    function mv(d){var j=+i+d;if(j<0||j>=P.mods.length)return;P.mods.splice(+i,1);P.mods.splice(j,0,m);i=j;view.pSel=j;upd();draw()}
+    $('#pnLk').onclick=function(){m.lock=!m.lock;save();render();draw()};
+    function mv(d){if(m.lock){toast(pnL(STX.locked));return}var j=+i+d;if(j<0||j>=P.mods.length)return;P.mods.splice(+i,1);P.mods.splice(j,0,m);i=j;view.pSel=j;upd();draw()}
     $('#pnL').onclick=function(){mv(settings.ui==='ar'?1:-1)};$('#pnR').onclick=function(){mv(settings.ui==='ar'?-1:1)};
-    $('#pnD').onclick=function(){var c=JSON.parse(JSON.stringify(m));P.mods.splice(+i+1,0,c);i=+i+1;m=c;view.pSel=i;upd();draw()};
-    $('#pnX').onclick=function(){P.mods.splice(+i,1);view.pSel=null;sheet._onclose=null;closeSheet();pnSave()};
+    $('#pnD').onclick=function(){var c=JSON.parse(JSON.stringify(m));delete c.id;delete c.n;delete c.lock;P.mods.splice(+i+1,0,c);i=+i+1;m=c;view.pSel=i;upd();draw()};
+    $('#pnX').onclick=function(){if(m.lock){toast(pnL(STX.locked));return}P.mods.splice(+i,1);view.pSel=null;sheet._onclose=null;closeSheet();pnSave()};
     $('#pnOk').onclick=closeSheet}
   draw()}
 var PNCAT_R={mcb:1,rcd:1,cont:1,main:1};
@@ -1469,7 +1475,7 @@ function pnSet(){var P=pnl();if(!P)return;
 // materiali per la richiesta
 function pnMat(P){
   var by={},ord=[],nm={ar:'',it:'',en:'',fr:''};
-  function add(k,n4,q){if(!by[k]){by[k]={n:n4,q:0};ord.push(k)}by[k].q+=q}
+  function add(k,n4,q,u,st){if(!by[k]){by[k]={k:k,n:n4,q:0,u:u||'pz',s:st||'ok'};ord.push(k)}by[k].q=Math.round((by[k].q+q)*100)/100}
   P.mods.forEach(function(m){var sp=m.p+' ',a=m.A||16,tri=P.sys==='3';
     if(m.ref){var rn=m.ref.n||{},bb=function(t){t=t||(m.ref.b+' '+m.ref.r);return t.indexOf(m.ref.b)===0?t:m.ref.b+' '+t};add('ref'+m.ref.i,{it:bb(rn.it),ar:bb(rn.ar||rn.it),en:bb(rn.en||rn.it),fr:bb(rn.fr||rn.it)},1);return}
     if(m.t==='isol')add('isol'+m.p+a,{it:'Sezionatore modulare '+sp+a+'A',ar:'مفصل رئيسي (Sezionatore) '+sp+a+'A',en:'Modular isolator switch '+sp+a+'A',fr:'Interrupteur-sectionneur '+sp+a+'A'},1);
@@ -1489,12 +1495,13 @@ function pnMat(P){
     else if(m.t==='cont')add('cont'+m.p+a,{it:'Contattore modulare '+sp+a+'A',ar:'كونتاكتور '+sp+a+'A',en:'Modular contactor '+sp+a+'A',fr:'Contacteur modulaire '+sp+a+'A'},1);
     else if(m.t==='gap')add('gap',{it:'Copriforo modulare',ar:'غطاء فراغ موديول',en:'Blanking module',fr:'Obturateur modulaire'},1)});
   var L=pnLayout(P),mods=L.rows.length*(P.row||12);
-  add('enc',{it:'Centralino '+mods+' moduli',ar:'علبة لوحة '+mods+' موديول',en:'Consumer unit '+mods+' modules',fr:'Coffret '+mods+' modules'},1);
+  add('enc',{it:'Centralino '+mods+' moduli',ar:'علبة لوحة '+mods+' موديول',en:'Consumer unit '+mods+' modules',fr:'Coffret '+mods+' modules'},1,'pz','est');
   var segs=0;L.items.forEach(function(it){if(it.seg)segs++});
-  if(segs)add('comb',{it:'Pettine di collegamento',ar:'مشط توصيل (Pettine)',en:'Busbar comb',fr:'Peigne de raccordement'},segs);
-  add('pe',{it:'Morsettiera di terra',ar:'قضيب توصيل الأرضي',en:'Earth terminal bar',fr:'Bornier de terre'},1);
+  if(segs)add('comb',{it:'Pettine di collegamento',ar:'مشط توصيل (Pettine)',en:'Busbar comb',fr:'Peigne de raccordement'},segs,'pz','est');
+  add('pe',{it:'Morsettiera di terra',ar:'قضيب توصيل الأرضي',en:'Earth terminal bar',fr:'Bornier de terre'},1,'pz','est');
+  P.mods.forEach(function(m){if(!PNOUT[m.t]||m.t==='trf'||!(m.len>0)||!m.s)return;var nc=pnCond(m,P.sys).length+1;add('cab'+m.s,{it:'Cavo unipolare FS17 '+m.s+' mm²',ar:'سلك FS17 مقطع '+m.s+' مم²',en:'Single-core cable FS17 '+m.s+' mm²',fr:'Câble unipolaire FS17 '+m.s+' mm²'},m.len*nc,'m','calc')});
   return ord.map(function(k){return by[k]})}
-function pnOrder(){var P=pnl();if(!P)return;pnMat(P).forEach(function(x){addLine({it:x.n.it,ar:x.n.ar,fr:x.n.fr,en:x.n.en,cat:'x',unit:'pz',qty:x.q,note:''})});save();refreshCounts();toast('✓ '+pnL(PN.added))}
+function pnOrder(){var P=pnl();if(!P)return;pnMat(P).forEach(function(x){addLine({it:x.n.it,ar:x.n.ar,fr:x.n.fr,en:x.n.en,cat:'x',unit:x.u==='m'?'m':'pz',qty:x.q,note:''})});save();refreshCounts();toast('✓ '+pnL(PN.added))}
 function pnText(P,lang){var t4=function(o){return o[lang]||o.it},L=pnLayout(P);
   var t='⚡ '+t4(PN.t)+(P.name?' — '+P.name:'')+'\n'+(P.sys==='3'?t4(PN.tri):t4(PN.mono))+'\n\n';
   L.items.forEach(function(it){if(it.m.t==='gap')return;var m=it.m;t+='Q'+it.q+' · '+(m.l||t4(PN.types[m.t]))+' — '+pnSpec(m)+(m.s?' · '+m.s+' mm²':'')+'\n'});
@@ -1510,11 +1517,392 @@ function pnDoc(P,lang){
    docHead(lang,'⚡ '+esc(t4(PN.t))+(P.name?' — '+esc(P.name):''),box)+'<div class="blk"><img class="pimg" src="'+img+'" alt=""></div>'+
    '<div class="blk cat">'+esc(t4(PN.legend))+'</div>'+rows+'<div class="blk" style="font-size:11px;color:#646A80;margin-top:10px">ⓘ '+esc(t4(PN.note))+'</div>'+
    docFoot(lang,'')+'<div class="pad"></div></div><script>'+PAGINATE+'<\/script></body></html>'}
+window.LM_stDocs=function(){var P=pnl();if(!P)return null;var l=settings.out==='both'?'it':settings.out;return {sld:stSldDoc(P,l),rep:stRepDoc(P,l)}};
 window.LM_pnDoc=function(){var P=pnl();return P?pnDoc(P,settings.out==='both'?'it':settings.out):''};
 function pnPdf(){var P=pnl();if(!P)return;var lang=settings.out==='both'?'it':settings.out,html=pnDoc(P,lang);
   var nm=(settings.out==='ar'?'لوحة_كهربائية':'Quadro_elettrico')+(P.name?'_'+P.name.replace(/[^\w؀-ۿ -]+/g,'').trim().replace(/\s+/g,'_'):'')+'.pdf';
   ping('/usa/quadro-pdf','Uso quadro PDF');
   if(A&&A.pdf){toast(T('pdfWait'));A.pdf(html,nm)}else webPdfHtml(html,nm)}
+
+// ======================= STUDIO: piattaforma di progettazione del quadro =======================
+function S4(ar,it,en,fr){return {ar:ar,it:it,en:en,fr:fr}}
+var STX={
+ home:S4('مشاريعي','Progetti','Projects','Projets'),panel:S4('اللوحة','Quadro','Panel','Tableau'),sld:S4('أحادي الخط','Unifilare','Single-line','Unifilaire'),
+ wire:S4('الأسلاك','Cablaggio','Wiring','Câblage'),calc:S4('الحسابات','Calcoli','Calculations','Calculs'),bom:S4('المواد والسعر','Materiali e prezzi','Materials & price','Matériel et prix'),rep:S4('التقرير','Rapporto','Report','Rapport'),
+ saved:S4('✓ محفوظ','✓ Salvato','✓ Saved','✓ Enregistré'),newP:S4('➕ لوحة جديدة','➕ Nuovo quadro','➕ New panel','➕ Nouveau tableau'),
+ search:S4('ابحث بالاسم أو الزبون…','Cerca per nome o cliente…','Search by name or client…','Rechercher par nom ou client…'),
+ all:S4('الكل','Tutti','All','Tous'),res:S4('سكني','Residenziale','Residential','Résidentiel'),com:S4('تجاري','Commerciale','Commercial','Commercial'),ind:S4('صناعي','Industriale','Industrial','Industriel'),
+ draft:S4('مسودة','Bozza','Draft','Brouillon'),review:S4('قيد المراجعة','In revisione','In review','En révision'),ok:S4('معتمد','Approvato','Approved','Approuvé'),done:S4('تم التسليم','Consegnato','Delivered','Livré'),
+ open:S4('فتح','Apri','Open','Ouvrir'),dup:S4('نسخ','Duplica','Duplicate','Dupliquer'),noProj:S4('لا توجد لوحات بعد','Nessun quadro ancora','No panels yet','Aucun tableau'),
+ mods:S4('موديول','moduli','modules','modules'),spare:S4('احتياطي','riserva','spare','réserve'),circ:S4('دائرة','circuiti','circuits','circuits'),
+ lib:S4('📚 المكتبة','📚 Libreria','📚 Library','📚 Bibliothèque'),prop:S4('✏️ الخصائص','✏️ Proprietà','✏️ Properties','✏️ Propriétés'),
+ copy:S4('نسخ','Copia','Copy','Copier'),paste:S4('لصق','Incolla','Paste','Coller'),del:S4('حذف','Elimina','Delete','Supprimer'),lock:S4('قفل','Blocca','Lock','Verrouiller'),
+ lbl:S4('الأسماء','Etichette','Labels','Étiquettes'),wires:S4('الأسلاك','Cavi','Wires','Câbles'),renum:S4('إعادة الترقيم','Rinumera','Renumber','Renuméroter'),
+ selFirst:S4('اختر قطعة أولاً (اضغط عليها)','Seleziona prima un modulo (toccalo)','Select a module first (tap it)','Sélectionnez d’abord un module'),
+ locked:S4('🔒 القطعة مقفلة','🔒 Modulo bloccato','🔒 Module locked','🔒 Module verrouillé'),
+ tapHint:S4('اضغط مرة للتحديد، ومرة ثانية للتعديل. اسحب بإصبع للتحريك وبإصبعين للتكبير.','Tocca una volta per selezionare, di nuovo per modificare. Trascina per spostare, due dita per lo zoom.','Tap once to select, again to edit. Drag to pan, pinch to zoom.','Touchez pour sélectionner, encore pour modifier. Glissez pour déplacer, pincez pour zoomer.'),
+ exp:S4('تصدير وحفظ','Esporta e salva','Export & save','Exporter et enregistrer'),
+ pdfP:S4('📄 PDF اللوحة','📄 PDF quadro','📄 Panel PDF','📄 PDF tableau'),pdfS:S4('📄 PDF المخطط أحادي الخط','📄 PDF unifilare','📄 Single-line PDF','📄 PDF unifilaire'),pdfR:S4('📄 PDF تقرير التسليم','📄 PDF rapporto di consegna','📄 Handover report PDF','📄 PDF rapport de livraison'),
+ svgP:S4('🖼 SVG اللوحة','🖼 SVG quadro','🖼 Panel SVG','🖼 SVG tableau'),svgS:S4('🖼 SVG أحادي الخط','🖼 SVG unifilare','🖼 Single-line SVG','🖼 SVG unifilaire'),png:S4('🖼 صورة PNG','🖼 Immagine PNG','🖼 PNG image','🖼 Image PNG'),
+ csvM:S4('📊 CSV المواد','📊 CSV materiali','📊 Materials CSV','📊 CSV matériel'),csvW:S4('📊 CSV الأسلاك','📊 CSV cavi','📊 Wires CSV','📊 CSV câbles'),
+ file:S4('💾 ملف المشروع','💾 File progetto','💾 Project file','💾 Fichier projet'),imp:S4('📂 فتح ملف مشروع','📂 Apri file progetto','📂 Open project file','📂 Ouvrir un fichier projet'),
+ ver:S4('🕓 حفظ نسخة','🕓 Salva versione','🕓 Save version','🕓 Enregistrer version'),vers:S4('النسخ السابقة','Versioni precedenti','Previous versions','Versions précédentes'),restore:S4('استرجاع','Ripristina','Restore','Restaurer'),
+ verOk:S4('تم حفظ النسخة','Versione salvata','Version saved','Version enregistrée'),impOk:S4('تم فتح المشروع','Progetto aperto','Project opened','Projet ouvert'),impBad:S4('الملف غير صالح','File non valido','Invalid file','Fichier invalide'),
+ pngWeb:S4('الصورة PNG متاحة في نسخة الويب؛ استعمل PDF أو SVG هنا','PNG disponibile nella versione web; qui usa PDF o SVG','PNG is available in the web version; use PDF or SVG here','PNG disponible en version web ; utilisez PDF ou SVG ici'),
+ type:S4('النوع','Tipo','Type','Type'),status:S4('الحالة','Stato','Status','Statut'),client:S4('الزبون','Cliente','Client','Client'),
+ // unifilare
+ sldNote:S4('المخطط يُرسم من نفس اللوحة: أي تعديل في اللوحة يظهر هنا بنفس رقم الدائرة.','Lo schema è generato dallo stesso quadro: ogni modifica appare qui con lo stesso numero di circuito.','The diagram is generated from the same panel: every change appears here with the same circuit number.','Le schéma est généré à partir du même tableau : chaque modification apparaît ici avec le même numéro.'),
+ grid:S4('الشبكة','Rete','Supply','Réseau'),
+ // cablaggio
+ modeV:S4('الوضع البصري','Modalità visiva','Visual mode','Mode visuel'),modeE:S4('الوضع الكهربائي','Modalità elettrica','Electrical mode','Mode électrique'),
+ modeVd:S4('الرسم في «اللوحة» للعرض فقط.','Il disegno nel «Quadro» è solo illustrativo.','The drawing in «Panel» is illustrative only.','Le dessin du «Tableau» est illustratif.'),
+ modeEd:S4('هنا كل توصيلة مسجلة: من أي طرف إلى أي طرف، بالموصل والمقطع.','Qui ogni collegamento è registrato: da quale morsetto a quale, con conduttore e sezione.','Here every connection is recorded: from which terminal to which, with conductor and size.','Ici chaque connexion est enregistrée : de quelle borne à quelle borne, avec conducteur et section.'),
+ check:S4('🔎 فحص التوصيلات','🔎 Verifica collegamenti','🔎 Check connections','🔎 Vérifier les connexions'),
+ lvl0:S4('رسم بصري فقط — لم يُفحص بعد','Solo disegno — non ancora verificato','Drawing only — not checked yet','Dessin seulement — pas encore vérifié'),
+ lvl1:S4('✓ تم فحص اتصال الأطراف منطقياً (ليس محاكاة ولا شهادة مطابقة)','✓ Collegamenti dei morsetti verificati logicamente (non è una simulazione né una certificazione)','✓ Terminal connections logically checked (not a simulation or a certificate)','✓ Connexions des bornes vérifiées logiquement (ni simulation ni certificat)'),
+ lvl2:S4('✕ توجد أخطاء يجب إصلاحها','✕ Ci sono errori da correggere','✕ There are errors to fix','✕ Des erreurs sont à corriger'),
+ noIss:S4('لا توجد ملاحظات','Nessuna segnalazione','No findings','Aucune remarque'),
+ wFrom:S4('من','Da','From','De'),wTo:S4('إلى','A','To','À'),wC:S4('الموصل','Cond.','Cond.','Cond.'),wS:S4('المقطع','Sez.','Size','Sect.'),wK:S4('النوع','Tipo','Type','Type'),
+ kFeed:S4('تغذية','alimentazione','supply','alimentation'),kJmp:S4('وصلة','ponticello','jumper','pont'),kComb:S4('مشط','pettine','comb','peigne'),kCab:S4('كابل دائرة','linea','circuit cable','ligne'),kPE:S4('أرضي','terra','earth','terre'),
+ // calcoli
+ len:S4('الطول م','Lungh. m','Length m','Long. m'),kw:S4('الحمل W','Carico W','Load W','Charge W'),pf:S4('cosφ','cosφ','cosφ','cosφ'),
+ ib:S4('التيار','Corrente','Current','Courant'),dv:S4('هبوط الجهد','Caduta di tensione','Voltage drop','Chute de tension'),lim:S4('الحد المسموح %','Limite %','Limit %','Limite %'),
+ tot:S4('مجموع الأحمال المتصلة','Totale carichi collegati','Total connected load','Total des charges raccordées'),
+ calcNote:S4('أدخل الطول والحمل لكل دائرة. لا نستعمل معامل طلب مفترض: المجموع هو الحمل المتصل فقط.','Inserisci lunghezza e carico per ogni circuito. Nessun fattore di contemporaneità inventato: il totale è solo il carico collegato.','Enter length and load for each circuit. No assumed demand factor: the total is the connected load only.','Saisissez longueur et charge pour chaque circuit. Aucun facteur de simultanéité supposé : le total est la charge raccordée.'),
+ formula:S4('المعادلة والافتراضات','Formula e ipotesi','Formula and assumptions','Formule et hypothèses'),moreCalc:S4('🧮 حاسبات أخرى','🧮 Altri calcolatori','🧮 More calculators','🧮 Autres calculateurs'),
+ phase:S4('الطور','Fase','Phase','Phase'),
+ // materiali
+ price:S4('السعر','Prezzo','Price','Prix'),qty:S4('الكمية','Q.tà','Qty','Qté'),
+ stOk:S4('مؤكد من المشروع','confermato dal progetto','confirmed from project','confirmé'),stEst:S4('تقديري','stimato','estimated','estimé'),stCalc:S4('محسوب من الأطوال','calcolato dalle lunghezze','calculated from lengths','calculé'),
+ field:S4('الأسلاك: يُضاف هامش ويُراجع في الموقع','Cavi: aggiungere margine e verificare in cantiere','Cables: add margin and verify on site','Câbles : ajouter une marge et vérifier sur site'),
+ toQuote:S4('💶 حوّل إلى عرض سعر','💶 Crea preventivo','💶 Make a quote','💶 Créer un devis'),quoted:S4('أضيفت المواد المسعّرة إلى عرض السعر','Materiali con prezzo aggiunti al preventivo','Priced materials added to the quote','Matériel chiffré ajouté au devis'),
+ noPrice:S4('أدخل سعراً واحداً على الأقل','Inserisci almeno un prezzo','Enter at least one price','Saisissez au moins un prix'),
+ // rapporto
+ tech:S4('الفني المسؤول','Tecnico responsabile','Responsible technician','Technicien responsable'),dDate:S4('تاريخ التسليم','Data di consegna','Delivery date','Date de livraison'),nDate:S4('الفحص القادم','Prossima verifica','Next inspection','Prochaine vérification'),
+ works:S4('وصف الأعمال','Descrizione dei lavori','Description of works','Description des travaux'),notes:S4('ملاحظات','Note','Notes','Notes'),
+ checks:S4('الفحوصات','Verifiche','Checks','Vérifications'),nt:S4('لم يُفحص','Non verificato','Not checked','Non vérifié'),pass:S4('مطابق','Conforme','Pass','Conforme'),fail:S4('غير مطابق','Non conforme','Fail','Non conforme'),
+ val:S4('القيمة المقاسة','Valore misurato','Measured value','Valeur mesurée'),
+ repNote:S4('لا يظهر أي فحص كمنجز إلا إذا أدخلته أنت.','Nessuna verifica appare come eseguita se non l’hai inserita tu.','No check appears as done unless you entered it.','Aucune vérification n’apparaît comme faite si vous ne l’avez pas saisie.'),
+ summary:S4('ملخص المشروع','Riepilogo del progetto','Project summary','Résumé du projet'),version:S4('الإصدار','Versione','Version','Version')};
+var STCHK=[['vis',S4('فحص بصري للوحة والتوصيلات','Esame a vista del quadro e dei collegamenti','Visual inspection of panel and connections','Examen visuel du tableau et des connexions')],
+ ['tight',S4('شدّ براغي الأطراف','Serraggio dei morsetti','Terminal tightening','Serrage des bornes')],
+ ['pe',S4('استمرارية الأرضي (Ω)','Continuità del conduttore di protezione (Ω)','Protective conductor continuity (Ω)','Continuité du conducteur de protection (Ω)')],
+ ['iso',S4('مقاومة العزل (MΩ)','Resistenza di isolamento (MΩ)','Insulation resistance (MΩ)','Résistance d’isolement (MΩ)')],
+ ['pol',S4('القطبية','Polarità','Polarity','Polarité')],
+ ['rcd',S4('اختبار التفاضلي (ms / mA)','Prova differenziali (ms / mA)','RCD test (ms / mA)','Essai différentiels (ms / mA)')],
+ ['lbl',S4('تسميات الدوائر ملصقة','Etichette dei circuiti applicate','Circuit labels applied','Étiquettes des circuits posées')]];
+function stS(){if(!view.st)view.st={mod:'panel',z:1,x:0,y:0,q:'',f:''};return view.st}
+function sL(o){return L4(o)}
+function pnUid(){return 'm'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function pnMig(P){if(!P)return P;if(!P.meta)P.meta={type:'res',st:'draft',c:Date.now(),u:Date.now(),ver:1};if(!P.vw)P.vw={lbl:1,wires:1};if(!P.rep)P.rep={chk:{}};if(!P.price)P.price={};
+  var mx=0;(P.mods||[]).forEach(function(m){if(m.n>mx)mx=m.n});var seen={};
+  (P.mods||[]).forEach(function(m){if(!m.id||seen[m.id])m.id=pnUid();seen[m.id]=1;if(m.t!=='gap'&&!m.n)m.n=++mx;if(m.t==='gap')delete m.n});
+  var ns={};(P.mods||[]).forEach(function(m){if(m.n){if(ns[m.n])m.n=++mx;ns[m.n]=1}});return P}
+// ---- annulla / ripeti (istantanee del modello) ----
+var PNU={pid:null,u:[],r:[],last:null};
+function pnCommit(){var P=pnl();if(!P)return;var pid=cur().id,js=JSON.stringify({m:P.mods,s:P.sys,r:P.row,l:P.lc});
+  if(PNU.pid!==pid){PNU={pid:pid,u:[],r:[],last:js};return}
+  if(js!==PNU.last){if(PNU.last!=null){PNU.u.push(PNU.last);if(PNU.u.length>60)PNU.u.shift();PNU.r=[]}PNU.last=js;P.meta.u=Date.now();save()}}
+function pnRestoreSnap(js){var P=pnl(),o=JSON.parse(js);P.mods=o.m;P.sys=o.s;P.row=o.r;P.lc=o.l;PNU.last=js;P.meta.u=Date.now();save()}
+function pnUndo(){if(!PNU.u.length)return;PNU.r.push(PNU.last);pnRestoreSnap(PNU.u.pop());view.pSel=null;render()}
+function pnRedo(){if(!PNU.r.length)return;PNU.u.push(PNU.last);pnRestoreSnap(PNU.r.pop());view.pSel=null;render()}
+var PNCLIP=null;
+function stSel(){var P=pnl();if(!P||view.pSel==null||!P.mods[view.pSel]){toast(sL(STX.selFirst));return null}return P.mods[view.pSel]}
+function stTime(t){var d=new Date(t||Date.now());return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}
+function stDate(t){var d=new Date(t||Date.now());return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear()}
+// ---- guscio dello studio ----
+var STMODS=[['home','🏠'],['panel','⚡'],['sld','📈'],['wire','🔌'],['calc','🧮'],['bom','📋'],['rep','📝']];
+function renderStudio(){
+  var st=stS(),P=pnl(),p=cur(),body;
+  if(st.mod!=='home'&&(!P||!(P.mods||[]).length)&&st.mod!=='panel')st.mod='panel';
+  switch(st.mod){case 'home':body=stHome();break;case 'sld':body=stSld();break;case 'wire':body=stWire();break;case 'calc':body=stCalc();break;case 'bom':body=stBom();break;case 'rep':body=stRep();break;default:body=stPanel()}
+  var title=st.mod==='home'?sL(STX.home):(P&&P.name)||projTitle(p);
+  return '<div class="stu"><div class="stbar"><button class="stb" data-act="stexit" aria-label="back">'+(settings.ui==='ar'?'→':'←')+'</button>'+
+   '<div class="stt"><b dir="auto">'+esc(title)+'</b><small>'+(P&&st.mod!=='home'?esc(sL(STX.saved))+' '+stTime(P.meta.u):'⚡ '+esc(sL(PN.t)))+'</small></div>'+
+   (st.mod!=='home'?'<button class="stb" data-act="stundo"'+(PNU.u.length?'':' disabled')+' title="Undo">↶</button><button class="stb" data-act="stredo"'+(PNU.r.length?'':' disabled')+' title="Redo">↷</button><button class="stb" data-act="stexp" title="Export">⤓</button>':'')+'</div>'+
+   '<div class="stmods">'+STMODS.map(function(x){return '<button class="'+(st.mod===x[0]?'on':'')+'" data-act="stmod" data-v="'+x[0]+'"><i>'+x[1]+'</i>'+esc(sL(STX[x[0]]))+'</button>'}).join('')+'</div>'+
+   '<div class="stbody">'+body+'</div></div>'}
+// ---- 🏠 progetti ----
+function stHome(){var st=stS();
+  return '<div class="stsrch"><input id="stQ" dir="auto" placeholder="'+esc(sL(STX.search))+'" value="'+esc(st.q||'')+'"></div>'+
+   '<div class="chips" style="margin:8px 0">'+[['',STX.all],['res',STX.res],['com',STX.com],['ind',STX.ind]].map(function(o){return '<button class="chip'+((st.f||'')===o[0]?' on':'')+'" data-act="stf" data-v="'+o[0]+'">'+esc(sL(o[1]))+'</button>'}).join('')+'</div>'+
+   '<button class="btn main" data-act="stnew" style="margin-bottom:10px">'+esc(sL(STX.newP))+'</button><button class="btn ghost" data-act="stimp" style="width:100%;margin-bottom:12px">'+esc(sL(STX.imp))+'</button>'+
+   '<div id="stList">'+stHomeList()+'</div>'}
+function stHomeList(){var st=stS(),q=(st.q||'').toLowerCase();
+  var L=P.list.filter(function(p){return ofTrade(p)&&p.panel&&(p.panel.mods||[]).length}).filter(function(p){var pp=pnMig(p.panel);
+    if(st.f&&pp.meta.type!==st.f)return false;if(!q)return true;return (projTitle(p)+' '+(p.site&&p.site.cliente||'')+' '+(pp.name||'')).toLowerCase().indexOf(q)>=0})
+   .sort(function(a,b){return (b.panel.meta.u||0)-(a.panel.meta.u||0)});
+  if(!L.length)return '<div class="empty"><div class="big">⚡</div>'+esc(sL(STX.noProj))+'</div>';
+  return L.map(function(p){var pp=p.panel,n=pp.mods.filter(function(m){return m.t!=='gap'}).length,stc={draft:'#868e96',review:'#E67700',ok:'#2F9E44',done:'#1F6FD6'}[pp.meta.st]||'#868e96';
+    return '<div class="stcard'+(p.id===cur().id?' cur':'')+'"><div class="sth"><b dir="auto">'+esc(pp.name||projTitle(p))+'</b><span class="stst" style="background:'+stc+'">'+esc(sL(STX[pp.meta.st]||STX.draft))+'</span></div>'+
+     '<div class="mini" dir="auto">'+(p.site&&p.site.cliente?'👤 '+esc(p.site.cliente)+' · ':'')+esc(sL(STX[pp.meta.type]||STX.res))+' · '+n+' Q · '+(pp.sys==='3'?'400V':'230V')+' · 🕓 '+stDate(pp.meta.u)+' '+stTime(pp.meta.u)+'</div>'+
+     '<div class="pngo" style="margin-top:8px"><button class="btn main" data-act="stopen" data-v="'+esc(p.id)+'">'+esc(sL(STX.open))+'</button><button class="btn ghost" data-act="stdupp" data-v="'+esc(p.id)+'">'+esc(sL(STX.dup))+'</button><button class="btn ghost" data-act="stmeta" data-v="'+esc(p.id)+'" style="flex:0 0 52px">⚙️</button></div></div>'}).join('')}
+function stMeta(pid){var p=P.list.find(function(x){return x.id===pid});if(!p||!p.panel)return;var pp=pnMig(p.panel);
+  function draw(){openSheet('<h2>⚙️ '+esc(pp.name||projTitle(p))+'</h2>'+pnChips('type',[['res',sL(STX.res)],['com',sL(STX.com)],['ind',sL(STX.ind)]],pp.meta.type,sL(STX.type))+
+    pnChips('st',[['draft',sL(STX.draft)],['review',sL(STX.review)],['ok',sL(STX.ok)],['done',sL(STX.done)]],pp.meta.st,sL(STX.status))+'<button class="btn main" id="pnOk" style="margin-top:12px">'+esc(sL(PN.ok))+'</button>');
+    sheet.querySelectorAll('[data-pk]').forEach(function(b){b.onclick=function(){pp.meta[b.dataset.pk]=b.dataset.pv;pp.meta.u=Date.now();put(K.proj,{cur:P.cur,list:P.list});draw();var l=$('#stList');if(l)l.innerHTML=stHomeList()}});
+    $('#pnOk').onclick=closeSheet}
+  draw()}
+// ---- ⚡ quadro ----
+function stPanel(){var P=pnl();
+  if(!P||!(P.mods||[]).length)return renderPanel().replace(/^[\s\S]*?<div class="pnempty">/,'<div class="pnempty">');
+  var L=pnLayout(P),used=0;L.items.forEach(function(it){if(it.m.t!=='gap')used+=pnW(it.m)});var cap=L.rows.length*(P.row||12),sel=view.pSel!=null?P.mods[view.pSel]:null,st=stS();
+  var tb=[['stlib',sL(STX.lib)],['stprop',sL(STX.prop)],['stdupm','⧉ '+sL(PN.dup)],['stcopy','📋 '+sL(STX.copy)],['stpaste','📥 '+sL(STX.paste)+(PNCLIP?'':'')],['stmvl','◀'],['stmvr','▶'],['stlock',(sel&&sel.lock?'🔓 ':'🔒 ')+sL(STX.lock)],['stdel','🗑 '+sL(STX.del)]];
+  return '<div class="sttools">'+tb.map(function(b){return '<button data-act="'+b[0]+'"'+(b[0]==='stpaste'&&!PNCLIP?' disabled':'')+'>'+esc(b[1])+'</button>'}).join('')+'</div>'+
+   '<div class="sttools sub"><button data-act="pngen">'+esc(sL(PN.gen))+'</button><button data-act="pnset">'+esc(sL(PN.set))+'</button><button class="'+(P.vw.lbl?'on':'')+'" data-act="stvw" data-v="lbl">🏷 '+esc(sL(STX.lbl))+'</button><button class="'+(P.vw.wires?'on':'')+'" data-act="stvw" data-v="wires">〰 '+esc(sL(STX.wires))+'</button><button data-act="stren">#️⃣ '+esc(sL(STX.renum))+'</button></div>'+
+   '<div class="stc" id="stc"><div class="stz" style="transform:translate('+st.x+'px,'+st.y+'px) scale('+st.z+')">'+pnSVG(P,{sel:view.pSel,lbl:P.vw.lbl,nw:!P.vw.wires})+'</div>'+
+   '<div class="stzoom"><button data-act="stz" data-v="1">＋</button><button data-act="stz" data-v="-1">－</button><button data-act="stz" data-v="0">⤢</button><button data-act="stz" data-v="s">🎯</button></div></div>'+
+   '<div class="ststat"><span>Q: <b>'+L.items.filter(function(it){return it.m.t!=='gap'}).length+'</b></span><span>'+esc(sL(STX.mods))+': <b>'+used+'/'+cap+'</b></span><span>'+esc(sL(STX.spare))+': <b>'+Math.max(0,cap-used)+'</b></span><span>'+(P.sys==='3'?'400V 3~':'230V 1~')+'</span>'+(sel?'<span>▶ <b>'+(sel.n?'Q'+sel.n:'—')+'</b>'+(sel.lock?' 🔒':'')+'</span>':'')+'</div>'+
+   '<div class="mini" style="margin:6px 4px 10px">👆 '+esc(sL(STX.tapHint))+'</div>'+
+   '<div class="pngo"><button class="btn ghost" data-act="pnpdf">'+esc(sL(PN.pdf))+'</button><button class="btn ghost" data-act="pnwa">'+esc(sL(PN.wa))+'</button></div>'+
+   '<button class="btn main" data-act="pnord" style="margin-top:8px">'+esc(sL(PN.ord))+'</button>'+
+   '<div class="h2" style="margin-top:16px"><b>'+esc(sL(PN.legend))+'</b></div><div class="pnlist">'+L.items.filter(function(it){return it.m.t!=='gap'}).map(function(it){var m=it.m;
+     return '<button class="pnrow" data-act="pnedit" data-v="'+it.i+'"><b>'+(m.t==='term'?'X':'Q')+it.q+'</b><span dir="auto">'+esc(pnName(m))+(m.lock?' 🔒':'')+'</span><i dir="ltr">'+esc(pnSpec(m))+(m.s?' · '+esc(m.s)+' mm²':'')+(pnSecLow(m)?' ⚠️':'')+'</i></button>'}).join('')+'</div>'+
+   '<div class="mini" style="margin:10px 4px">ⓘ '+esc(sL(PN.note))+'</div>'}
+// libreria con ricerca (tipi generici + pezzi reali)
+function stLib(){var P=pnl()||(cur().panel=pnMig({v:1,sys:'1',row:12,lc:packId()==='IT'?'br':'rd',name:'',mods:[]}));var q='';
+  function put(m){pnMig(P);var at=view.pSel!=null&&view.pSel<P.mods.length?view.pSel+1:P.mods.length;P.mods.splice(at,0,m);pnMig(P);view.pSel=at;save();closeSheet();render()}
+  function list(){var qq=q.toLowerCase().trim(),h='';
+    var gen=PNTALL.filter(function(k){if(!qq)return true;var t=PN.types[k];return [t.ar,t.it,t.en,t.fr,k].join(' ').toLowerCase().indexOf(qq)>=0});
+    if(!qq)h+=PNG3.map(function(g,gi){return '<div class="h2" style="margin:10px 2px 6px"><b>'+esc(sL(PN.grp[gi]))+'</b></div><div class="pnadd">'+g.map(function(k){return '<button class="btn ghost" data-pa="'+k+'">'+esc(sL(PN.types[k]))+'</button>'}).join('')+'</div>'}).join('');
+    else if(gen.length)h+='<div class="pnadd">'+gen.map(function(k){return '<button class="btn ghost" data-pa="'+k+'">'+esc(sL(PN.types[k]))+'</button>'}).join('')+'</div>';
+    var R=pnRealList(P).filter(function(x){if(!qq)return true;var n=x.n||{};return [x.b,x.r,x.f,x.p,x.cv?x.cv+x.A:'',x.A!=null?x.A+'a':'',x.A,n.it,n.ar,n.fr,n.en].join(' ').toLowerCase().indexOf(qq.replace(/\s+/g,' '))>=0});
+    if(R.length)h+='<div class="h2" style="margin:14px 2px 6px"><b>'+esc(sL(PN.real))+'</b> <small>'+R.length+'</small></div>'+R.slice(0,60).map(function(x){return '<button class="pnrow" data-rp="'+esc(x.i)+'"><b style="font-size:12px">'+esc(x.b.split(' ')[0])+'</b><span dir="ltr" style="text-align:start">'+esc(x.r)+'</span><i dir="ltr">'+esc([x.f,x.p,x.cv?x.cv+x.A:(x.A!=null?x.A+'A':''),x.mA?x.mA+'mA':'',x.w?x.w+' mod':''].filter(Boolean).join(' · '))+'</i></button>'}).join('');
+    var box=$('#stLibL');if(box){box.innerHTML=h;bind()}}
+  function bind(){sheet.querySelectorAll('[data-pa]').forEach(function(b){b.onclick=function(){put(pnNew(b.dataset.pa,P.sys))}});
+    sheet.querySelectorAll('[data-rp]').forEach(function(b){b.onclick=function(){var x=null;pnRealList(P).forEach(function(y){if(y.i===b.dataset.rp)x=y});if(!x)return;var m=pnNew(PNCAT[x.c],P.sys);pnApplyReal(m,x,P);put(m)}})}
+  openSheet('<h2>'+esc(sL(STX.lib))+'</h2><div class="stsrch"><input id="stLQ" dir="auto" placeholder="🔍 C16, 2P, Schneider, A9F…, '+esc(sL(PN.types.rcd))+'…"></div><div id="stLibL"></div>');
+  $('#stLQ').oninput=function(){q=this.value;list()};list()}
+// pan / zoom / pinch sulla tela (delegato: sopravvive ai render)
+(function(){var ps={},s0=null,moved=false,sup=false;
+  function apply(){var z=document.querySelector('.stz');if(z){var s=stS();z.style.transform='translate('+s.x+'px,'+s.y+'px) scale('+s.z+')'}}
+  function dist(){var k=Object.keys(ps);if(k.length<2)return 0;var a=ps[k[0]],b=ps[k[1]];return Math.hypot(a.x-b.x,a.y-b.y)}
+  function mid(){var k=Object.keys(ps),a=ps[k[0]],b=ps[k[1]];return {x:(a.x+b.x)/2,y:(a.y+b.y)/2}}
+  function start(){var s=stS(),c=document.querySelector('.stc'),r=c.getBoundingClientRect(),k=Object.keys(ps),p=k.length>1?mid():ps[k[0]];s0={x:s.x,y:s.y,z:s.z,px:p.x-r.left,py:p.y-r.top,d:dist()}}
+  document.addEventListener('pointerdown',function(e){var c=e.target.closest&&e.target.closest('.stc');if(!c||e.target.closest('.stzoom'))return;ps[e.pointerId]={x:e.clientX,y:e.clientY};moved=false;start()});
+  document.addEventListener('pointermove',function(e){if(!ps[e.pointerId]||!s0)return;ps[e.pointerId]={x:e.clientX,y:e.clientY};var s=stS(),c=document.querySelector('.stc');if(!c)return;var r=c.getBoundingClientRect(),k=Object.keys(ps);
+    if(k.length>1&&s0.d){var m=mid(),nz=Math.max(0.5,Math.min(6,s0.z*dist()/s0.d)),mx=m.x-r.left,my=m.y-r.top;s.z=nz;s.x=mx-(s0.px-s0.x)*nz/s0.z;s.y=my-(s0.py-s0.y)*nz/s0.z;moved=true}
+    else{var p=ps[k[0]],dx=p.x-r.left-s0.px,dy=p.y-r.top-s0.py;if(Math.abs(dx)+Math.abs(dy)>8)moved=true;if(moved){s.x=s0.x+dx;s.y=s0.y+dy}}
+    if(moved){e.preventDefault();apply()}},{passive:false});
+  function end(e){if(!ps[e.pointerId])return;delete ps[e.pointerId];if(moved)sup=true;if(Object.keys(ps).length)start();else s0=null}
+  document.addEventListener('pointerup',end);document.addEventListener('pointercancel',end);
+  document.addEventListener('click',function(e){if(sup&&e.target.closest&&e.target.closest('.stc')){sup=false;e.stopPropagation();e.preventDefault()}else sup=false},true);
+  document.addEventListener('wheel',function(e){var c=e.target.closest&&e.target.closest('.stc');if(!c)return;e.preventDefault();var s=stS(),r=c.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,nz=Math.max(0.5,Math.min(6,s.z*(e.deltaY<0?1.15:1/1.15)));s.x=mx-(mx-s.x)*nz/s.z;s.y=my-(my-s.y)*nz/s.z;s.z=nz;apply()},{passive:false});
+  // scorciatoie da tastiera (computer)
+  document.addEventListener('keydown',function(e){if(view.cat!=='__panel'||stS().mod!=='panel'||sheetOpen)return;var t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'))return;var k=e.key.toLowerCase(),c=e.ctrlKey||e.metaKey;
+    if(c&&k==='z'){e.preventDefault();e.shiftKey?pnRedo():pnUndo()}else if(c&&k==='y'){e.preventDefault();pnRedo()}else if(c&&k==='c'){e.preventDefault();stAct('stcopy')}else if(c&&k==='v'){e.preventDefault();stAct('stpaste')}else if(c&&k==='d'){e.preventDefault();stAct('stdupm')}
+    else if(k==='delete'||k==='backspace'){if(view.pSel!=null){e.preventDefault();stAct('stdel')}}else if(k==='arrowleft'){stAct('stmvl')}else if(k==='arrowright'){stAct('stmvr')}else if(k==='escape'){view.pSel=null;render()}})})();
+function stZoom(v){var s=stS(),c=document.querySelector('.stc');if(!c)return;var r=c.getBoundingClientRect();
+  if(v==='0'){s.z=1;s.x=0;s.y=0}
+  else if(v==='s'){var g=document.querySelector('.stz [data-act="pnle"][data-v="'+view.pSel+'"]');if(!g){toast(sL(STX.selFirst));return}var gr=g.getBoundingClientRect(),zr=document.querySelector('.stz').getBoundingClientRect(),cx=(gr.left+gr.width/2-zr.left)/s.z,cy=(gr.top+gr.height/2-zr.top)/s.z;s.z=Math.min(6,Math.max(2,s.z));s.x=r.width/2-cx*s.z;s.y=r.height/2-cy*s.z}
+  else{var nz=Math.max(0.5,Math.min(6,s.z*(v==='1'?1.3:1/1.3))),mx=r.width/2,my=r.height/2;s.x=mx-(mx-s.x)*nz/s.z;s.y=my-(my-s.y)*nz/s.z;s.z=nz}
+  var z=document.querySelector('.stz');if(z)z.style.transform='translate('+s.x+'px,'+s.y+'px) scale('+s.z+')'}
+function stAct(a,v){var P=pnl(),m;
+  switch(a){
+   case 'stlib':stLib();break;
+   case 'stprop':if(stSel())pnEdit(view.pSel);break;
+   case 'stdupm':m=stSel();if(!m)break;var c=JSON.parse(JSON.stringify(m));delete c.id;delete c.n;delete c.lock;P.mods.splice(view.pSel+1,0,c);pnMig(P);view.pSel++;save();render();break;
+   case 'stcopy':m=stSel();if(!m)break;PNCLIP=JSON.stringify(m);toast('📋 '+(m.n?'Q'+m.n:''));render();break;
+   case 'stpaste':if(!PNCLIP||!P)break;var c2=JSON.parse(PNCLIP);delete c2.id;delete c2.n;delete c2.lock;pnFix(c2,P.sys);var at=view.pSel!=null?view.pSel+1:P.mods.length;P.mods.splice(at,0,c2);pnMig(P);view.pSel=at;save();render();break;
+   case 'stdel':m=stSel();if(!m)break;if(m.lock){toast(sL(STX.locked));break}P.mods.splice(view.pSel,1);view.pSel=null;save();render();break;
+   case 'stlock':m=stSel();if(!m)break;m.lock=!m.lock;save();render();break;
+   case 'stmvl':case 'stmvr':m=stSel();if(!m)break;if(m.lock){toast(sL(STX.locked));break}var d=a==='stmvr'?1:-1,j=view.pSel+d;if(j<0||j>=P.mods.length)break;P.mods.splice(view.pSel,1);P.mods.splice(j,0,m);view.pSel=j;save();render();break;
+  }}
+// ---- 📈 schema unifilare (generato dallo stesso modello: stessi codici Q) ----
+function sldTree(P){var L=pnLayout(P),I={},chain=[],top=[],grp={};L.items.forEach(function(it){I[it.i]=it});
+  L.items.forEach(function(it){var m=it.m;if(m.t==='gap'||m.t==='term')return;
+    if(it.src==='feed'&&(m.t==='main'||m.t==='isol'))chain.push(it);
+    else if(m.t==='rcd'){var g={it:it,kids:[]};grp[it.i]=g;top.push(g)}
+    else if(m.t==='spd')top.push({it:it,kids:null});
+    else if(it.head!==undefined&&grp[it.head])grp[it.head].kids.push(it);
+    else top.push({it:it,kids:null})});
+  return {chain:chain,top:top}}
+function sldSym(m,x,y,col){var h='',s='stroke="'+col+'" stroke-width="2" fill="none"',t=m.t;
+  function ln(a,b,c,d){return '<path d="M'+a+' '+b+'L'+c+' '+d+'" '+s+'/>'}
+  var poles=(m.p==='4P'?4:m.p==='3P'?3:(m.p==='2P'||m.p==='1P+N')?2:1);
+  for(var k=0;k<poles&&poles>1;k++)h+=ln(x-5,y+8+k*4,x+5,y+4+k*4);
+  if(t==='mcb'||t==='main'||t==='rcbo'||t==='rcd'||t==='isol'||t==='cont'||t==='rel'){
+    h+=ln(x,y,x,y+22)+ln(x,y+46,x,y+62)+ln(x+13,y+22,x,y+46);
+    if(t==='mcb'||t==='main'||t==='rcbo')h+=ln(x-4,y+18,x+4,y+26)+ln(x-4,y+26,x+4,y+18);
+    if(t==='isol')h+=ln(x-5,y+22,x+5,y+22);
+    if(t==='cont'||t==='rel')h+='<path d="M'+(x-5)+' '+(y+22)+'A5 5 0 0 0 '+(x+5)+' '+(y+22)+'" '+s+'/>';
+    if(t==='rcd'||t==='rcbo')h+='<ellipse cx="'+x+'" cy="'+(y+54)+'" rx="9" ry="4" '+s+'/><text x="'+(x-12)+'" y="'+(y+58)+'" text-anchor="end" font-size="9" font-family="Arial" fill="'+col+'">IΔ</text>'}
+  else if(t==='fuse'){h+=ln(x,y,x,y+62)+'<rect x="'+(x-5)+'" y="'+(y+16)+'" width="10" height="30" '+s+'/>'}
+  else if(t==='spd'){h+=ln(x,y,x,y+16)+'<rect x="'+(x-8)+'" y="'+(y+16)+'" width="16" height="28" '+s+'/>'+ln(x+5,y+20,x-5,y+40)+ln(x,y+44,x,y+56)+ln(x-9,y+56,x+9,y+56)+ln(x-6,y+60,x+6,y+60)+ln(x-3,y+64,x+3,y+64)}
+  else {var lt={meter:'kWh',tmr:'T',crep:'☾',lamp:'⊗',sock:'⊐',trf:'TR'}[t]||'?';h+=ln(x,y,x,y+16)+'<rect x="'+(x-13)+'" y="'+(y+16)+'" width="26" height="28" rx="2" '+s+'/><text x="'+x+'" y="'+(y+34)+'" text-anchor="middle" font-size="'+(lt.length>2?8:11)+'" font-family="Arial" font-weight="700" fill="'+col+'">'+esc(lt)+'</text>'+ln(x,y+44,x,y+62)}
+  return h}
+function sldSVG(P,opt){opt=opt||{};var T=sldTree(P),CW=78,lang=opt.lang||settings.ui,t4=function(o){return o[lang]||o.it};
+  var cols=0;T.top.forEach(function(g){g.w=(g.kids&&g.kids.length?g.kids.length:1);cols+=g.w});cols=Math.max(cols,2);
+  var W=Math.max(520,70+cols*CW+40),x0=70,yS=46,yB=yS+40+T.chain.length*84+16,yLoad=yB+(T.top.some(function(g){return g.kids})?260:150),H=yLoad+150,col='#14213D',h='';
+  h+='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" '+(opt.fh?(function(){var k=Math.min(1.3,Math.max(0.45,((window.innerHeight||800)*0.58-16)/H));return 'width="'+Math.round(W*k)+'" height="'+Math.round(H*k)+'"'})():'width="'+(opt.px?W:'100%')+'"'+(opt.px?' height="'+H+'"':''))+' style="display:block;background:#fff"><rect width="'+W+'" height="'+H+'" fill="#fff"/>';
+  // sorgente
+  h+='<circle cx="'+x0+'" cy="'+yS+'" r="14" fill="none" stroke="'+col+'" stroke-width="2"/><path d="M'+(x0-7)+' '+yS+'q3.5 -6 7 0t7 0" stroke="'+col+'" stroke-width="2" fill="none"/>'+
+   '<text x="'+(x0+22)+'" y="'+(yS-2)+'" font-family="Arial" font-size="12" font-weight="700" fill="'+col+'">'+(P.sys==='3'?'3~ 400V + N':'1~ 230V')+'</text><text x="'+(x0+22)+'" y="'+(yS+12)+'" font-family="Arial" font-size="10.5" fill="#495057">'+esc(t4(STX.grid))+'</text>';
+  var y=yS+14;
+  T.chain.forEach(function(it){h+='<path d="M'+x0+' '+y+'V'+(y+12)+'" stroke="'+col+'" stroke-width="2"/>'+sldSym(it.m,x0,y+12,col)+
+    '<text x="'+(x0+20)+'" y="'+(y+40)+'" font-family="Arial" font-size="12" font-weight="800" fill="#1F4FD8">Q'+it.q+'</text><text x="'+(x0+20)+'" y="'+(y+54)+'" font-family="Arial" font-size="10" fill="'+col+'">'+esc(pnSpec(it.m))+'</text>';y+=84});
+  h+='<path d="M'+x0+' '+y+'V'+yB+'" stroke="'+col+'" stroke-width="2"/>';
+  var cx=x0,xs=[];T.top.forEach(function(g){var w=g.w*CW;g.x=cx+w/2-CW/2+ (g.w>1?0:0);g.x0=cx;cx+=w});
+  var bx1=Math.max(x0,T.top.length?T.top[T.top.length-1].x0+(T.top[T.top.length-1].w-1)*CW:x0)+0;
+  h+='<path d="M'+(x0-10)+' '+yB+'H'+(Math.max(bx1,x0)+10)+'" stroke="'+col+'" stroke-width="4"/>';
+  function leaf(it,x,yt){var m=it.m,lb=(m.l||t4(PN.types[m.t]));h+='<path d="M'+x+' '+yt+'V'+(yt+10)+'" stroke="'+col+'" stroke-width="2"/>'+sldSym(m,x,yt+10,col)+
+    '<text x="'+(x+16)+'" y="'+(yt+30)+'" font-family="Arial" font-size="11" font-weight="800" fill="#1F4FD8">'+(m.t==='term'?'X':'Q')+it.q+'</text>'+
+    '<path d="M'+x+' '+(yt+72)+'V'+yLoad+'" stroke="'+col+'" stroke-width="2"/>'+(m.t==='spd'?'':'<path d="M'+(x-5)+' '+(yLoad-8)+'L'+x+' '+yLoad+'L'+(x+5)+' '+(yLoad-8)+'" stroke="'+col+'" stroke-width="2" fill="none"/>')+
+    '<g transform="translate('+(x+4)+','+(yLoad+8)+') rotate(90)"><text font-family="Arial" font-size="11" font-weight="700" fill="'+col+'">'+esc(lb.slice(0,22))+'</text><text y="-12" font-family="Arial" font-size="9.5" fill="#495057">'+esc(pnSpec(m).replace(/^[^·]*· /,m.ref?'':'$&'))+(m.s?' · '+esc(m.s)+'mm²':'')+(m.len?' · '+esc(String(m.len))+'m':'')+'</text></g>'}
+  T.top.forEach(function(g){var x=g.x0+CW/2;
+    if(g.kids){var it=g.it,kx0=g.x0+CW/2,kx1=g.x0+(g.w-1)*CW+CW/2;h+='<path d="M'+x+' '+yB+'V'+(yB+10)+'" stroke="'+col+'" stroke-width="2"/>'+sldSym(it.m,x,yB+10,col)+
+      '<text x="'+(x+16)+'" y="'+(yB+34)+'" font-family="Arial" font-size="11" font-weight="800" fill="#1F4FD8">Q'+it.q+'</text><text x="'+(x+16)+'" y="'+(yB+47)+'" font-family="Arial" font-size="9.5" fill="'+col+'">'+esc((it.m.A||40)+'A '+(it.m.mA||30)+'mA '+(it.m.rt||'A'))+'</text>'+
+      '<path d="M'+x+' '+(yB+72)+'V'+(yB+96)+'" stroke="'+col+'" stroke-width="2"/><path d="M'+(kx0-6)+' '+(yB+96)+'H'+(kx1+6)+'" stroke="'+col+'" stroke-width="3"/>';
+      if(!g.kids.length)return;g.kids.forEach(function(k,j){leaf(k,g.x0+j*CW+CW/2,yB+96)})}
+    else leaf(g.it,x,yB)});
+  // cartiglio
+  var tw=300,tx=W-tw-12,ty=H-58,p=cur();
+  h+='<rect x="'+tx+'" y="'+ty+'" width="'+tw+'" height="48" fill="#fff" stroke="'+col+'"/><path d="M'+tx+' '+(ty+24)+'H'+(tx+tw)+'" stroke="'+col+'"/>'+
+   '<text x="'+(tx+8)+'" y="'+(ty+16)+'" font-family="Arial" font-size="11" font-weight="700" fill="'+col+'">'+esc((P.name||projTitle(p)).slice(0,34))+'</text>'+
+   '<text x="'+(tx+8)+'" y="'+(ty+40)+'" font-family="Arial" font-size="10" fill="'+col+'">'+esc(t4(STX.sld))+' · '+esc(t4(STX.version))+' '+((P.meta&&P.meta.ver)||1)+' · '+stDate(P.meta&&P.meta.u)+(settings.ditta?' · '+esc(settings.ditta.slice(0,18)):'')+'</text>';
+  return h+'</svg>'}
+function stSld(){var P=pnl();
+  return '<div class="mini" style="margin:2px 4px 8px">ⓘ '+esc(sL(STX.sldNote))+'</div><div class="stc sldc"><div class="stz" style="transform:translate('+stS().x+'px,'+stS().y+'px) scale('+stS().z+')">'+sldSVG(P,{fh:1})+'</div><div class="stzoom"><button data-act="stz" data-v="1">＋</button><button data-act="stz" data-v="-1">－</button><button data-act="stz" data-v="0">⤢</button></div></div>'+
+   '<div class="pngo" style="margin-top:10px"><button class="btn ghost" data-act="stx" data-v="pdfS">📄 PDF</button><button class="btn ghost" data-act="stx" data-v="svgS">🖼 SVG</button><button class="btn ghost" data-act="stx" data-v="pngS">🖼 PNG</button></div>'}
+// ---- 🔌 rete dei collegamenti (modello elettrico) + verifica ----
+function pnColName(P,c,lang){var t4=function(o){return o[lang]||o.it};if(c==='N')return t4(S4('أزرق','blu','blue','bleu'));if(c==='PE')return t4(S4('أصفر-أخضر','giallo-verde','green-yellow','vert-jaune'));
+  if(c==='L2')return t4(S4('أسود','nero','black','noir'));if(c==='L3')return t4(S4('رمادي','grigio','grey','gris'));if(c==='L1')return t4(S4('بني','marrone','brown','marron'));
+  return t4({br:S4('بني','marrone','brown','marron'),rd:S4('أحمر','rosso','red','rouge'),bk:S4('أسود','nero','black','noir')}[P.lc||'br'])}
+var PNOUT={mcb:1,rcbo:1,fuse:1,cont:1,rel:1,tmr:1,crep:1,trf:1};
+function pnNet(P,lang){lang=lang||settings.ui;var L=pnLayout(P),sys=P.sys,ph=pnPh(sys).concat(['N']),I={},W=[],iss=[],t4=function(o){return o[lang]||o.it};
+  L.items.forEach(function(it){I[it.i]=it});
+  function Q(it){return (it.m.t==='term'?'X':'Q')+it.q}
+  function av(src){return src==='feed'?ph:pnCond(src.m,sys)}
+  function lab(src,c){return src==='feed'?t4(STX.grid)+' '+c:Q(src)+' ↓'+c}
+  function A_(src){return src==='feed'?null:src.m.A}
+  function issue(lv,txt){iss.push([lv,txt])}
+  var mains=L.items.filter(function(it){return it.m.t==='main'||it.m.t==='isol'}),mainA=mains.length?(mains[0].m.A||0):0,prev={};
+  if(!mains.length)issue(1,t4(S4('لا يوجد قاطع رئيسي في بداية اللوحة','Manca l’interruttore generale all’inizio del quadro','No main switch at the start of the panel','Pas d’interrupteur général en tête du tableau')));
+  L.items.forEach(function(it){var m=it.m;if(m.t==='gap'||m.t==='term')return;var cs=pnCond(m,sys),src,kind;
+    if(it.src!==undefined){src=it.src==='feed'?'feed':I[it.src];kind=src==='feed'?'feed':'jmp'}
+    else{src=it.head==='feed'?'feed':I[it.head];kind=it.seg?(src==='feed'?'feed':'jmp'):'comb'}
+    var a=av(src),pv=prev[it.head];
+    cs.forEach(function(c){if(a.indexOf(c)<0){issue(2,Q(it)+': '+t4(S4('الطرف '+c+' بدون تغذية من المصدر','morsetto '+c+' non alimentato dalla sorgente','terminal '+c+' not supplied by the source','borne '+c+' non alimentée par la source')));return}
+      var from=(kind==='comb'&&pv&&pnCond(pv.m,sys).indexOf(c)>=0)?Q(pv)+' ↑'+c:lab(src,c);
+      W.push({f:from,t:Q(it)+' ↑'+c,c:c,s:pnMinSec(mainA||(src!=='feed'&&src.m.t!=='rcd'&&src.m.t!=='isol'?A_(src):0)||m.A||16),k:kind==='comb'?'kComb':kind==='feed'?'kFeed':'kJmp',q:it.q})});
+    if(it.head!==undefined)prev[it.head]=it;
+    if(m.t==='spd')W.push({f:Q(it)+' ⏚',t:'PE',c:'PE',s:'',k:'kPE',q:it.q});
+    if(PNOUT[m.t]){var lb=m.l||t4(PN.types[m.t]);cs.forEach(function(c){W.push({f:Q(it)+' ↓'+c,t:'→ '+lb,c:c,s:m.s||'',k:'kCab',q:it.q})});if(m.t!=='trf')W.push({f:'PE',t:'→ '+lb,c:'PE',s:m.s||'',k:'kCab',q:it.q});
+      if(!m.l)issue(1,Q(it)+': '+t4(S4('الدائرة بدون اسم','circuito senza nome','circuit without a name','circuit sans nom')));
+      if(!m.s&&m.t!=='trf')issue(1,Q(it)+': '+t4(S4('مقطع السلك غير محدد','sezione del cavo non indicata','cable size not set','section du câble non indiquée')));
+      if(pnSecLow(m))issue(2,Q(it)+': '+t4(S4('مقطع '+m.s+' مم² صغير على '+(m.cv||'C')+m.A,'sezione '+m.s+' mm² piccola per '+(m.cv||'C')+m.A,'size '+m.s+' mm² too small for '+(m.cv||'C')+m.A,'section '+m.s+' mm² trop faible pour '+(m.cv||'C')+m.A)));
+      var hd=it.head!==undefined&&it.head!=='feed'?I[it.head]:null;if(m.t!=='rcbo'&&!(hd&&hd.m.t==='rcd')&&m.t!=='trf')issue(1,Q(it)+': '+t4(S4('بدون حماية تفاضلية قبلها','senza protezione differenziale a monte','no residual-current protection upstream','sans protection différentielle en amont')));
+      if(mainA&&m.A&&(m.t==='mcb'||m.t==='rcbo'||m.t==='fuse')&&m.A>=mainA)issue(1,Q(it)+': '+t4(S4(m.A+'A ≥ القاطع الرئيسي '+mainA+'A (انتقائية)',m.A+'A ≥ generale '+mainA+'A (selettività)',m.A+'A ≥ main '+mainA+'A (selectivity)',m.A+'A ≥ général '+mainA+'A (sélectivité)')));
+      var cr=pnCirc(P,m);if(cr){if(cr.ib>m.A)issue(2,Q(it)+': '+t4(S4('تيار الحمل '+cr.ib.toFixed(1)+'A أكبر من القاطع','corrente di impiego '+cr.ib.toFixed(1)+'A > interruttore','load current '+cr.ib.toFixed(1)+'A > breaker','courant d’emploi '+cr.ib.toFixed(1)+'A > disjoncteur')));if(cr.dvp>(P.vlim||4))issue(1,Q(it)+': '+t4(S4('هبوط الجهد ','caduta di tensione ','voltage drop ','chute de tension '))+cr.dvp.toFixed(2)+'% > '+(P.vlim||4)+'%')}}
+    if(m.t==='rcd'&&mainA&&(m.A||0)<mainA)issue(1,Q(it)+': '+t4(S4('تيار التفاضلي '+m.A+'A أقل من الرئيسي '+mainA+'A','In differenziale '+m.A+'A < generale '+mainA+'A','RCCB '+m.A+'A < main '+mainA+'A','différentiel '+m.A+'A < général '+mainA+'A')));
+    if(m.ref&&!m.wm)issue(0,Q(it)+': '+t4(S4('عرض القطعة غير مؤكد من المصدر (مُقدَّر في الرسم)','larghezza non confermata dalla fonte (stimata nel disegno)','width not confirmed by the source (estimated in drawing)','largeur non confirmée par la source (estimée)')))});
+  W.forEach(function(w,i){w.id='W'+(i+1)});
+  if(sys==='3'){var pl={L1:0,L2:0,L3:0},any=false;L.items.forEach(function(it){var m=it.m;if(!PNOUT[m.t]||!m.kw)return;any=true;var cs=pnCond(m,sys).filter(function(c){return /^L/.test(c)});cs.forEach(function(c){pl[c]+=m.kw/cs.length})});
+    if(any){var mx=Math.max(pl.L1,pl.L2,pl.L3),mn=Math.min(pl.L1,pl.L2,pl.L3);if(mx>0&&(mx-mn)/mx>0.2)issue(0,t4(S4('توزيع الأحمال على الأطوار غير متوازن','carichi sulle fasi non equilibrati','phase loads not balanced','charges des phases déséquilibrées'))+': L1 '+Math.round(pl.L1)+'W · L2 '+Math.round(pl.L2)+'W · L3 '+Math.round(pl.L3)+'W')}}
+  return {w:W,iss:iss}}
+function stWire(){var P=pnl(),st=stS(),N=pnNet(P),err=N.iss.filter(function(x){return x[0]===2}).length;
+  var lvl=!st.chk?['#868e96',sL(STX.lvl0)]:err?['#C92A2A',sL(STX.lvl2)]:['#2F9E44',sL(STX.lvl1)];
+  return '<div class="stmode"><button data-act="stmod" data-v="panel"><b>👁 '+esc(sL(STX.modeV))+'</b><small>'+esc(sL(STX.modeVd))+'</small></button><button class="on"><b>⚡ '+esc(sL(STX.modeE))+'</b><small>'+esc(sL(STX.modeEd))+'</small></button></div>'+
+   '<div class="stlvl" style="border-color:'+lvl[0]+';color:'+lvl[0]+'">'+esc(lvl[1])+'</div>'+
+   '<button class="btn main" data-act="stchk" style="margin:8px 0">'+esc(sL(STX.check))+'</button>'+
+   (st.chk?'<div class="stiss">'+(N.iss.length?N.iss.map(function(x){return '<div class="lv'+x[0]+'">'+['ⓘ','⚠️','✕'][x[0]]+' <span dir="auto">'+esc(x[1])+'</span></div>'}).join(''):'<div class="lv0">✓ '+esc(sL(STX.noIss))+'</div>')+'</div>':'')+
+   '<div class="sttbl"><table><thead><tr><th>#</th><th>'+esc(sL(STX.wFrom))+'</th><th>'+esc(sL(STX.wTo))+'</th><th>'+esc(sL(STX.wC))+'</th><th>'+esc(sL(STX.wS))+'</th><th>'+esc(sL(STX.wK))+'</th></tr></thead><tbody>'+
+   N.w.map(function(w){return '<tr><td>'+w.id+'</td><td dir="auto">'+esc(w.f)+'</td><td dir="auto">'+esc(w.t)+'</td><td><i class="cdot" style="background:'+pnCol(P,w.c)+(w.c==='PE'?';box-shadow:inset 0 0 0 3px #F4D31C':'')+'"></i>'+esc(w.c)+'</td><td dir="ltr">'+(w.s?esc(w.s)+' mm²':'—')+'</td><td>'+esc(sL(STX[w.k]))+'</td></tr>'}).join('')+'</tbody></table></div>'+
+   '<button class="btn ghost" data-act="stx" data-v="csvW" style="width:100%;margin-top:10px">'+esc(sL(STX.csvW))+'</button>'}
+// ---- 🧮 calcoli per circuito ----
+function pnCirc(P,m){if(!m.kw||!(m.kw>0))return null;var tri=/^(3P|4P)$/.test(m.p),U=tri?400:230,pf=m.pf>0&&m.pf<=1?m.pf:1,ib=m.kw/((tri?Math.sqrt(3):1)*U*pf),S=parseFloat(String(m.s||'').replace(',','.'));
+  var r={ib:ib,U:U,pf:pf,tri:tri,dv:null,dvp:null};if(m.len>0&&S>0){var sin=Math.sqrt(1-pf*pf);r.dv=(tri?Math.sqrt(3):2)*m.len*ib*(0.0225/S*pf+0.00008*sin);r.dvp=r.dv/U*100}return r}
+function stCalc(){var P=pnl(),L=pnLayout(P),tot=0,lim=P.vlim||4,ph={L1:0,L2:0,L3:0};
+  var rows=L.items.filter(function(it){return PNOUT[it.m.t]&&it.m.t!=='trf'}).map(function(it){var m=it.m,r=pnCirc(P,m);if(m.kw)tot+=+m.kw;
+    if(P.sys==='3'&&m.kw){var cs=pnCond(m,P.sys).filter(function(c){return /^L/.test(c)});cs.forEach(function(c){ph[c]+=m.kw/cs.length})}
+    var bad=r&&(r.ib>m.A||(r.dvp!=null&&r.dvp>lim));
+    return '<div class="stcr'+(bad?' bad':'')+'"><div class="sth"><b>Q'+it.q+' <span dir="auto">'+esc(m.l||sL(PN.types[m.t]))+'</span></b><i dir="ltr">'+esc((m.cv&&m.t!=='fuse'?m.cv:'')+(m.A||'')+(m.t==='fuse'?'A':''))+' · '+(m.s?esc(m.s)+' mm²':'—')+'</i></div>'+
+     '<div class="stin"><label>'+esc(sL(STX.len))+'<input inputmode="decimal" data-cl="len" data-v="'+it.i+'" value="'+(m.len||'')+'"></label><label>'+esc(sL(STX.kw))+'<input inputmode="decimal" data-cl="kw" data-v="'+it.i+'" value="'+(m.kw||'')+'"></label><label>'+esc(sL(STX.pf))+'<input inputmode="decimal" data-cl="pf" data-v="'+it.i+'" value="'+(m.pf||'')+'" placeholder="1"></label></div>'+
+     (r?'<div class="stres"><span>'+esc(sL(STX.ib))+' <b dir="ltr">'+r.ib.toFixed(2)+' A</b>'+(r.ib>m.A?' ✕':'')+'</span><span>'+esc(sL(STX.dv))+' <b dir="ltr">'+(r.dv!=null?r.dv.toFixed(2)+' V · '+r.dvp.toFixed(2)+'%':'—')+'</b>'+(r.dvp!=null&&r.dvp>lim?' ⚠️':'')+'</span></div>':'')+'</div>'}).join('');
+  return '<div class="mini" style="margin:2px 4px 8px">ⓘ '+esc(sL(STX.calcNote))+'</div>'+
+   '<div class="stin" style="margin-bottom:8px"><label>'+esc(sL(STX.lim))+'<input inputmode="decimal" data-cl="vlim" value="'+lim+'"></label></div>'+rows+
+   '<div class="stcr"><b>'+esc(sL(STX.tot))+': <span dir="ltr">'+(tot/1000).toFixed(2)+' kW</span></b>'+(P.sys==='3'?'<div class="mini" dir="ltr">L1 '+Math.round(ph.L1)+' W · L2 '+Math.round(ph.L2)+' W · L3 '+Math.round(ph.L3)+' W</div>':'')+'</div>'+
+   '<details class="stf"><summary>'+esc(sL(STX.formula))+'</summary><div dir="ltr">Ib = P / (U · cosφ) &nbsp;(1~, U = 230 V)<br>Ib = P / (√3 · U · cosφ) &nbsp;(3~, U = 400 V)<br>ΔV = k · L · Ib · (ρ/S · cosφ + x · sinφ)<br>k = 2 (1~), √3 (3~) · ρ = 0.0225 Ω·mm²/m (Cu) · x = 0.08 mΩ/m<br>ΔV% = ΔV / U · 100</div><div class="mini">'+esc(sL(S4('افتراضات: نحاس، درجة حرارة التشغيل، دون تصحيح للتجميع أو طريقة التمديد. للنتيجة النهائية راجع جداول المعيار المعتمد في بلدك.','Ipotesi: rame, temperatura di esercizio, senza correzioni per raggruppamento o posa. Per il dimensionamento finale usa le tabelle della norma del tuo paese.','Assumptions: copper, operating temperature, no correction for grouping or installation method. For final sizing use your country’s standard tables.','Hypothèses : cuivre, température de service, sans correction de groupement ni de pose. Pour le dimensionnement final, utilisez les tables de la norme de votre pays.')))+'</div></details>'+
+   '<button class="btn ghost" data-act="stgocalc" style="width:100%;margin-top:10px">'+esc(sL(STX.moreCalc))+'</button>'}
+// ---- 📋 materiali e prezzi ----
+function stBomRows(P){var M=pnMat(P);return M}
+function stBom(){var P=pnl(),M=stBomRows(P),sym=curSym(),tot=0,lang=settings.ui;
+  var rows=M.map(function(x){var pr=P.price[x.k],t=pr!=null&&pr!==''?pr*x.q:null;if(t!=null)tot+=t;var stl={ok:STX.stOk,est:STX.stEst,calc:STX.stCalc}[x.s];
+    return '<div class="stcr"><div class="sth"><b dir="auto">'+esc(x.n[lang]||x.n.it)+'</b><span class="stst" style="background:'+({ok:'#2F9E44',est:'#E67700',calc:'#1F6FD6'}[x.s])+'">'+esc(sL(stl))+'</span></div>'+
+     '<div class="stin"><label>'+esc(sL(STX.qty))+'<b dir="ltr" style="display:block;padding:8px 2px">'+fmt(x.q)+' '+esc(x.u==='m'?'m':'pz')+'</b></label><label>'+esc(sL(STX.price))+' '+esc(sym)+'<input inputmode="decimal" data-bp="'+esc(x.k)+'" value="'+(pr!=null?pr:'')+'"></label><label>Σ<b dir="ltr" style="display:block;padding:8px 2px">'+(t!=null?t.toFixed(2)+' '+esc(sym):'—')+'</b></label></div></div>'}).join('');
+  return rows+'<div class="stcr"><b>Σ '+tot.toFixed(2)+' '+esc(sym)+'</b><div class="mini">ⓘ '+esc(sL(STX.field))+'</div></div>'+
+   '<button class="btn main" data-act="sttoq" style="margin-top:8px">'+esc(sL(STX.toQuote))+'</button><button class="btn ghost" data-act="pnord" style="width:100%;margin-top:8px">'+esc(sL(PN.ord))+'</button><button class="btn ghost" data-act="stx" data-v="csvM" style="width:100%;margin-top:8px">'+esc(sL(STX.csvM))+'</button>'}
+function stToQuote(){var P=pnl(),q=cur().quote,n=0;pnMat(P).forEach(function(x){var pr=P.price[x.k];if(pr==null||pr==='')return;q.lines.push({sid:null,it:x.n.it,ar:x.n.ar,fr:x.n.fr,en:x.n.en,unit:x.u==='m'?'m':'pz',price:+pr,qty:x.q});n++});
+  if(!n){toast(sL(STX.noPrice));return}save();toast('✓ '+sL(STX.quoted));view.cat=null;view.tab='price';document.body.classList.remove('studio');render();window.scrollTo(0,0)}
+// ---- 📝 rapporto di consegna ----
+function stRep(){var P=pnl(),R=P.rep;
+  function fld(k,lab,type){return '<div class="field"><label>'+esc(sL(lab))+'</label><input '+(type?'type="'+type+'" ':'dir="auto" ')+'data-rf="'+k+'" value="'+esc(R[k]||(k==='tech'?settings.tecnico||'':''))+'"></div>'}
+  return fld('tech',STX.tech)+fld('dd',STX.dDate,'date')+fld('nd',STX.nDate,'date')+
+   '<div class="field"><label>'+esc(sL(STX.works))+'</label><textarea dir="auto" rows="3" data-rf="works">'+esc(R.works||'')+'</textarea></div>'+
+   '<div class="h2" style="margin-top:14px"><b>'+esc(sL(STX.checks))+'</b></div><div class="mini">ⓘ '+esc(sL(STX.repNote))+'</div>'+
+   STCHK.map(function(c){var v=R.chk[c[0]]||{};return '<div class="stcr"><b dir="auto">'+esc(sL(c[1]))+'</b><div class="chips" style="margin-top:6px">'+[['',STX.nt],['ok',STX.pass],['ko',STX.fail]].map(function(o){return '<button class="chip'+((v.r||'')===o[0]?' on':'')+'" data-act="strc" data-k="'+c[0]+'" data-v="'+o[0]+'">'+esc(sL(o[1]))+'</button>'}).join('')+'</div>'+
+     '<input class="stv" dir="auto" data-rv="'+c[0]+'" placeholder="'+esc(sL(STX.val))+'" value="'+esc(v.v||'')+'"></div>'}).join('')+
+   '<div class="field"><label>'+esc(sL(STX.notes))+'</label><textarea dir="auto" rows="3" data-rf="notes">'+esc(R.notes||'')+'</textarea></div>'+
+   '<button class="btn main" data-act="stx" data-v="pdfR" style="margin-top:12px">'+esc(sL(STX.pdfR))+'</button>'}
+// ---- documenti / esportazioni ----
+function svgImg(svg){return 'data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svg)))}
+function stDoc(lang,title,inner,extraCss){var rtl=lang==='ar';
+  return '<!doctype html><html dir="'+(rtl?'rtl':'ltr')+'"><head><meta charset="utf-8"><meta name="viewport" content="width=794"><style>'+DOC_CSS+'.pimg{display:block;width:100%;height:auto;margin:6px 0 4px}.r{grid-template-columns:44px 1fr 170px 80px}.n{font-weight:800}'+(extraCss||'')+'</style></head><body>'+wmImg()+'<div class="wrap"><div class="pad"></div>'+
+   inner+docFoot(lang,'')+'<div class="pad"></div></div><script>'+PAGINATE+'<\/script></body></html>'}
+function stBox(P,lang){var t4=function(o){return o[lang]||o.it},s=cur().site||{};return [[DL(lang,'client'),s.cliente||'—'],[t4(PN.sys),P.sys==='3'?t4(PN.tri):t4(PN.mono)],[t4(STX.version),String(P.meta.ver||1)],['📅',stDate()]]}
+function stCircRows(P,lang){var t4=function(o){return o[lang]||o.it};return pnLayout(P).items.filter(function(it){return it.m.t!=='gap'}).map(function(it,n){var m=it.m;return '<div class="blk r'+(n%2?' alt':'')+'"><div class="n">'+(m.t==='term'?'X':'Q')+it.q+'</div><div class="d"><b dir="auto">'+esc(m.l||t4(PN.types[m.t]))+'</b></div><div class="s" dir="ltr">'+esc(pnSpec(m))+'</div><div class="q" dir="ltr">'+(m.s?esc(m.s)+' mm²':'—')+'</div></div>'}).join('')}
+function stSldDoc(P,lang){var t4=function(o){return o[lang]||o.it};return stDoc(lang,'',docHead(lang,'📈 '+esc(t4(STX.sld))+(P.name?' — '+esc(P.name):''),stBox(P,lang))+'<div class="blk"><img class="pimg" src="'+svgImg(sldSVG(P,{px:1,lang:lang}))+'" alt=""></div><div class="blk cat">'+esc(t4(PN.legend))+'</div>'+stCircRows(P,lang))}
+function stRepDoc(P,lang){var t4=function(o){return o[lang]||o.it},R=P.rep,M=pnMat(P);
+  var chk=STCHK.map(function(c,n){var v=R.chk[c[0]]||{},r=v.r==='ok'?'✓ '+t4(STX.pass):v.r==='ko'?'✕ '+t4(STX.fail):'— '+t4(STX.nt);return '<div class="blk r'+(n%2?' alt':'')+'"><div class="n">'+(n+1)+'</div><div class="d"><b dir="auto">'+esc(t4(c[1]))+'</b></div><div class="s" dir="auto">'+esc(r)+'</div><div class="q" dir="auto">'+esc(v.r?v.v||'':'')+'</div></div>'}).join('');
+  var bom=M.map(function(x,n){return '<div class="blk r'+(n%2?' alt':'')+'"><div class="n">'+(n+1)+'</div><div class="d"><b dir="auto">'+esc(x.n[lang]||x.n.it)+'</b></div><div class="s" dir="auto">'+esc(t4({ok:STX.stOk,est:STX.stEst,calc:STX.stCalc}[x.s]))+'</div><div class="q" dir="ltr">'+fmt(x.q)+' '+(x.u==='m'?'m':'pz')+'</div></div>'}).join('');
+  var sum=[[t4(STX.tech),R.tech||settings.tecnico||'—'],[t4(STX.dDate),R.dd||'—'],[t4(STX.nDate),R.nd||'—'],[t4(STX.status),t4(STX[P.meta.st]||STX.draft)]];
+  return stDoc(lang,'',docHead(lang,'📝 '+esc(t4(STX.rep))+(P.name?' — '+esc(P.name):''),stBox(P,lang))+
+   '<div class="blk cat">'+esc(t4(STX.summary))+'</div><div class="blk box" style="margin:6px 0">'+sum.map(function(r){return '<div class="kv"><span>'+esc(r[0])+':</span> <b dir="auto">'+esc(r[1])+'</b></div>'}).join('')+(R.works?'<div dir="auto" style="margin-top:6px;white-space:pre-wrap">'+esc(R.works)+'</div>':'')+'</div>'+
+   '<div class="blk"><img class="pimg" src="'+svgImg(pnSVG(P,{px:1,lang:lang,lbl:1}))+'" alt=""></div>'+
+   '<div class="blk"><img class="pimg" src="'+svgImg(sldSVG(P,{px:1,lang:lang}))+'" alt=""></div>'+
+   '<div class="blk cat">'+esc(t4(PN.legend))+'</div>'+stCircRows(P,lang)+
+   '<div class="blk cat">'+esc(t4(STX.bom))+'</div>'+bom+
+   '<div class="blk cat">'+esc(t4(STX.checks))+'</div>'+chk+
+   (R.notes?'<div class="blk box" style="margin-top:8px"><b>'+esc(t4(STX.notes))+':</b><div dir="auto" style="white-space:pre-wrap">'+esc(R.notes)+'</div></div>':'')+
+   '<div class="blk" style="font-size:11px;color:#646A80;margin-top:10px">ⓘ '+esc(t4(STX.repNote))+' '+esc(t4(PN.note))+'</div>')}
+function stFname(P,base,ext){return base+(P.name?'_'+P.name.replace(/[^\w؀-ۿ -]+/g,'').trim().replace(/\s+/g,'_'):'')+'_v'+(P.meta.ver||1)+'.'+ext}
+function stShareTxt(name,txt,mime){if(A&&A.shareFile)A.shareFile(name,txt,mime);else fileReadySheet(new File([txt],name,{type:mime}))}
+function stPdf(html,name){if(A&&A.pdf){toast(T('pdfWait'));A.pdf(html,name)}else webPdfHtml(html,name)}
+function stPng(svg,name){if(A){toast(sL(STX.pngWeb));return}var im=new Image();im.onload=function(){var c=document.createElement('canvas');c.width=im.width*2;c.height=im.height*2;var g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);c.toBlob(function(b){fileReadySheet(new File([b],name,{type:'image/png'}))},'image/png')};im.src=svgImg(svg)}
+function csvCell(v){v=String(v==null?'':v);return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+function stExport(k){var P=pnl();if(!P)return;var lang=settings.out==='both'?'it':settings.out,ar=settings.out==='ar';
+  switch(k){
+   case 'pdfP':pnPdf();break;
+   case 'pdfS':stPdf(stSldDoc(P,lang),stFname(P,ar?'مخطط_أحادي':'Schema_unifilare','pdf'));break;
+   case 'pdfR':stPdf(stRepDoc(P,lang),stFname(P,ar?'تقرير_تسليم':'Rapporto_consegna','pdf'));break;
+   case 'svgP':stShareTxt(stFname(P,'Quadro','svg'),pnSVG(P,{px:1,lang:lang,lbl:P.vw.lbl,nw:!P.vw.wires}),'image/svg+xml');break;
+   case 'svgS':stShareTxt(stFname(P,'Unifilare','svg'),sldSVG(P,{px:1,lang:lang}),'image/svg+xml');break;
+   case 'pngP':stPng(pnSVG(P,{px:1,lang:lang,lbl:P.vw.lbl,nw:!P.vw.wires}),stFname(P,'Quadro','png'));break;
+   case 'pngS':stPng(sldSVG(P,{px:1,lang:lang}),stFname(P,'Unifilare','png'));break;
+   case 'csvM':{var sym=curSym(),c='﻿'+['#','Item','Qty','Unit','Price '+sym,'Total '+sym,'Status'].join(';')+'\n';pnMat(P).forEach(function(x,i){var pr=P.price[x.k];c+=[i+1,x.n[lang]||x.n.it,fmt(x.q),x.u==='m'?'m':'pz',pr!=null?pr:'',pr!=null&&pr!==''?(pr*x.q).toFixed(2):'',x.s].map(csvCell).join(';')+'\n'});stShareTxt(stFname(P,'Materiali','csv'),c,'text/csv');break}
+   case 'csvW':{var N=pnNet(P,lang),c2='﻿'+['ID','From','To','Conductor','Colour','Size mm2','Type','Circuit'].join(';')+'\n';N.w.forEach(function(w){c2+=[w.id,w.f,w.t,w.c,pnColName(P,w.c,lang),w.s,(STX[w.k][lang]||STX[w.k].it),'Q'+w.q].map(csvCell).join(';')+'\n'});stShareTxt(stFname(P,'Cablaggio','csv'),c2,'text/csv');break}
+   case 'file':{var p=cur(),o={app:'SiteNeeds',kind:'panel-project',format:1,saved:new Date().toISOString(),project:{name:p.name||'',site:p.site||{},panel:P}};stShareTxt(stFname(P,'SiteNeeds_quadro','json'),JSON.stringify(o,null,1),'application/json');break}
+  }}
+function stImport(){var inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';inp.onchange=function(){var f=inp.files&&inp.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var o=JSON.parse(rd.result);if(!o||o.kind!=='panel-project'||!o.project||!o.project.panel||!Array.isArray(o.project.panel.mods))throw 0;
+    var np=blankProj();np.name=o.project.name||'';np.site=Object.assign(np.site,o.project.site||{});np.panel=pnMig(o.project.panel);P.list.unshift(np);P.cur=np.id;save();stS().mod='panel';view.pSel=null;toast('✓ '+sL(STX.impOk));render()}catch(e){toast('⚠️ '+sL(STX.impBad))}};rd.readAsText(f)};inp.click()}
+function stExpSheet(){var P=pnl(),web=!A;
+  var b=function(k,lab){return '<button class="btn ghost" data-sx="'+k+'">'+esc(sL(lab))+'</button>'};
+  openSheet('<h2>⤓ '+esc(sL(STX.exp))+'</h2><div class="pnadd">'+b('pdfP',STX.pdfP)+b('pdfS',STX.pdfS)+b('pdfR',STX.pdfR)+b('svgP',STX.svgP)+b('svgS',STX.svgS)+(web?b('pngP',STX.png):'')+b('csvM',STX.csvM)+b('csvW',STX.csvW)+b('file',STX.file)+'</div>'+
+   '<div class="h2" style="margin:14px 2px 6px"><b>'+esc(sL(STX.vers))+'</b></div><button class="btn main" id="stVer">'+esc(sL(STX.ver))+'</button>'+
+   (P.vers&&P.vers.length?'<div class="pnlist" style="margin-top:8px">'+P.vers.slice().reverse().map(function(v,i){var j=P.vers.length-1-i;return '<div class="pnrow" style="grid-template-columns:1fr auto"><span>v'+v.ver+' · '+stDate(v.t)+' '+stTime(v.t)+' · '+v.mods.filter(function(m){return m.t!=='gap'}).length+' Q</span><button class="chip" data-vr="'+j+'">'+esc(sL(STX.restore))+'</button></div>'}).join('')+'</div>':''));
+  sheet.querySelectorAll('[data-sx]').forEach(function(x){x.onclick=function(){closeSheet();stExport(x.dataset.sx)}});
+  $('#stVer').onclick=function(){if(!P.vers)P.vers=[];P.vers.push({t:Date.now(),ver:P.meta.ver||1,mods:JSON.parse(JSON.stringify(P.mods)),sys:P.sys,row:P.row,lc:P.lc});if(P.vers.length>10)P.vers.shift();P.meta.ver=(P.meta.ver||1)+1;save();toast('✓ '+sL(STX.verOk));stExpSheet();render()};
+  sheet.querySelectorAll('[data-vr]').forEach(function(x){x.onclick=function(){var v=P.vers[+x.dataset.vr];if(!v||!confirm(sL(PN.sure)))return;P.mods=JSON.parse(JSON.stringify(v.mods));P.sys=v.sys;P.row=v.row;P.lc=v.lc;pnMig(P);save();closeSheet();view.pSel=null;render()}})}
+// input dello studio (calcoli, prezzi, rapporto, ricerca progetti)
+document.addEventListener('input',function(e){var t=e.target;if(!t||!t.closest||!t.closest('.stu'))return;var P_=pnl();
+  if(t.id==='stQ'){stS().q=t.value;var l=$('#stList');if(l)l.innerHTML=stHomeList();return}
+  if(!P_)return;
+  if(t.dataset.rf){P_.rep[t.dataset.rf]=t.value;P_.meta.u=Date.now();save();return}
+  if(t.dataset.rv){var c=P_.rep.chk[t.dataset.rv]||(P_.rep.chk[t.dataset.rv]={});c.v=t.value;save();return}});
+document.addEventListener('change',function(e){var t=e.target;if(!t||!t.closest||!t.closest('.stu'))return;var P_=pnl();if(!P_)return;
+  if(t.dataset.cl){var v=num(t.value);if(t.dataset.cl==='vlim'){P_.vlim=v>0?v:4}else{var m=P_.mods[+t.dataset.v];if(!m)return;var k=t.dataset.cl;if(v>0)m[k]=k==='pf'?Math.min(1,v):v;else delete m[k]}save();stRerender();return}
+  if(t.dataset.bp){var pv=t.value.trim();if(pv==='')delete P_.price[t.dataset.bp];else P_.price[t.dataset.bp]=num(pv);save();stRerender()}});
+var stRT=null;function stRerender(){if(stRT)return;stRT=setTimeout(function(){stRT=null;var y=window.scrollY,ae=document.activeElement,key=ae&&ae.dataset?(ae.dataset.cl?'[data-cl="'+ae.dataset.cl+'"]'+(ae.dataset.v?'[data-v="'+ae.dataset.v+'"]':''):ae.dataset.bp?'[data-bp="'+ae.dataset.bp+'"]':''):'';render();window.scrollTo(0,y);if(key){var el=document.querySelector(key);if(el)try{el.focus({preventScroll:true})}catch(e){}}},0)}
 
 var MLD={more:{ar:'سطور إضافية',it:'Altre righe',en:'More lines',fr:'Plus de lignes'},clear:{ar:'مسح',it:'Svuota',en:'Clear',fr:'Effacer'},
  send:{ar:'حفظ وإرسال',it:'Salva e invia',en:'Save & send',fr:'Enregistrer et envoyer'},back:{ar:'رجوع',it:'Indietro',en:'Back',fr:'Retour'},
@@ -2355,8 +2743,29 @@ document.addEventListener('click',function(e){
    case 'panel': view.tab='mat';view.cat='__panel';view.pSel=null;clearSearch();render();window.scrollTo(0,0);break;
    case 'pngen': pnGenSheet();break;
    case 'pntpl': {var tp=PTPL[+v];if(tp){var o2=JSON.parse(JSON.stringify(tp[2]));var nP=pnGen(o2);nP.name=pnL(tp[1]);cur().panel=nP;pnSave()}}break;
-   case 'pnle': pnEdit(v);break;
-   case 'pnadd': pnAdd();break;
+   case 'pnle': if(stS().mod==='panel'&&view.pSel!==+v){view.pSel=+v;render()}else pnEdit(v);break;
+   case 'pnedit': pnEdit(v);break;
+   case 'stexit': view.cat=null;view.pSel=null;render();window.scrollTo(0,0);break;
+   case 'stmod': {var s_=stS();s_.mod=v;s_.z=1;s_.x=0;s_.y=0;render();window.scrollTo(0,0)}break;
+   case 'stundo': pnUndo();break;
+   case 'stredo': pnRedo();break;
+   case 'stexp': stExpSheet();break;
+   case 'stx': stExport(v);break;
+   case 'stz': stZoom(v);break;
+   case 'stlib': case 'stprop': case 'stdupm': case 'stcopy': case 'stpaste': case 'stdel': case 'stlock': case 'stmvl': case 'stmvr': stAct(a,v);break;
+   case 'stvw': {var Pv=pnl();if(Pv){Pv.vw[v]=Pv.vw[v]?0:1;save();render()}}break;
+   case 'stren': {var Pr=pnl();if(Pr&&confirm(pnL(STX.renum)+'?')){var nn=0;Pr.mods.forEach(function(m){if(m.t!=='gap')m.n=++nn});save();render()}}break;
+   case 'stchk': stS().chk=true;render();break;
+   case 'strc': {var Pc=pnl();if(Pc){var cc=Pc.rep.chk[b.dataset.k]||(Pc.rep.chk[b.dataset.k]={});cc.r=v;if(!v)cc.v='';Pc.meta.u=Date.now();save();var yy=window.scrollY;render();window.scrollTo(0,yy)}}break;
+   case 'stgocalc': view.cat=null;view.tab='calc';render();window.scrollTo(0,0);break;
+   case 'sttoq': stToQuote();break;
+   case 'stf': stS().f=v;render();break;
+   case 'stnew': {save();var np=blankProj();P.list.unshift(np);P.cur=np.id;save();var s2=stS();s2.mod='panel';view.pSel=null;render();window.scrollTo(0,0)}break;
+   case 'stopen': P.cur=v;save();stS().mod='panel';view.pSel=null;render();window.scrollTo(0,0);break;
+   case 'stdupp': if(dupProj(v)){var dp=P.list[0];if(dp.panel){pnMig(dp.panel);dp.panel.meta.st='draft';dp.panel.meta.c=dp.panel.meta.u=Date.now();delete dp.panel.vers}save();render()}break;
+   case 'stmeta': stMeta(v);break;
+   case 'stimp': stImport();break;
+   case 'pnadd': stLib();break;
    case 'pnset': pnSet();break;
    case 'pnzoom': view.pZoom=!view.pZoom;render();break;
    case 'pnpdf': pnPdf();break;
