@@ -1058,7 +1058,7 @@ function whenTxt(lang,k){var w=WHEN.find(function(x){return x[0]===k});return w?
 function whenRow(){var k=cur().site.when||'';return '<div class="when"><span>'+esc(L4(WHT))+'</span><div class="chips">'+WHEN.map(function(w){return '<button class="chip'+(k===w[0]?' on':'')+'" data-act="when" data-v="'+w[0]+'">'+esc(L4(w[1]))+'</button>'}).join('')+'</div></div>'}
 // ---- 📘 guida tecnica: pezzi reali (marca, codice, dati, scheda PDF) + filtro interruttori ----
 var TG={t:{ar:'دليل القطع التقني',it:'Guida tecnica dei pezzi',en:'Technical parts guide',fr:'Guide technique des pièces'},
- s:{ar:'قطع حقيقية بمراجعها وملفاتها الرسمية',it:'Pezzi reali con codice e scheda ufficiale',en:'Real parts with reference and official datasheet',fr:'Pièces réelles avec référence et fiche officielle'},
+ s:{ar:'قطع حقيقية بالعلامة والمرجع والمواصفات',it:'Pezzi reali con marca, codice e caratteristiche',en:'Real parts with brand, reference and specifications',fr:'Pièces réelles avec marque, référence et caractéristiques'},
  f:{ar:'🔎 مساعد اختيار القاطع',it:'🔎 Trova l’interruttore',en:'🔎 Breaker finder',fr:'🔎 Trouver le disjoncteur'},
  type:{ar:'النوع',it:'Tipo',en:'Type',fr:'Type'},amp:{ar:'الأمبير',it:'Ampere',en:'Amps',fr:'Ampères'},curve:{ar:'المنحنى',it:'Curva',en:'Curve',fr:'Courbe'},poles:{ar:'الأقطاب',it:'Poli',en:'Poles',fr:'Pôles'},
  all:{ar:'الكل',it:'Tutti',en:'All',fr:'Tous'},res:{ar:'نتيجة',it:'risultati',en:'results',fr:'résultats'},reset:{ar:'مسح الفلتر',it:'Azzera filtri',en:'Clear filters',fr:'Effacer'},
@@ -1066,7 +1066,7 @@ var TG={t:{ar:'دليل القطع التقني',it:'Guida tecnica dei pezzi',en
  add:{ar:'➕ أضف إلى طلبي',it:'➕ Aggiungi alla richiesta',en:'➕ Add to my order',fr:'➕ Ajouter à la demande'},
  toPn:{ar:'ضعه في اللوحة الكهربائية',it:'Mettilo nel quadro elettrico',en:'Put it in the electrical panel',fr:'Le placer dans le tableau'},
  none:{ar:'لا توجد قطعة مطابقة. غيّر الاختيار.',it:'Nessun pezzo corrisponde. Cambia i filtri.',en:'No matching part. Change the filters.',fr:'Aucune pièce ne correspond. Modifiez les filtres.'},
- note:{ar:'المعلومات من مصادر الصانع الرسمية. تأكد دائماً من الملف الرسمي قبل التركيب.',it:'Dati da fonti ufficiali del produttore. Verifica sempre la scheda ufficiale prima dell’installazione.',en:'Data from official manufacturer sources. Always check the official datasheet before installing.',fr:'Données issues des sources officielles du fabricant. Vérifiez toujours la fiche officielle avant l’installation.'},
+ note:{ar:'المواصفات للإرشاد. تأكد دائماً من بيانات القطعة على العلبة قبل التركيب.',it:'Caratteristiche indicative. Verifica sempre i dati riportati sul prodotto prima dell’installazione.',en:'Specifications are indicative. Always check the data printed on the product before installing.',fr:'Caractéristiques indicatives. Vérifiez toujours les données inscrites sur le produit avant l’installation.'},
  cats:{mcb:{ar:'قاطع',it:'Magnetotermico',en:'MCB',fr:'Disjoncteur'},rccb:{ar:'تفاضلي',it:'Differenziale',en:'RCCB',fr:'Interrupteur diff.'},contactor:{ar:'كونتاكتور',it:'Contattore',en:'Contactor',fr:'Contacteur'},wiring_switch:{ar:'مفتاح',it:'Frutto',en:'Switch',fr:'Interrupteur'},terminal:{ar:'موصل',it:'Morsetto',en:'Terminal',fr:'Borne'},enclosure:{ar:'لوحة',it:'Centralino',en:'Enclosure',fr:'Coffret'}}};
 function techList(){var T_=window.LM_TECH;if(!T_||(settings.trade||'ele')!=='ele'||!rcFlag('tech'))return [];var cc=packId();var ix=T_.cc[cc]||T_.cc.IT||[];return ix.map(function(i){return T_.items[i]})}
 function techF(){if(!view.tf)view.tf={c:'',A:'',cv:'',p:''};return view.tf}
@@ -1091,8 +1091,7 @@ function renderTech(){
     return '<div class="tcard"><div class="th1"><span class="tb">'+esc(x.b)+'</span><span class="tr" dir="ltr">'+esc(x.r)+'</span><span class="tc">'+esc(L4(TG.cats[x.c]||{it:x.c}))+'</span></div>'+
      '<div class="tn" dir="auto">'+esc(techName(x).split(' — ').pop())+'</div>'+((x.d&&(TL(x.d,settings.ui)))?'<div class="mini" dir="auto" style="text-align:start">'+esc(TL(x.d,settings.ui))+'</div>':'')+
      '<div class="tbadges">'+b.map(function(t){return '<span dir="ltr">'+esc(t)+'</span>'}).join('')+'</div>'+
-     '<div class="tact">'+(x.ds?'<button class="btn ghost" data-act="turl" data-v="'+gi+'" data-w="ds">'+esc(L4(TG.ds))+'</button>':x.pu?'<button class="btn ghost" data-act="turl" data-v="'+gi+'" data-w="pu">'+esc(L4(TG.pg))+'</button>':'')+
-     '<button class="btn main" data-act="tadd" data-v="'+gi+'">'+esc(L4(TG.add))+'</button></div>'+(PNCAT[x.c]&&rcFlag('panel')?'<button class="tpn" data-act="tpanel" data-v="'+gi+'">⚡ '+esc(L4(TG.toPn))+'</button>':'')+'</div>'}).join('');
+     '<div class="tact">'+'<button class="btn main" data-act="tadd" data-v="'+gi+'">'+esc(L4(TG.add))+'</button></div>'+(PNCAT[x.c]&&rcFlag('panel')?'<button class="tpn" data-act="tpanel" data-v="'+gi+'">⚡ '+esc(L4(TG.toPn))+'</button>':'')+'</div>'}).join('');
 }
 var TECH_IX={};(function(){var T_=window.LM_TECH;if(T_)T_.items.forEach(function(x,i){TECH_IX[x.i]=i})})();
 function techAdd(i){var x=(window.LM_TECH||{items:[]}).items[+i];if(!x)return;var n=x.n||{};
@@ -2518,7 +2517,8 @@ function kitSheet(k){
    ===================================================================== */
 function segChips(name,curv,opts){return '<div class="seg">'+opts.map(function(o){return '<button class="chip'+(o[0]===curv?' on':'')+'" data-'+name+'="'+o[0]+'">'+o[1]+'</button>'}).join('')+'</div>'}
 function appVersion(){try{if(A&&A.version){var v=A.version(),j=+window.LM_JS_VER||0,m=String(v).match(/(\d+)$/);return j&&m&&j>+m[1]?v+' ⚡'+j:v}return WEB_VERSION}catch(e){return WEB_VERSION}}
-function openUrl(u){if(A&&A.open)A.open(u);else if(/^https?:/.test(u))window.open(u,'_blank');else location.href=u}
+function urlOk(u){u=String(u||'');return /^tel:/.test(u)||/^https:\/\/(wa\.me|api\.whatsapp\.com|(www\.)?siteneeds\.net|mohamed203055\.github\.io)(\/|$)/.test(u)||u.indexOf('https://www.instagram.com/'+CONTACT.ig)===0||u.indexOf('https://www.tiktok.com/@'+CONTACT.tt)===0}
+function openUrl(u,own){if(!own&&!urlOk(u))return;if(A&&A.open)A.open(u);else if(/^https?:/.test(u))window.open(u,'_blank');else location.href=u}
 function openContact(k){
   if(k==='wa'){var t=T('reportMsg')+'\n\n(v'+appVersion()+')';if(A&&A.whatsapp)A.whatsapp(t,CONTACT.num);else openUrl('https://wa.me/'+CONTACT.num+'?text='+encodeURIComponent(t))}
   else if(k==='tel') openUrl('tel:+'+CONTACT.num);
@@ -3322,7 +3322,6 @@ document.addEventListener('click',function(e){
    case 'tpanel': {var tx2=(window.LM_TECH||{items:[]}).items[+v];if(!tx2)break;var P2=pnl();if(!P2){P2=cur().panel={v:1,sys:/^(3P|4P)$/.test(tx2.p||'')?'3':'1',row:12,lc:packId()==='IT'?'br':'rd',name:'',mods:[]}}
      if(P2.sys!=='3'&&/^(3P|4P)$/.test(tx2.p||'')){P2.sys='3';P2.mods.forEach(function(m){if(/^(main|isol|rcd|spd|cont)$/.test(m.t))m.p='4P';pnFix(m,'3')})}
      var m2=pnNew(PNCAT[tx2.c],P2.sys);pnApplyReal(m2,tx2,P2);P2.mods.push(m2);save();view.cat='__panel';view.pSel=P2.mods.length-1;render();window.scrollTo(0,0);toast('⚡ ✓ '+tx2.b+' '+tx2.r);}break;
-   case 'turl': {var tx=(window.LM_TECH||{items:[]}).items[+v];var u=tx&&(b.dataset.w==='ds'?tx.ds:tx.pu);if(u&&/^https:\/\//.test(u))openUrl(u);}break;
    case 'when': {var st=cur().site;st.when=st.when===v?'':v;save();render();}break;
    case 'siteopen': cur().site.open=true;save();render();break;
    case 'siteclose': cur().site.open=false;save();render();break;
@@ -3746,7 +3745,7 @@ function showBroadcast(m){
    (m.link?'<button class="btn ghost" style="width:100%;margin-top:10px" id="bmLink">🔗 '+T('openLink')+'</button>':'')+
    '<button class="btn main" id="bmOk">'+T('ok')+'</button>');
   function seen(){settings.msgSeen=(settings.msgSeen||[]).concat([m.id]).slice(-30);saveSettings()}
-  if(m.link)$('#bmLink').onclick=function(){seen();openUrl(m.link)};
+  if(m.link)$('#bmLink').onclick=function(){seen();openUrl(m.link,1)};
   $('#bmOk').onclick=function(){seen();closeSheet()};
   ping('/messaggio/'+m.id,'Messaggio letto');
 }
