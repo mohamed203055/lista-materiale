@@ -1056,6 +1056,7 @@ var TG={t:{ar:'دليل القطع التقني',it:'Guida tecnica dei pezzi',en
  all:{ar:'الكل',it:'Tutti',en:'All',fr:'Tous'},res:{ar:'نتيجة',it:'risultati',en:'results',fr:'résultats'},reset:{ar:'مسح الفلتر',it:'Azzera filtri',en:'Clear filters',fr:'Effacer'},
  ds:{ar:'📄 الملف الرسمي',it:'📄 Scheda ufficiale',en:'📄 Official datasheet',fr:'📄 Fiche officielle'},pg:{ar:'🔗 صفحة المنتج',it:'🔗 Pagina prodotto',en:'🔗 Product page',fr:'🔗 Page produit'},
  add:{ar:'➕ أضف إلى طلبي',it:'➕ Aggiungi alla richiesta',en:'➕ Add to my order',fr:'➕ Ajouter à la demande'},
+ toPn:{ar:'ضعه في اللوحة الكهربائية',it:'Mettilo nel quadro elettrico',en:'Put it in the electrical panel',fr:'Le placer dans le tableau'},
  none:{ar:'لا توجد قطعة مطابقة. غيّر الاختيار.',it:'Nessun pezzo corrisponde. Cambia i filtri.',en:'No matching part. Change the filters.',fr:'Aucune pièce ne correspond. Modifiez les filtres.'},
  note:{ar:'المعلومات من مصادر الصانع الرسمية. تأكد دائماً من الملف الرسمي قبل التركيب.',it:'Dati da fonti ufficiali del produttore. Verifica sempre la scheda ufficiale prima dell’installazione.',en:'Data from official manufacturer sources. Always check the official datasheet before installing.',fr:'Données issues des sources officielles du fabricant. Vérifiez toujours la fiche officielle avant l’installation.'},
  cats:{mcb:{ar:'قاطع',it:'Magnetotermico',en:'MCB',fr:'Disjoncteur'},rccb:{ar:'تفاضلي',it:'Differenziale',en:'RCCB',fr:'Interrupteur diff.'},contactor:{ar:'كونتاكتور',it:'Contattore',en:'Contactor',fr:'Contacteur'},wiring_switch:{ar:'مفتاح',it:'Frutto',en:'Switch',fr:'Interrupteur'},terminal:{ar:'موصل',it:'Morsetto',en:'Terminal',fr:'Borne'},enclosure:{ar:'لوحة',it:'Centralino',en:'Enclosure',fr:'Coffret'}}};
@@ -1083,7 +1084,7 @@ function renderTech(){
      '<div class="tn" dir="auto">'+esc(techName(x).split(' — ').pop())+'</div>'+((x.d&&(x.d[settings.ui]||x.d.it))?'<div class="mini" dir="auto" style="text-align:start">'+esc(x.d[settings.ui]||x.d.it)+'</div>':'')+
      '<div class="tbadges">'+b.map(function(t){return '<span dir="ltr">'+esc(t)+'</span>'}).join('')+'</div>'+
      '<div class="tact">'+(x.ds?'<button class="btn ghost" data-act="turl" data-v="'+gi+'" data-w="ds">'+esc(L4(TG.ds))+'</button>':x.pu?'<button class="btn ghost" data-act="turl" data-v="'+gi+'" data-w="pu">'+esc(L4(TG.pg))+'</button>':'')+
-     '<button class="btn main" data-act="tadd" data-v="'+gi+'">'+esc(L4(TG.add))+'</button></div></div>'}).join('');
+     '<button class="btn main" data-act="tadd" data-v="'+gi+'">'+esc(L4(TG.add))+'</button></div>'+(PNCAT[x.c]&&rcFlag('panel')?'<button class="tpn" data-act="tpanel" data-v="'+gi+'">⚡ '+esc(L4(TG.toPn))+'</button>':'')+'</div>'}).join('');
 }
 var TECH_IX={};(function(){var T_=window.LM_TECH;if(T_)T_.items.forEach(function(x,i){TECH_IX[x.i]=i})})();
 function techAdd(i){var x=(window.LM_TECH||{items:[]}).items[+i];if(!x)return;var n=x.n||{};
@@ -1128,8 +1129,21 @@ var PN={t:{ar:'لوحة كهربائية واقعية',it:'Quadro elettrico real
  out:{ar:'الخطوط نحو الاستعمالات',it:'Linee verso le utenze',en:'Lines to the loads',fr:'Lignes vers les utilisations'},
  earth:{ar:'الأرضي',it:'Terra',en:'Earth',fr:'Terre'},
  note:{ar:'رسم توضيحي. التصميم والتركيب النهائي يجب أن يتحقق منه كهربائي مؤهل وفق المعايير.',it:'Disegno illustrativo. Progetto e installazione vanno verificati da un tecnico abilitato secondo le norme.',en:'Illustrative drawing. Final design and installation must be checked by a qualified electrician to the standards.',fr:'Dessin illustratif. La conception et l’installation doivent être vérifiées par un électricien qualifié selon les normes.'},
+ manual:{ar:'✋ ابنِ اللوحة بنفسك قطعة قطعة',it:'✋ Costruisci il quadro da te, pezzo per pezzo',en:'✋ Build the panel yourself, part by part',fr:'✋ Construisez le tableau vous-même, pièce par pièce'},
  zoom:{ar:'🔍 تكبير',it:'🔍 Zoom',en:'🔍 Zoom',fr:'🔍 Zoom'},
- types:{main:{ar:'قاطع رئيسي',it:'Generale',en:'Main',fr:'Général'},rcd:{ar:'تفاضلي',it:'Differenziale',en:'RCCB',fr:'Interrupteur diff.'},rcbo:{ar:'حراري تفاضلي',it:'Magnetot. diff.',en:'RCBO',fr:'Disj. diff.'},mcb:{ar:'قاطع',it:'Magnetotermico',en:'MCB',fr:'Disjoncteur'},spd:{ar:'واقي صواعق',it:'Scaricatore SPD',en:'SPD',fr:'Parafoudre'},cont:{ar:'كونتاكتور',it:'Contattore',en:'Contactor',fr:'Contacteur'},gap:{ar:'فراغ',it:'Spazio vuoto',en:'Blank',fr:'Obturateur'}}};
+ types:{main:{ar:'قاطع رئيسي',it:'Generale',en:'Main',fr:'Général'},rcd:{ar:'تفاضلي',it:'Differenziale',en:'RCCB',fr:'Interrupteur diff.'},rcbo:{ar:'حراري تفاضلي',it:'Magnetot. diff.',en:'RCBO',fr:'Disj. diff.'},mcb:{ar:'قاطع',it:'Magnetotermico',en:'MCB',fr:'Disjoncteur'},spd:{ar:'واقي صواعق',it:'Scaricatore SPD',en:'SPD',fr:'Parafoudre'},cont:{ar:'كونتاكتور',it:'Contattore',en:'Contactor',fr:'Contacteur'},gap:{ar:'فراغ',it:'Spazio vuoto',en:'Blank',fr:'Obturateur'},
+  isol:{ar:'مفصل رئيسي',it:'Sezionatore',en:'Isolator',fr:'Sectionneur'},fuse:{ar:'حامل فيوز',it:'Portafusibile',en:'Fuse holder',fr:'Porte-fusible'},
+  rel:{ar:'ريليه خطوة بخطوة',it:'Relè passo-passo',en:'Impulse relay',fr:'Télérupteur'},tmr:{ar:'مؤقت الدرج',it:'Temporizzatore',en:'Staircase timer',fr:'Minuterie'},
+  crep:{ar:'مفتاح ضوئي',it:'Crepuscolare',en:'Twilight switch',fr:'Crépusculaire'},meter:{ar:'عداد طاقة',it:'Contatore energia',en:'Energy meter',fr:'Compteur'},
+  lamp:{ar:'لمبة إشارة',it:'Lampada spia',en:'Pilot lamp',fr:'Voyant'},sock:{ar:'مقبس لوحة',it:'Presa da quadro',en:'DIN socket',fr:'Prise modulaire'},
+  trf:{ar:'محول جرس',it:'Trasformatore',en:'Bell transformer',fr:'Transfo sonnerie'},term:{ar:'موصلات DIN',it:'Morsettiera',en:'Terminal block',fr:'Bornier'}},
+ grp:[{ar:'الحماية',it:'Protezione',en:'Protection',fr:'Protection'},{ar:'التحكم',it:'Comando',en:'Control',fr:'Commande'},{ar:'أخرى',it:'Altro',en:'Other',fr:'Autres'}],
+ real:{ar:'📘 قطعة حقيقية من الدليل',it:'📘 Pezzo reale dalla guida',en:'📘 Real part from the guide',fr:'📘 Pièce réelle du guide'},
+ realS:{ar:'اختر مرجعاً حقيقياً (علامة + مرجع) فيدخل في اللوحة وفي الطلب كما هو',it:'Scegli un codice reale (marca + codice): entra nel quadro e nella richiesta così com’è',en:'Pick a real reference (brand + code): it goes into the panel and the order as is',fr:'Choisissez une référence réelle (marque + code) : elle entre dans le tableau et la demande telle quelle'},
+ noReal:{ar:'لا توجد قطع حقيقية مطابقة لبلدك في الدليل بعد',it:'Nessun pezzo reale compatibile nella guida per il tuo paese',en:'No compatible real parts in the guide for your country yet',fr:'Aucune pièce réelle compatible dans le guide pour votre pays'}};
+var PNG3=[['main','isol','rcd','rcbo','mcb','spd','fuse'],['cont','rel','tmr','crep'],['meter','lamp','sock','trf','term','gap']];
+var PNTALL=PNG3[0].concat(PNG3[1],PNG3[2]);
+var PNBRK={main:1,isol:1,rcd:1,rcbo:1,mcb:1};
 // circuiti tipici: ampere, sezione mm², nome
 var PCT=[['luci',10,'1,5',{ar:'إنارة',it:'Luci',en:'Lighting',fr:'Éclairage'},2],['prese',16,'2,5',{ar:'مقابس',it:'Prese',en:'Sockets',fr:'Prises'},2],
  ['cucina',16,'2,5',{ar:'مطبخ / فرن',it:'Cucina / forno',en:'Kitchen / oven',fr:'Cuisine / four'},1],['induz',32,'6',{ar:'موقد كهربائي (Induction)',it:'Piano a induzione',en:'Induction hob',fr:'Plaque à induction'},0],
@@ -1146,15 +1160,22 @@ function pnL(o){return L4(o)}
 function pnl(){var p=cur();return p.panel||null}
 function pnPh(sys){return sys==='3'?['L1','L2','L3']:['L']}
 function pnFix(m,sys){ // poli validi secondo tipo e sistema
-  var tri=sys==='3';
-  if(m.t==='gap'){m.p='';return m}
-  if(m.t==='main'||m.t==='rcd'||m.t==='spd'||m.t==='cont'){if(!/^(2P|4P)$/.test(m.p))m.p=tri?'4P':'2P';if(!tri)m.p='2P'}
-  else if(m.t==='rcbo'){if(!/^(1P\+N|4P)$/.test(m.p))m.p='1P+N';if(!tri)m.p='1P+N'}
-  else {if(!/^(1P|1P\+N|2P|3P|4P)$/.test(m.p))m.p='1P+N';if(!tri&&/3P|4P/.test(m.p))m.p='2P'}
+  var tri=sys==='3',t=m.t,ok;
+  if(t==='gap'||t==='term'){m.p='';return m}
+  if(m.ref&&m.p){if(tri&&/^(1P|1P\+N|2P)$/.test(m.p)&&!/^L[123]$/.test(m.ph||''))m.ph='L1';return m}
+  if(t==='main'||t==='rcd'||t==='spd'||t==='cont'||t==='isol')ok=tri?['2P','4P']:['2P'];
+  else if(t==='rcbo')ok=tri?['1P+N','4P']:['1P+N'];
+  else if(t==='meter')ok=tri?['1P+N','4P']:['1P+N'];
+  else if(t==='mcb'||t==='fuse')ok=tri?['1P','1P+N','2P','3P','4P']:['1P','1P+N','2P'];
+  else ok=['1P+N'];
+  if(ok.indexOf(m.p)<0)m.p=t==='main'||t==='isol'||t==='rcd'||t==='spd'?(tri?'4P':'2P'):ok[0];
   if(tri&&/^(1P|1P\+N|2P)$/.test(m.p)&&!/^L[123]$/.test(m.ph||''))m.ph='L1';
   return m}
-function pnW(m){if(m.t==='gap')return 1;var n={'1P':1,'1P+N':1,'2P':2,'3P':3,'4P':4}[m.p]||1;if(m.t==='rcd'||m.t==='spd'||m.t==='cont')return m.p==='4P'?4:2;if(m.t==='rcbo')return m.p==='4P'?4:2;return n}
-function pnCond(m,sys){var ph=sys==='3'?(m.ph||'L1'):'L';
+function pnW(m){if(m.wm)return m.wm;var t=m.t,np={'1P':1,'1P+N':2,'2P':2,'3P':3,'4P':4}[m.p]||1;
+  switch(t){case 'gap':case 'tmr':case 'rel':case 'crep':case 'lamp':return 1;case 'sock':return 2.5;case 'trf':case 'term':return 2;
+   case 'meter':return m.p==='4P'?4:1;case 'fuse':return np;case 'isol':case 'rcd':case 'spd':case 'cont':return m.p==='4P'?4:2;case 'rcbo':return m.p==='4P'?4:2}
+  return {'1P':1,'1P+N':1,'2P':2,'3P':3,'4P':4}[m.p]||1}
+function pnCond(m,sys){if(m.t==='term'||m.t==='gap')return [];var ph=sys==='3'?(m.ph||'L1'):'L';
   switch(m.p){case '1P':return [ph];case '1P+N':case '2P':return [ph,'N'];case '3P':return ['L1','L2','L3'];case '4P':return ['L1','L2','L3','N']}return []}
 function pnGen(o){ // o={sys,A,prot:'1'|'2'|'E',spd,c:{key:n}}
   var sys=o.sys==='3'?'3':'1',ms=[],k=0,phs=['L1','L2','L3'];
@@ -1180,7 +1201,7 @@ function pnLayout(P){
   var ms=P.mods||[],cap=(P.row||12)*PNM+3*PNG,rows=[[]],x=0,head=-1,lastMain=-1,items=[],prevMem=null,q=0;
   ms.forEach(function(m,i){
     var it={m:m,i:i,w:pnW(m)*PNM};
-    if(m.t==='main'){it.src='feed';lastMain=i;head=i}
+    if(m.t==='main'||m.t==='isol'){it.src='feed';lastMain=i;head=i}
     else if(m.t==='rcd'){it.src=lastMain>=0?lastMain:'feed';head=i}
     else if(m.t==='spd'){it.src=lastMain>=0?lastMain:'feed'}
     else if(m.t!=='gap'){it.head=head<0?'feed':head}
@@ -1205,13 +1226,16 @@ function pnScrew(x,y){return '<circle cx="'+x+'" cy="'+y+'" r="7" fill="url(#pnS
 function pnDev(it,X,Y,P,sel){
   var m=it.m,w=it.w,x=X+it.x,y=Y,n=pnCond(m,P.sys).length||1,h='',cx=x+w/2,i;
   var tx=function(k){return x+(k+0.5)*w/n};
-  h+='<g data-act="pnle" data-v="'+it.i+'" style="cursor:pointer"><rect x="'+(x+3)+'" y="'+(y+4)+'" width="'+(w-2)+'" height="'+PNDH+'" rx="4" fill="#000" opacity=".35"/>';
+  var shY=m.t==='gap'?30:m.t==='term'?18:0,shH=m.t==='gap'?PNDH-60:m.t==='term'?PNDH-36:PNDH;
+  h+='<g data-act="pnle" data-v="'+it.i+'" style="cursor:pointer"><rect x="'+(x+3)+'" y="'+(y+4+shY)+'" width="'+(w-2)+'" height="'+shH+'" rx="4" fill="#000" opacity=".35"/>';
+  if(m.t==='term'){h+='<rect x="'+(x+1)+'" y="'+(y+18)+'" width="'+(w-2)+'" height="'+(PNDH-36)+'" rx="3" fill="#cfd4d9" stroke="#9aa1a8"/>';var nt=Math.max(2,Math.round(w/12));for(i=0;i<nt;i++){var xx=x+(i+0.5)*w/nt,cl=i%3===2?'#2E9E48':i%3===1?'#1F6FD6':'#8C949C';h+='<rect x="'+(xx-w/nt/2+1)+'" y="'+(y+40)+'" width="'+(w/nt-2)+'" height="'+(PNDH-80)+'" rx="2" fill="'+cl+'" opacity=".85"/>'+pnScrew(xx,y+30)+pnScrew(xx,y+PNDH-30)}
+    return h+'<text x="'+cx+'" y="'+(y+PNDH/2+4)+'" text-anchor="middle" font-family="Arial" font-weight="700" font-size="10" fill="#fff">X'+it.q+'</text>'+(sel?'<rect x="'+(x-2)+'" y="'+(y+14)+'" width="'+(w+4)+'" height="'+(PNDH-28)+'" rx="5" fill="none" stroke="#2F6BFF" stroke-width="3"/>':'')+'</g>'}
   if(m.t==='gap'){return h+'<rect x="'+(x+1)+'" y="'+(y+30)+'" width="'+(w-2)+'" height="'+(PNDH-60)+'" rx="3" fill="url(#pnBody)" stroke="#aab0b7"/><rect x="'+(x+8)+'" y="'+(y+60)+'" width="'+(w-16)+'" height="30" rx="2" fill="#d5d9de"/>'+(sel?'<rect x="'+(x-2)+'" y="'+(y+26)+'" width="'+(w+4)+'" height="'+(PNDH-52)+'" rx="5" fill="none" stroke="#2F6BFF" stroke-width="3"/>':'')+'</g>'}
   var body=m.t==='spd'?'url(#pnBodyG)':'url(#pnBody)';
   h+='<rect x="'+(x+1)+'" y="'+y+'" width="'+(w-2)+'" height="'+PNDH+'" rx="4" fill="'+body+'" stroke="#a9afb6"/>'+
    '<rect x="'+(x+2)+'" y="'+(y+1)+'" width="'+(w-4)+'" height="27" rx="3" fill="#e4e7ea"/><rect x="'+(x+2)+'" y="'+(y+PNDH-28)+'" width="'+(w-4)+'" height="27" rx="3" fill="#e4e7ea"/>';
   for(i=0;i<n;i++){h+=pnScrew(tx(i),y+14)+pnScrew(tx(i),y+PNDH-14)}
-  var stripe={main:'#C92A2A',rcd:'#1F6FD6',rcbo:'#1F6FD6',mcb:'#2F9E44',spd:'#E8590C',cont:'#5F3DC4'}[m.t];
+  var stripe={main:'#C92A2A',isol:'#C92A2A',rcd:'#1F6FD6',rcbo:'#1F6FD6',mcb:'#2F9E44',spd:'#E8590C',cont:'#5F3DC4',rel:'#5F3DC4',tmr:'#5F3DC4',crep:'#5F3DC4',fuse:'#868E96',meter:'#0B7285',lamp:'#E67700',sock:'#495057',trf:'#495057'}[m.t]||'#868E96';
   h+='<rect x="'+(x+3)+'" y="'+(y+31)+'" width="'+(w-6)+'" height="3.5" rx="1" fill="'+stripe+'"/>';
   var big='',small='';
   if(m.t==='mcb'||m.t==='main'){big=(m.cv||'C')+(m.A||16)}
@@ -1219,23 +1243,39 @@ function pnDev(it,X,Y,P,sel){
   else if(m.t==='rcd'){big=(m.A||40)+'A';small=(m.mA||30)+'mA'}
   else if(m.t==='spd'){big='SPD'}
   else if(m.t==='cont'){big='KM';small=(m.A||25)+'A'}
+  else if(m.t==='isol'){big=(m.A||40)+'A';small='0 - I'}
+  else if(m.t==='fuse'){big=(m.A||10)+'A';small='gG'}
+  else if(m.t==='rel'){big='RL';small='16A'}
+  else if(m.t==='tmr'){big='T';small='min'}
+  else if(m.t==='crep'){big='LUX'}
+  else if(m.t==='meter'){big='kWh'}
+  else if(m.t==='lamp'){big='H'}
+  else if(m.t==='sock'){big='16A'}
+  else if(m.t==='trf'){big='12V';small='~'}
   var fs=w<=PNM?(big.length>3?11.5:13.5):16;
   h+='<text x="'+cx+'" y="'+(y+52)+'" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="'+fs+'" fill="#1d2329">'+esc(big)+'</text>';
   if(small)h+='<text x="'+cx+'" y="'+(y+64)+'" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="9" fill="#1F6FD6">'+esc(small)+'</text>';
   var ly=y+(small?70:62),lh=40;
   if(m.t==='spd'){for(i=0;i<n;i++){h+='<rect x="'+(tx(i)-6)+'" y="'+(ly+6)+'" width="12" height="18" rx="2" fill="#2F9E44" stroke="#1d6b2e"/>'}}
+  else if(m.t==='meter'){h+='<rect x="'+(x+4)+'" y="'+(ly+2)+'" width="'+(w-8)+'" height="18" rx="2" fill="#1b2a1e"/><text x="'+cx+'" y="'+(ly+15)+'" text-anchor="middle" font-family="Courier New,monospace" font-weight="700" font-size="'+(w>40?11:8)+'" fill="#8CE99A">'+(w>40?'0001234.5':'0123')+'</text><circle cx="'+cx+'" cy="'+(ly+30)+'" r="3" fill="#FA5252"/>'}
+  else if(m.t==='lamp'){h+='<circle cx="'+cx+'" cy="'+(ly+16)+'" r="11" fill="#40C057" stroke="#2b8a3e" stroke-width="2"/><circle cx="'+(cx-3)+'" cy="'+(ly+12)+'" r="3.5" fill="#fff" opacity=".6"/>'}
+  else if(m.t==='sock'){h+='<circle cx="'+cx+'" cy="'+(ly+18)+'" r="17" fill="#e9ecef" stroke="#868e96" stroke-width="1.5"/><circle cx="'+(cx-7)+'" cy="'+(ly+18)+'" r="2.5" fill="#343a40"/><circle cx="'+(cx+7)+'" cy="'+(ly+18)+'" r="2.5" fill="#343a40"/><circle cx="'+cx+'" cy="'+(ly+18)+'" r="2.5" fill="#343a40"/>'}
+  else if(m.t==='fuse'){var nf=pnCond(m,P.sys).length||1;for(i=0;i<nf;i++){var fx=x+(i+0.5)*w/nf;h+='<rect x="'+(fx-8)+'" y="'+(ly)+'" width="16" height="34" rx="3" fill="#bfe3f5" stroke="#74a9c4"/><rect x="'+(fx-4)+'" y="'+(ly+4)+'" width="8" height="26" rx="3" fill="#f1f3f5" stroke="#adb5bd"/>'}}
+  else if(m.t==='tmr'||m.t==='crep'||m.t==='trf'){h+='<circle cx="'+cx+'" cy="'+(ly+16)+'" r="10" fill="#dee2e6" stroke="#868e96" stroke-width="1.5"/><path d="M'+cx+' '+(ly+16)+'L'+(cx+6)+' '+(ly+10)+'" stroke="#343a40" stroke-width="2" stroke-linecap="round"/>'}
+  else if(m.t==='rel'){h+='<rect x="'+(cx-8)+'" y="'+(ly+4)+'" width="16" height="24" rx="3" fill="#2B3036"/><rect x="'+(cx-5)+'" y="'+(ly+7)+'" width="10" height="8" rx="1" fill="#fff" opacity=".3"/>'}
   else if(m.t==='cont'){h+='<rect x="'+(x+8)+'" y="'+(ly+2)+'" width="'+(w-16)+'" height="30" rx="3" fill="#2b3036"/><circle cx="'+cx+'" cy="'+(ly+17)+'" r="5" fill="#40C057"/>'}
   else{
     var pw=Math.min(15,w/n-6);
     h+='<rect x="'+(x+4)+'" y="'+ly+'" width="'+(w-8)+'" height="'+lh+'" rx="3" fill="#cfd4d9"/>';
-    var lv=m.t==='main'?'#C92A2A':'#2B3036';
+    var lv=m.t==='main'||m.t==='isol'?'#C92A2A':'#2B3036';
     var nl=w<=PNM?1:n,lx=function(k){return nl===1?cx:tx(k)};if(nl===1)pw=14;
     for(i=0;i<nl;i++){h+='<rect x="'+(lx(i)-pw/2)+'" y="'+(ly+3)+'" width="'+pw+'" height="20" rx="2.5" fill="'+lv+'"/><rect x="'+(lx(i)-pw/2+2)+'" y="'+(ly+5)+'" width="'+(pw-4)+'" height="4" rx="1" fill="#fff" opacity=".22"/>'}
     if(nl>1)h+='<rect x="'+(tx(0)-2)+'" y="'+(ly+10)+'" width="'+(tx(n-1)-tx(0)+4)+'" height="4" fill="'+lv+'" opacity=".85"/>';
     if(m.t==='rcd'||m.t==='rcbo')h+='<circle cx="'+(x+w-11)+'" cy="'+(ly+lh-8)+'" r="5.5" fill="#F2C200" stroke="#9b7a00"/><text x="'+(x+w-11)+'" y="'+(ly+lh-5)+'" text-anchor="middle" font-family="Arial" font-size="7.5" font-weight="700" fill="#333">T</text>'
   }
   h+='<text x="'+cx+'" y="'+(y+PNDH-34)+'" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="10" fill="#495057">Q'+it.q+'</text>';
-  if(m.t!=='gap'&&m.p)h+='<text x="'+cx+'" y="'+(y+PNDH-46)+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="8" fill="#868e96">'+esc(m.p)+(m.ph&&P.sys==='3'&&/^(1P|1P\+N|2P)$/.test(m.p)?' '+esc(m.ph):'')+'</text>';
+  if(m.ref)h+='<text x="'+cx+'" y="'+(y+PNDH-46)+'" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="'+(w>40?9:7)+'" fill="#1F4FD8">'+esc(m.ref.b.split(' ')[0].toUpperCase().slice(0,w>40?12:7))+'</text>';
+  else if(m.t!=='gap'&&m.p)h+='<text x="'+cx+'" y="'+(y+PNDH-46)+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="8" fill="#868e96">'+esc(m.p)+(m.ph&&P.sys==='3'&&/^(1P|1P\+N|2P)$/.test(m.p)?' '+esc(m.ph):'')+'</text>';
   if(sel)h+='<rect x="'+(x-2)+'" y="'+(y-4)+'" width="'+(w+4)+'" height="'+(PNDH+8)+'" rx="6" fill="none" stroke="#2F6BFF" stroke-width="3"/>';
   return h+'</g>'}
 function pnSVG(P,opt){
@@ -1308,10 +1348,37 @@ function pnSVG(P,opt){
   return h+'</svg>'}
 // ---------- pagina ----------
 function pnName(m,lang){return m.l||pnL(PN.types[m.t])}
-function pnSpec(m){if(m.t==='gap')return '';var a=[];if(m.p)a.push(m.p);if(m.t==='mcb'||m.t==='main'||m.t==='rcbo')a.push((m.cv||'C')+(m.A||16));if(m.t==='rcd')a.push((m.A||40)+'A');if(m.t==='cont')a.push((m.A||25)+'A');if(m.t==='rcd'||m.t==='rcbo')a.push((m.mA||30)+'mA '+(m.rt||'A'));if(m.ph&&/^(1P|1P\+N|2P)$/.test(m.p))a.push(m.ph);return a.join(' · ')}
+function pnSpec(m){if(m.t==='gap'||m.t==='term')return '';var a=[];if(m.ref)a.push(m.ref.b+' '+m.ref.r);if(m.p)a.push(m.p);
+  if(m.t==='mcb'||m.t==='main'||m.t==='rcbo')a.push((m.cv||'C')+(m.A||16));if(m.t==='rcd'||m.t==='isol'||m.t==='fuse')a.push((m.A||40)+'A');if(m.t==='cont')a.push((m.A||25)+'A');
+  if(m.t==='rcd'||m.t==='rcbo')a.push((m.mA||30)+'mA '+(m.rt||'A'));if(m.ph&&/^(1P|1P\+N|2P)$/.test(m.p))a.push(m.ph);return a.join(' · ')}
+var PNAMP={rcd:[25,40,63,80],isol:[32,40,63,80,100],fuse:[2,4,6,10,16,20,25,32],cont:[16,20,25,40,63],main:[16,20,25,32,40,50,63,80,100]};
+function pnDefA(t){return {rcd:40,isol:40,main:32,cont:25,fuse:10,rel:16,tmr:16}[t]||16}
+function pnNew(t,sys){var m={t:t,p:'',A:pnDefA(t),cv:'C',mA:30,rt:'A',l:(t==='mcb'||t==='rcbo'||t==='gap')?'':pnL(PN.types[t])};return pnFix(m,sys)}
+function pnPolesOk(t,tri){var m={t:t,p:'?'};var r=[];['1P','1P+N','2P','3P','4P'].forEach(function(pp){m.p=pp;pnFix(m,tri?'3':'1');if(m.p===pp)r.push(pp)});return r}
+// scelta di un pezzo reale dalla guida tecnica (stesso paese, compatibile con il sistema)
+var PNCAT={mcb:'mcb',rccb:'rcd',contactor:'cont'};
+function pnRealList(P){var T_=window.LM_TECH;if(!T_)return [];var ix=T_.cc[packId()]||T_.cc.IT||[];
+  return ix.map(function(i){return T_.items[i]}).filter(function(x){return PNCAT[x.c]&&!(P.sys!=='3'&&/^(3P|4P)$/.test(x.p||''))})}
+function pnApplyReal(m,x,P){m.t=PNCAT[x.c];m.p=x.p||m.p;if(x.A!=null)m.A=x.A;if(x.cv)m.cv=x.cv;if(x.mA)m.mA=x.mA;if(x.rt)m.rt=/^(AC|A|F|B)$/.test(x.rt)?x.rt:m.rt;
+  m.ref={i:x.i,b:x.b,r:x.r};if(x.w)m.wm=x.w;else delete m.wm;if(!m.l&&m.t!=='mcb')m.l=pnL(PN.types[m.t]);
+  var n=x.n||{};m.ref.n={it:n.it,ar:n.ar,fr:n.fr,en:n.en};pnFix(m,P.sys);if(m.p!==(x.p||m.p)){m.p=x.p}}
+function pnRealSheet(P,onPick){
+  var L=pnRealList(P),f={c:'',A:''};
+  function draw(){var res=L.filter(function(x){return (!f.c||PNCAT[x.c]===f.c)&&(!f.A||String(x.A)===f.A)});
+    var amps={};L.filter(function(x){return !f.c||PNCAT[x.c]===f.c}).forEach(function(x){if(x.A!=null)amps[x.A]=1});
+    var h='<h2>'+esc(pnL(PN.real))+'</h2><div class="mini" style="margin-bottom:6px">'+esc(pnL(PN.realS))+'</div>';
+    if(!L.length){openSheet(h+'<div class="empty">'+esc(pnL(PN.noReal))+'</div>');return}
+    h+=pnChips('c',[['',pnL(TG.all)],['mcb',pnL(PN.types.mcb)],['rcd',pnL(PN.types.rcd)],['cont',pnL(PN.types.cont)]].filter(function(o){return !o[0]||L.some(function(x){return PNCAT[x.c]===o[0]})}),f.c,pnL(PN.type))+
+      pnChips('A',[['',pnL(TG.all)]].concat(Object.keys(amps).map(Number).sort(function(a,b){return a-b}).map(function(a){return [String(a),a+' A']})),f.A,pnL(PN.amp))+
+      '<div class="mini" style="margin:8px 2px"><b>'+res.length+'</b></div>'+
+      res.map(function(x){return '<button class="pnrow" data-rp="'+esc(x.i)+'"><b style="font-size:12px">'+esc(x.b.split(' ')[0])+'</b><span dir="ltr" style="text-align:start">'+esc(x.r)+'</span><i dir="ltr">'+esc([x.p,x.cv?x.cv+x.A:(x.A!=null?x.A+'A':''),x.mA?x.mA+'mA '+(x.rt||''):''].filter(Boolean).join(' · '))+'</i></button>'}).join('');
+    openSheet(h);
+    sheet.querySelectorAll('[data-pk]').forEach(function(b){b.onclick=function(){f[b.dataset.pk]=b.dataset.pv;if(b.dataset.pk==='c')f.A='';draw()}});
+    sheet.querySelectorAll('[data-rp]').forEach(function(b){b.onclick=function(){var x=null;L.forEach(function(y){if(y.i===b.dataset.rp)x=y});if(x)onPick(x)}})}
+  draw()}
 function renderPanel(){
   var P=pnl(),hd='<button class="back" data-act="back">'+(settings.ui==='ar'?'→ ':'← ')+T('allCats')+'</button><div class="sec">'+icH('⚡')+' '+esc(pnL(PN.t))+'</div>';
-  if(!P||!(P.mods||[]).length) return hd+'<div class="pnempty"><div class="big">⚡</div><p>'+esc(pnL(PN.empty))+'</p><button class="btn main" data-act="pngen">'+esc(pnL(PN.start))+'</button>'+
+  if(!P||!(P.mods||[]).length) return hd+'<div class="pnempty"><div class="big">⚡</div><p>'+esc(pnL(PN.empty))+'</p><button class="btn main" data-act="pngen">'+esc(pnL(PN.start))+'</button><button class="btn ghost" data-act="pnadd" style="width:100%;margin-top:8px">'+esc(pnL(PN.manual))+'</button>'+
    '<div class="mini" style="margin:14px 0 8px">'+esc(pnL(PN.tpl))+'</div><div class="chips" style="justify-content:center">'+PTPL.map(function(t,i){return '<button class="chip" data-act="pntpl" data-v="'+i+'">'+esc(pnL(t[1]))+'</button>'}).join('')+'</div></div>';
   var L=pnLayout(P),rows=L.items.filter(function(it){return it.m.t!=='gap'}).map(function(it){var m=it.m;
     return '<button class="pnrow" data-act="pnle" data-v="'+it.i+'"><b>Q'+it.q+'</b><span dir="auto">'+esc(pnName(m))+'</span><i dir="ltr">'+esc(pnSpec(m))+(m.s?' · '+esc(m.s)+' mm²':'')+(pnSecLow(m)?' ⚠️':'')+'</i></button>'}).join('');
@@ -1346,13 +1413,15 @@ function pnEdit(i){
   var P=pnl();if(!P)return;var m=P.mods[+i];if(!m)return;view.pSel=+i;render();
   function upd(){pnFix(m,P.sys);save();render()}
   function draw(){
-    var tri=P.sys==='3',polesBy={main:tri?['2P','4P']:['2P'],rcd:tri?['2P','4P']:['2P'],spd:tri?['2P','4P']:['2P'],cont:tri?['2P','4P']:['2P'],rcbo:tri?['1P+N','4P']:['1P+N'],mcb:tri?['1P','1P+N','2P','3P','4P']:['1P','1P+N','2P']}[m.t]||[];
+    var tri=P.sys==='3',polesBy=pnPolesOk(m.t,tri),hasA=!/^(spd|gap|term|crep|lamp|sock|trf|meter|rel|tmr)$/.test(m.t);
     var h='<h2>Q'+(pnLayout(P).items[+i].q||'')+' · '+esc(pnL(PN.types[m.t]))+'</h2>'+
-     pnChips('t',['mcb','rcbo','rcd','main','spd','cont','gap'].map(function(k){return [k,pnL(PN.types[k])]}),m.t,pnL(PN.type));
-    if(m.t!=='gap'){
+     (m.ref?'<div class="pnref"><b dir="ltr">'+esc(m.ref.b+' · '+m.ref.r)+'</b><button class="chip" id="pnUnref">✕</button></div>':'')+
+     (PNCAT_R[m.t]?'<button class="btn ghost" id="pnReal" style="width:100%;margin:4px 0 6px">'+esc(pnL(PN.real))+'</button>':'')+
+     pnChips('t',PNTALL.map(function(k){return [k,pnL(PN.types[k])]}),m.t,pnL(PN.type));
+    if(m.t!=='gap'&&m.t!=='term'){
       h+='<div class="field"><label>'+esc(pnL(PN.lbl))+'</label><input id="pnLbl" dir="auto" value="'+esc(m.l||'')+'" maxlength="40"></div>';
       if(m.t==='mcb'||m.t==='rcbo')h+='<div class="chips" style="margin-top:6px">'+PCT.map(function(c){return '<button class="chip" data-pq="'+c[0]+'">'+esc(pnL(c[3]))+'</button>'}).join('')+'</div>';
-      if(m.t!=='spd')h+=pnChips('A',(m.t==='rcd'?[25,40,63,80]:[6,10,13,16,20,25,32,40,50,63]).map(function(a){return [a,(m.t==='rcd'||m.t==='cont'?'':(m.cv||'C'))+a+(m.t==='rcd'||m.t==='cont'?'A':'')]}),m.A||'',pnL(PN.amp));
+      if(hasA){var noC=!(m.t==='mcb'||m.t==='main'||m.t==='rcbo');h+=pnChips('A',(PNAMP[m.t]||[6,10,13,16,20,25,32,40,50,63]).map(function(a){return [a,(noC?'':(m.cv||'C'))+a+(noC?'A':'')]}),m.A||'',pnL(PN.amp))}
       if(m.t==='mcb'||m.t==='main'||m.t==='rcbo')h+=pnChips('cv',['B','C','D'],m.cv||'C',pnL(PN.curve));
       if(polesBy.length>1)h+=pnChips('p',polesBy,m.p,pnL(PN.poles));
       if(tri&&/^(1P|1P\+N|2P)$/.test(m.p))h+=pnChips('ph',['L1','L2','L3'],m.ph||'L1',pnL(PN.ph));
@@ -1364,11 +1433,14 @@ function pnEdit(i){
      '<button class="btn main" id="pnOk" style="margin-top:8px">'+esc(pnL(PN.ok))+'</button>';
     openSheet(h);sheet._onclose=function(){view.pSel=null;render()};
     sheet.querySelectorAll('[data-pk]').forEach(function(b){b.onclick=function(){var k=b.dataset.pk,v=b.dataset.pv;
-      if(k==='t'){var was=m.t;m.t=v;if(v==='rcd'){m.A=Math.max(40,m.A||40);if([25,40,63,80].indexOf(m.A)<0)m.A=40;m.mA=m.mA||30;m.rt=m.rt||'A'}if(v==='rcbo'){m.mA=m.mA||30;m.rt=m.rt||'A'}if(v==='main'&&was!=='main')m.A=m.A||32;if(v==='gap')m.l=''}
-      else m[k]=(k==='A'||k==='mA')?+v:v;
+      if(k==='t'){var was=m.t;if(v===was)return;m.t=v;delete m.ref;delete m.wm;if(PNAMP[v]&&PNAMP[v].indexOf(m.A)<0)m.A=pnDefA(v);if(!(v==='mcb'||v==='rcbo'||v==='main'))m.cv=m.cv||'C';m.mA=m.mA||30;m.rt=m.rt||'A';
+        if(v==='gap'||v==='term')m.l='';else if(!m.l||m.l===pnL(PN.types[was]))m.l=(v==='mcb'||v==='rcbo')?'':pnL(PN.types[v])}
+      else {m[k]=(k==='A'||k==='mA')?+v:v;if(m.ref&&k!=='s'&&k!=='ph'){delete m.ref;delete m.wm}}
       if(k==='A'&&pnSecLow(m)){m.s=pnMinSec(m.A);toast('⚠️ '+pnL(PN.sec)+' → '+m.s+' mm²')}
       upd();var st=sheet.scrollTop;draw();sheet.scrollTop=st}});
     sheet.querySelectorAll('[data-pq]').forEach(function(b){b.onclick=function(){var c=PCTBY[b.dataset.pq];m.l=pnL(c[3]);m.A=c[1];m.s=c[2];m.k=c[0];upd();var st=sheet.scrollTop;draw();sheet.scrollTop=st}});
+    var rb=$('#pnReal');if(rb)rb.onclick=function(){pnRealSheet(P,function(x){pnApplyReal(m,x,P);save();render();draw()})};
+    var ub=$('#pnUnref');if(ub)ub.onclick=function(){delete m.ref;delete m.wm;upd();draw()};
     var li=$('#pnLbl');if(li)li.oninput=function(){m.l=li.value;save();var sv=document.querySelector('.pnin');if(sv)sv.innerHTML=pnSVG(P,{sel:view.pSel})};
     function mv(d){var j=+i+d;if(j<0||j>=P.mods.length)return;P.mods.splice(+i,1);P.mods.splice(j,0,m);i=j;view.pSel=j;upd();draw()}
     $('#pnL').onclick=function(){mv(settings.ui==='ar'?1:-1)};$('#pnR').onclick=function(){mv(settings.ui==='ar'?-1:1)};
@@ -1376,17 +1448,20 @@ function pnEdit(i){
     $('#pnX').onclick=function(){P.mods.splice(+i,1);view.pSel=null;sheet._onclose=null;closeSheet();pnSave()};
     $('#pnOk').onclick=closeSheet}
   draw()}
+var PNCAT_R={mcb:1,rcd:1,cont:1,main:1};
 function pnAdd(){
-  openSheet('<h2>'+esc(pnL(PN.add))+'</h2><div class="pnadd">'+['mcb','rcbo','rcd','main','spd','cont','gap'].map(function(k){return '<button class="btn ghost" data-pa="'+k+'">'+esc(pnL(PN.types[k]))+'</button>'}).join('')+'</div>');
-  sheet.querySelectorAll('[data-pa]').forEach(function(b){b.onclick=function(){var P=pnl();if(!P){P=cur().panel={v:1,sys:'1',row:12,lc:packId()==='IT'?'br':'rd',name:'',mods:[]}}
-    var t=b.dataset.pa,m={t:t,p:'',A:t==='rcd'?40:t==='main'?32:t==='cont'?25:16,cv:'C',mA:30,rt:'A',l:t==='mcb'||t==='rcbo'?'':pnL(PN.types[t])};pnFix(m,P.sys);
-    var at=view.pSel!=null&&view.pSel<P.mods.length?view.pSel+1:P.mods.length;P.mods.splice(at,0,m);save();closeSheet();pnEdit(at)}})}
+  function P0(){var P=pnl();if(!P){P=cur().panel={v:1,sys:'1',row:12,lc:packId()==='IT'?'br':'rd',name:'',mods:[]}}return P}
+  function put(m){var P=P0();var at=view.pSel!=null&&view.pSel<P.mods.length?view.pSel+1:P.mods.length;P.mods.splice(at,0,m);save();closeSheet();pnEdit(at)}
+  openSheet('<h2>'+esc(pnL(PN.add))+'</h2>'+(window.LM_TECH?'<button class="btn main" id="pnAR" style="margin-bottom:10px">'+esc(pnL(PN.real))+'</button>':'')+
+   PNG3.map(function(g,gi){return '<div class="h2" style="margin:10px 2px 6px"><b>'+esc(pnL(PN.grp[gi]))+'</b></div><div class="pnadd">'+g.map(function(k){return '<button class="btn ghost" data-pa="'+k+'">'+esc(pnL(PN.types[k]))+'</button>'}).join('')+'</div>'}).join(''));
+  sheet.querySelectorAll('[data-pa]').forEach(function(b){b.onclick=function(){put(pnNew(b.dataset.pa,P0().sys))}});
+  var ar=$('#pnAR');if(ar)ar.onclick=function(){var P=P0();SHEET_BACK=pnAdd;pnRealSheet(P,function(x){var m=pnNew(PNCAT[x.c],P.sys);pnApplyReal(m,x,P);put(m)})}}
 function pnSet(){var P=pnl();if(!P)return;
   function draw(){openSheet('<h2>'+esc(pnL(PN.set))+'</h2><div class="field"><label>'+esc(pnL(PN.name))+'</label><input id="pnNm" dir="auto" maxlength="40" value="'+esc(P.name||'')+'"></div>'+
     pnChips('sys',[['1',pnL(PN.mono)],['3',pnL(PN.tri)]],P.sys,pnL(PN.sys))+pnChips('row',[12,18,24],P.row||12,pnL(PN.row))+
     (P.sys==='3'?'':pnChips('lc',[['br','🟤'],['rd','🔴'],['bk','⚫']],P.lc||'br',pnL(PN.lc)))+
     '<button class="btn ghost" id="pnClr" style="width:100%;margin-top:14px;color:var(--danger)">'+esc(pnL(PN.clr))+'</button><button class="btn main" id="pnOk" style="margin-top:8px">'+esc(pnL(PN.ok))+'</button>');
-    sheet.querySelectorAll('[data-pk]').forEach(function(b){b.onclick=function(){var k=b.dataset.pk,v=b.dataset.pv;P[k]=k==='row'?+v:v;if(k==='sys')P.mods.forEach(function(m){if(m.t==='main'||m.t==='rcd'||m.t==='spd'||m.t==='cont')m.p=v==='3'?'4P':'2P';pnFix(m,v)});save();render();draw()}});
+    sheet.querySelectorAll('[data-pk]').forEach(function(b){b.onclick=function(){var k=b.dataset.pk,v=b.dataset.pv;P[k]=k==='row'?+v:v;if(k==='sys')P.mods.forEach(function(m){if(/^(main|isol|rcd|spd|cont)$/.test(m.t))m.p=v==='3'?'4P':'2P';if(m.t==='meter'&&v==='3')m.p='4P';if(m.ref&&v!=='3'&&/^(3P|4P)$/.test(m.p)){delete m.ref;delete m.wm}pnFix(m,v)});save();render();draw()}});
     $('#pnNm').oninput=function(){P.name=$('#pnNm').value;save()};
     $('#pnClr').onclick=function(){if(!confirm(pnL(PN.sure)))return;cur().panel=null;closeSheet();pnSave()};
     $('#pnOk').onclick=function(){closeSheet();render()}}
@@ -1395,8 +1470,19 @@ function pnSet(){var P=pnl();if(!P)return;
 function pnMat(P){
   var by={},ord=[],nm={ar:'',it:'',en:'',fr:''};
   function add(k,n4,q){if(!by[k]){by[k]={n:n4,q:0};ord.push(k)}by[k].q+=q}
-  P.mods.forEach(function(m){var sp=m.p+' ',a=m.A||16;
-    if(m.t==='mcb'||m.t==='main')add('mcb'+m.p+m.cv+a,{it:'Interruttore magnetotermico '+sp+(m.cv||'C')+a,ar:'قاطع حراري مغناطيسي '+sp+(m.cv||'C')+a,en:'MCB '+sp+(m.cv||'C')+a,fr:'Disjoncteur '+sp+'courbe '+(m.cv||'C')+' '+a+'A'},1);
+  P.mods.forEach(function(m){var sp=m.p+' ',a=m.A||16,tri=P.sys==='3';
+    if(m.ref){var rn=m.ref.n||{},bb=function(t){t=t||(m.ref.b+' '+m.ref.r);return t.indexOf(m.ref.b)===0?t:m.ref.b+' '+t};add('ref'+m.ref.i,{it:bb(rn.it),ar:bb(rn.ar||rn.it),en:bb(rn.en||rn.it),fr:bb(rn.fr||rn.it)},1);return}
+    if(m.t==='isol')add('isol'+m.p+a,{it:'Sezionatore modulare '+sp+a+'A',ar:'مفصل رئيسي (Sezionatore) '+sp+a+'A',en:'Modular isolator switch '+sp+a+'A',fr:'Interrupteur-sectionneur '+sp+a+'A'},1);
+    else if(m.t==='fuse')add('fuse'+m.p+a,{it:'Portafusibile sezionabile '+sp+'10x38 + fusibili gG '+a+'A',ar:'حامل فيوز '+sp+'10x38 + فيوزات gG '+a+'A',en:'Fuse holder '+sp+'10x38 + gG fuses '+a+'A',fr:'Porte-fusible sectionneur '+sp+'10x38 + fusibles gG '+a+'A'},1);
+    else if(m.t==='rel')add('rel',{it:'Relè passo-passo modulare 16A',ar:'ريليه خطوة بخطوة (Passo-passo) 16A',en:'Modular impulse relay 16A',fr:'Télérupteur modulaire 16A'},1);
+    else if(m.t==='tmr')add('tmr',{it:'Temporizzatore luce scale modulare',ar:'مؤقت إنارة الدرج (موديولي)',en:'Modular staircase timer',fr:'Minuterie d’escalier modulaire'},1);
+    else if(m.t==='crep')add('crep',{it:'Interruttore crepuscolare modulare con sonda',ar:'مفتاح ضوئي (Crepuscolare) مع حساس',en:'Modular twilight switch with sensor',fr:'Interrupteur crépusculaire modulaire avec sonde'},1);
+    else if(m.t==='meter')add('meter'+m.p,m.p==='4P'?{it:'Contatore di energia trifase MID',ar:'عداد طاقة ثلاثي الطور MID',en:'Three-phase energy meter MID',fr:'Compteur d’énergie triphasé MID'}:{it:'Contatore di energia monofase MID',ar:'عداد طاقة أحادي الطور MID',en:'Single-phase energy meter MID',fr:'Compteur d’énergie monophasé MID'},1);
+    else if(m.t==='lamp')add('lamp',{it:'Lampada spia modulare 230V',ar:'لمبة إشارة 230V للوحة',en:'Modular pilot lamp 230V',fr:'Voyant lumineux modulaire 230V'},1);
+    else if(m.t==='sock')add('sock',{it:'Presa modulare da quadro 2P+T 16A',ar:'مقبس داخل اللوحة 2P+T 16A',en:'DIN-rail socket 2P+E 16A',fr:'Prise modulaire 2P+T 16A'},1);
+    else if(m.t==='trf')add('trf',{it:'Trasformatore modulare per campanello 230/12V',ar:'محول جرس 230/12V للوحة',en:'Modular bell transformer 230/12V',fr:'Transformateur de sonnerie modulaire 230/12V'},1);
+    else if(m.t==='term')add('term',{it:'Morsettiera modulare da guida DIN',ar:'مجموعة موصلات على سكة DIN',en:'DIN-rail terminal block',fr:'Bornier modulaire sur rail DIN'},1);
+    else if(m.t==='mcb'||m.t==='main')add('mcb'+m.p+m.cv+a,{it:'Interruttore magnetotermico '+sp+(m.cv||'C')+a,ar:'قاطع حراري مغناطيسي '+sp+(m.cv||'C')+a,en:'MCB '+sp+(m.cv||'C')+a,fr:'Disjoncteur '+sp+'courbe '+(m.cv||'C')+' '+a+'A'},1);
     else if(m.t==='rcd')add('rcd'+m.p+a+m.mA+m.rt,{it:'Interruttore differenziale puro '+sp+a+'A '+(m.mA||30)+'mA tipo '+(m.rt||'A'),ar:'قاطع تفاضلي '+sp+a+'A '+(m.mA||30)+'mA نوع '+(m.rt||'A'),en:'RCCB '+sp+a+'A '+(m.mA||30)+'mA type '+(m.rt||'A'),fr:'Interrupteur différentiel '+sp+a+'A '+(m.mA||30)+'mA type '+(m.rt||'A')},1);
     else if(m.t==='rcbo')add('rcbo'+m.p+m.cv+a+m.mA+m.rt,{it:'Magnetotermico differenziale '+sp+(m.cv||'C')+a+' '+(m.mA||30)+'mA tipo '+(m.rt||'A'),ar:'قاطع حراري تفاضلي '+sp+(m.cv||'C')+a+' '+(m.mA||30)+'mA نوع '+(m.rt||'A'),en:'RCBO '+sp+(m.cv||'C')+a+' '+(m.mA||30)+'mA type '+(m.rt||'A'),fr:'Disjoncteur différentiel '+sp+(m.cv||'C')+a+' '+(m.mA||30)+'mA type '+(m.rt||'A')},1);
     else if(m.t==='spd')add('spd'+m.p,{it:'Scaricatore di sovratensione SPD '+m.p,ar:'واقي الصواعق SPD '+m.p,en:'Surge protection device SPD '+m.p,fr:'Parafoudre '+m.p},1);
@@ -2280,6 +2366,9 @@ document.addEventListener('click',function(e){
    case 'tf': {var tf=techF();tf[b.dataset.k]=v;render();}break;
    case 'tfreset': view.tf=null;render();break;
    case 'tadd': techAdd(v);break;
+   case 'tpanel': {var tx2=(window.LM_TECH||{items:[]}).items[+v];if(!tx2)break;var P2=pnl();if(!P2){P2=cur().panel={v:1,sys:/^(3P|4P)$/.test(tx2.p||'')?'3':'1',row:12,lc:packId()==='IT'?'br':'rd',name:'',mods:[]}}
+     if(P2.sys!=='3'&&/^(3P|4P)$/.test(tx2.p||'')){P2.sys='3';P2.mods.forEach(function(m){if(/^(main|isol|rcd|spd|cont)$/.test(m.t))m.p='4P';pnFix(m,'3')})}
+     var m2=pnNew(PNCAT[tx2.c],P2.sys);pnApplyReal(m2,tx2,P2);P2.mods.push(m2);save();view.cat='__panel';view.pSel=P2.mods.length-1;render();window.scrollTo(0,0);toast('⚡ ✓ '+tx2.b+' '+tx2.r);}break;
    case 'turl': {var tx=(window.LM_TECH||{items:[]}).items[+v];var u=tx&&(b.dataset.w==='ds'?tx.ds:tx.pu);if(u&&/^https:\/\//.test(u))openUrl(u);}break;
    case 'when': {var st=cur().site;st.when=st.when===v?'':v;save();render();}break;
    case 'siteopen': cur().site.open=true;save();render();break;
