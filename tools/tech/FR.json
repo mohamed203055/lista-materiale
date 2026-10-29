@@ -1,0 +1,1975 @@
+{
+  "schema_version": "2.0.0",
+  "dataset_id": "official-electrical-components-it-fr-ma-2026-10-29-v2-FR",
+  "generated_on": "2026-10-29",
+  "scope": "Curated source-supported catalog, not an exhaustive manufacturer catalog or compliance certification database.",
+  "record_count": 14,
+  "data_policy": {
+    "official_sources_only": true,
+    "invented_part_numbers": false,
+    "null_meaning": "Not applicable OR not transcribed/confirmed; consult field_notes. Never interpret null as zero, false, unrestricted, or compliant.",
+    "translations": "Italian, French and Arabic descriptions are editorial translations, not manufacturer-approved localized catalog text.",
+    "pricing": "No prices invented. All pricing is null pending a current, currency-specific supplier quote.",
+    "regional_tags": "Editorial library organization only, not proof of availability or certification.",
+    "standards": "Product standards are distinct from installation standards and certification marks.",
+    "rotation": "Null rotation permissions mean unknown, not unrestricted.",
+    "verification_limit": "Official web pages may contain errors or change. Dataset is not a guarantee of 100% accuracy; current manufacturer datasheet, certificate scope, supplied SKU and local requirements must be verified before procurement or installation.",
+    "numeric_contract": "Physical quantities are JSON numbers or null; voltage ranges use explicit numeric min/max fields. Numeric strings and booleans are forbidden. SKUs and EANs remain strings.",
+    "calculation_scope": "This is a component catalog, not a voltage-drop model. Cable length, conductor area/material, resistance/reactance, temperature, load current, phase configuration and power factor must be provided separately. Rated component current is not design/load current.",
+    "standard_mapping": "standard is normalized for querying; standard_as_published preserves the source label. IEC/EN 60898-1 and IEC/EN 60947-2 are different rating systems, not exclusive installation-sector permissions.",
+    "i18n_contract": "translations.<it|fr|en|ar>.{name,description}; all four required. Text is editorial, not official localization.",
+    "datasheet_contract": "datasheet_url is an official direct PDF if identified; otherwise null. Family catalogs are marked family_catalog. Linked does not mean certificate validity verified."
+  },
+  "regional_profiles": {
+    "FR": {
+      "country": "France",
+      "installation_rules_context": [
+        "NF C 15-100 series (applicable edition and project scope to be established)"
+      ],
+      "compliance_status": "not_assessed",
+      "note": "EN/IEC conformity does not alone establish an NF mark. catalog_marks records only marks/certificate links displayed by the manufacturer."
+    }
+  },
+  "sources": {
+    "se-10": {
+      "manufacturer": "Schneider Electric",
+      "url": "https://www.se.com/th/en/product/A9F74110/ic60n---miniature-circuit-breaker---1p---10a---c-curve/",
+      "title": "A9F74110 iC60N",
+      "locator": "Characteristics: Main, Complementary",
+      "accessed_on": "2026-10-29",
+      "source_type": "official_manufacturer_catalog"
+    },
+    "se-16": {
+      "manufacturer": "Schneider Electric",
+      "url": "https://www.se.com/sg/en/product/A9F74116/miniature-circuit-breaker%2C-acti9-ic60n%2C-1p%2C-16-a%2C-c-curve%2C-6000-a-%28iec-60898-1%29%2C-10-ka-%28iec-60947-2%29/",
+      "title": "A9F74116 iC60N",
+      "locator": "Specifications",
+      "accessed_on": "2026-10-29",
+      "source_type": "official_manufacturer_catalog"
+    },
+    "se-32": {
+      "manufacturer": "Schneider Electric",
+      "url": "https://www.se.com/africa/fr/product/A9F74232/miniature-circuitbreaker-acti9-ic60n-2p-32-a-c-curve-6000-a-iec-608981-10-ka-iec-609472/",
+      "title": "A9F74232 iC60N",
+      "locator": "Product description and title",
+      "accessed_on": "2026-10-29",
+      "source_type": "official_manufacturer_catalog"
+    },
+    "se-25": {
+      "manufacturer": "Schneider Electric",
+      "url": "https://www.se.com/hk/en/product/A9F74325/miniature-circuitbreaker-acti9-ic60n-3p-25-a-c-curve-6000-a-iec-608981-10-ka-iec-609472/",
+      "title": "A9F74325 iC60N",
+      "locator": "Specifications",
+      "accessed_on": "2026-10-29",
+      "source_type": "official_manufacturer_catalog"
+    },
+    "se-rcd": {
+      "manufacturer": "Schneider Electric",
+      "url": "https://www.se.com/sg/en/product/A9R21240/residual-current-circuit-breaker-rccb-acti9-iid-2p-40a-a-type-30ma/",
+      "title": "A9R21240 Acti9 iID",
+      "locator": "Description",
+      "accessed_on": "2026-10-29",
+      "source_type": "official_manufacturer_catalog"
+    },
+    "se-contactor": {
+      "manufacturer": "Schneider Electric",
+      "url": "https://www.se.com/nl/nl/product/A9C20732/ict-magneetschakelaar-2-no-in25a-uc230v-ac-50hz/",
+      "title": "A9C20732 iCT",
+      "locator": "Description: AC-7a 25 A; AC-7b 8.5 A; Uc 230–240 VAC",
+      "accessed_on": "2026-10-29",
+      "source_type": "official_manufacturer_catalog"
+    },
+    "se-terminal": {
+      "manufacturer": "Schneider Electric",
+      "url": "https://www.se.com/ca/en/product/NSYTRV22/screw-terminal-feed-through-2-points-25mm-grey/",
+      "title": "NSYTRV22 Linergy TR",
+      "locator": "Description and Specifications: IEC/EN 60947-7-1 ratings",
+      "accessed_on": "2026-10-29",
+      "source_type": "official_manufacturer_catalog"
+    },
+    "se-box": {
+      "manufacturer": "Schneider Electric",
+      "url": "https://www.se.com/vn/vi/product/MIP12112/mini-pragma-surface-enclosure-1-x-12-modules-plain-door/",
+      "title": "MIP12112 mini Pragma / Resi9 MP",
+      "locator": "Description",
+      "accessed_on": "2026-10-29",
+      "source_type": "official_manufacturer_catalog"
+    },
+    "abb-s201": {
+      "manufacturer": "ABB",
+      "url": "https://new.abb.com/products/2CDS251001R0164/s201-c16",
+      "title": "S201-C16",
+      "locator": "General Information, Technical, Electrical, Dimensions, Installation, Standards",
+      "accessed_on": "2026-10-29",
+      "source_type": "official_manufacturer_catalog"
+    },
+    "vimar-20000.FX": {
+      "manufacturer": "Vimar",
+      "url": "https://www.vimar.com/fr/int/catalog/product/index/code/20000.FX",
+      "title": "20000.FX",
+      "locator": "Product description; ETIM technical data; Marks; Supply data",
+      "accessed_on": "2026-10-29",
+      "source_type": "official_manufacturer_catalog"
+    },
+    "lg-406774": {
+      "manufacturer": "Legrand",
+      "url": "https://www.legrand.fr/pro/catalogue/disjoncteur-phaseneutre-dnx34500-6ka-arrivee-et-sortie-borne-a-vis-1pn-230v-16a-courbe-c-1-module",
+      "title": "406774 DNX³",
+      "locator": "Caractéristiques techniques",
+      "accessed_on": "2026-10-29",
+      "source_type": "official_manufacturer_catalog"
+    },
+    "lg-407782": {
+      "manufacturer": "Legrand",
+      "url": "https://www.legrand.fr/pro/catalogue/disjoncteur-dx36000-10ka-arrivee-haute-et-depart-bas-a-vis-2p-230v-a-400v-10a-courbe-c-2-modules",
+      "title": "407782 DX³",
+      "locator": "Caractéristiques techniques; Certificats et agréments",
+      "accessed_on": "2026-10-29",
+      "source_type": "official_manufacturer_catalog"
+    },
+    "lg-dx3-sheet": {
+      "manufacturer": "Legrand",
+      "url": "https://assets.legrand.com/pim/NP-FT-GT/F01298EN-07.pdf",
+      "title": "F01298EN/07 DX³ 6000 A / 10 kA",
+      "locator": "Pages 1–2: standards and family scope; older family dimensions are NOT used",
+      "accessed_on": "2026-10-29",
+      "source_type": "official_manufacturer_catalog"
+    },
+    "hager-mfs": {
+      "manufacturer": "Hager",
+      "url": "https://hager.com/fr/catalogue/produits/mfs716-disjoncteur-1p-n-3ka-c-16a-sanvis-1m",
+      "title": "MFS716",
+      "locator": "Caractéristiques techniques; commercial reference in title, not structured-data SKU",
+      "accessed_on": "2026-10-29",
+      "source_type": "official_manufacturer_catalog"
+    },
+    "hager-mfs-pdf": {
+      "manufacturer": "Hager",
+      "url": "https://assets.hager.com/step-content/P/PDS_157733490501FR/Document/std.lang.all/MFS716_0501_fr-FR.pdf",
+      "title": "MFS716 product data sheet",
+      "locator": "Architecture; Tension; Fréquence",
+      "accessed_on": "2026-10-29",
+      "source_type": "official_manufacturer_catalog"
+    },
+    "hager-cdc": {
+      "manufacturer": "Hager",
+      "url": "https://assets.hager.com/step-content/P/PDS_156802900501FR/Document/std.lang.all/CDC742F_0501_fr-FR.pdf",
+      "title": "CDC742F product data sheet",
+      "locator": "Pages 1–2: Architecture, Courant électrique, Tension, Dimensions",
+      "accessed_on": "2026-10-29",
+      "source_type": "official_manufacturer_catalog"
+    }
+  },
+  "components": [
+    {
+      "id": "schneider-electric:A9F74110",
+      "manufacturer": "Schneider Electric",
+      "manufacturer_reference": "A9F74110",
+      "family": "Acti9 iC60N",
+      "category": "mcb",
+      "description_provenance": "editorial_translations_and_display_names_based_on_catalog_facts_not_manufacturer_approved_localization",
+      "technical": {
+        "rated_current_A": 10,
+        "current_rating_designation": null,
+        "poles": "1P",
+        "protected_poles": 1,
+        "trip_curve": "C",
+        "rated_voltage_V_AC": null,
+        "frequency_Hz": null,
+        "short_circuit_ratings": [
+          {
+            "quantity": "Icn",
+            "value_A": 6000,
+            "standard": "IEC/EN 60898-1",
+            "voltage_V_AC": 230,
+            "notes": null,
+            "standard_as_published": "EN/IEC 60898-1",
+            "value_kA": 6.0,
+            "voltage_min_V_AC": 230,
+            "voltage_max_V_AC": 230,
+            "voltage_condition_status": "source_supported",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": true,
+            "source_ids": [
+              "se-10"
+            ],
+            "coordination_required": null
+          }
+        ],
+        "residual_current_type": null,
+        "rated_residual_operating_current_mA": null,
+        "coil_voltage_V_AC": null,
+        "contact_arrangement": null,
+        "utilization_category_ratings": [],
+        "nominal_cross_section_mm2": null,
+        "ip_rating": null,
+        "rated_voltage_min_V_AC": null,
+        "rated_voltage_max_V_AC": null,
+        "coil_voltage_min_V_AC": null,
+        "coil_voltage_max_V_AC": null
+      },
+      "mechanical": {
+        "mounting": "DIN_rail",
+        "width_mm": 18,
+        "height_mm": 85,
+        "depth_mm": 78.5,
+        "din_modules": null,
+        "wiring_device_modules": null,
+        "rail_rows": null,
+        "enclosure_modules_per_row": null,
+        "rotation_permissions": null
+      },
+      "product_standards": [
+        "EN/IEC 60898-1",
+        "EN/IEC 60947-2"
+      ],
+      "catalog_marks": [],
+      "ean13": null,
+      "regional": {
+        "application_library_tags": [
+          "IT",
+          "FR",
+          "MA"
+        ],
+        "tags_are": "editorial_organization_not_certification_or_confirmed_local_stock",
+        "installation_compliance": "not_assessed",
+        "local_availability": "not_verified",
+        "country_approval": "not_assessed"
+      },
+      "pricing": {
+        "unit_price_minor": null,
+        "currency": null,
+        "status": "not_imported_no_current_supplier_quote"
+      },
+      "provenance": {
+        "source_ids": [
+          "se-10"
+        ],
+        "primary_source_url": "https://www.se.com/th/en/product/A9F74110/ic60n---miniature-circuit-breaker---1p---10a---c-curve/",
+        "checked_on": "2026-10-29",
+        "method": "manual_transcription_from_official_catalog",
+        "status": "source_supported_not_manufacturer_certified_dataset"
+      },
+      "field_notes": {
+        "mechanical.din_modules": "Not substituted for manufacturer 9 mm pitch count; use physical width for placement.",
+        "technical.rated_voltage_V_AC": "Not transcribed: short-circuit test voltage is separately recorded and is not a substitute for Ue.",
+        "translations": "Names and all four language descriptions are editorial UI text; numerical fields are the calculation source of truth.",
+        "datasheet_url": "Official PDF link only when identified; null means not identified, not that the manufacturer has no datasheet."
+      },
+      "warnings": [],
+      "translations": {
+        "it": {
+          "name": "Acti9 iC60N A9F74110 — Interruttore magnetotermico",
+          "description": "Acti9 iC60N: interruttore magnetotermico 1P, 10 A, curva C, Icn 6 kA."
+        },
+        "fr": {
+          "name": "Acti9 iC60N A9F74110 — Disjoncteur magnétothermique",
+          "description": "Acti9 iC60N : disjoncteur magnétothermique 1P, 10 A, courbe C, Icn 6 kA."
+        },
+        "en": {
+          "name": "Acti9 iC60N A9F74110 — Miniature circuit breaker",
+          "description": "Acti9 iC60N miniature circuit breaker, 1P, 10 A, C curve; Icn 6 kA. See voltage and standard conditions in technical.short_circuit_ratings."
+        },
+        "ar": {
+          "name": "Acti9 iC60N A9F74110 — قاطع حراري مغناطيسي",
+          "description": "Acti9 iC60N: قاطع حراري مغناطيسي 1P، تيار 10 أمبير، منحنى C، قدرة قطع Icn تبلغ 6 كيلو أمبير."
+        }
+      },
+      "product_url": "https://www.se.com/th/en/product/A9F74110/ic60n---miniature-circuit-breaker---1p---10a---c-curve/",
+      "datasheet_url": null,
+      "datasheet_metadata": null
+    },
+    {
+      "id": "schneider-electric:A9F74116",
+      "manufacturer": "Schneider Electric",
+      "manufacturer_reference": "A9F74116",
+      "family": "Acti9 iC60N",
+      "category": "mcb",
+      "description_provenance": "editorial_translations_and_display_names_based_on_catalog_facts_not_manufacturer_approved_localization",
+      "technical": {
+        "rated_current_A": 16,
+        "current_rating_designation": null,
+        "poles": "1P",
+        "protected_poles": 1,
+        "trip_curve": "C",
+        "rated_voltage_V_AC": null,
+        "frequency_Hz": null,
+        "short_circuit_ratings": [
+          {
+            "quantity": "Icn",
+            "value_A": 6000,
+            "standard": "IEC/EN 60898-1",
+            "voltage_V_AC": 230,
+            "notes": null,
+            "standard_as_published": "EN/IEC 60898-1",
+            "value_kA": 6.0,
+            "voltage_min_V_AC": 230,
+            "voltage_max_V_AC": 230,
+            "voltage_condition_status": "source_supported",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": true,
+            "source_ids": [
+              "se-16"
+            ],
+            "coordination_required": null
+          }
+        ],
+        "residual_current_type": null,
+        "rated_residual_operating_current_mA": null,
+        "coil_voltage_V_AC": null,
+        "contact_arrangement": null,
+        "utilization_category_ratings": [],
+        "nominal_cross_section_mm2": null,
+        "ip_rating": null,
+        "rated_voltage_min_V_AC": null,
+        "rated_voltage_max_V_AC": null,
+        "coil_voltage_min_V_AC": null,
+        "coil_voltage_max_V_AC": null
+      },
+      "mechanical": {
+        "mounting": "DIN_rail",
+        "width_mm": 18,
+        "height_mm": null,
+        "depth_mm": 78.5,
+        "din_modules": null,
+        "wiring_device_modules": null,
+        "rail_rows": null,
+        "enclosure_modules_per_row": null,
+        "rotation_permissions": null
+      },
+      "product_standards": [
+        "EN/IEC 60898-1",
+        "EN/IEC 60947-2"
+      ],
+      "catalog_marks": [],
+      "ean13": null,
+      "regional": {
+        "application_library_tags": [
+          "IT",
+          "FR",
+          "MA"
+        ],
+        "tags_are": "editorial_organization_not_certification_or_confirmed_local_stock",
+        "installation_compliance": "not_assessed",
+        "local_availability": "not_verified",
+        "country_approval": "not_assessed"
+      },
+      "pricing": {
+        "unit_price_minor": null,
+        "currency": null,
+        "status": "not_imported_no_current_supplier_quote"
+      },
+      "provenance": {
+        "source_ids": [
+          "se-16"
+        ],
+        "primary_source_url": "https://www.se.com/sg/en/product/A9F74116/miniature-circuit-breaker%2C-acti9-ic60n%2C-1p%2C-16-a%2C-c-curve%2C-6000-a-%28iec-60898-1%29%2C-10-ka-%28iec-60947-2%29/",
+        "checked_on": "2026-10-29",
+        "method": "manual_transcription_from_official_catalog",
+        "status": "source_supported_not_manufacturer_certified_dataset"
+      },
+      "field_notes": {
+        "mechanical.din_modules": "Not substituted for manufacturer 9 mm pitch count; use physical width for placement.",
+        "technical.rated_voltage_V_AC": "Not transcribed: short-circuit test voltage is separately recorded and is not a substitute for Ue.",
+        "translations": "Names and all four language descriptions are editorial UI text; numerical fields are the calculation source of truth.",
+        "datasheet_url": "Official PDF link only when identified; null means not identified, not that the manufacturer has no datasheet."
+      },
+      "warnings": [],
+      "translations": {
+        "it": {
+          "name": "Acti9 iC60N A9F74116 — Interruttore magnetotermico",
+          "description": "Acti9 iC60N: interruttore magnetotermico 1P, 16 A, curva C, Icn 6 kA."
+        },
+        "fr": {
+          "name": "Acti9 iC60N A9F74116 — Disjoncteur magnétothermique",
+          "description": "Acti9 iC60N : disjoncteur magnétothermique 1P, 16 A, courbe C, Icn 6 kA."
+        },
+        "en": {
+          "name": "Acti9 iC60N A9F74116 — Miniature circuit breaker",
+          "description": "Acti9 iC60N miniature circuit breaker, 1P, 16 A, C curve; Icn 6 kA. See voltage and standard conditions in technical.short_circuit_ratings."
+        },
+        "ar": {
+          "name": "Acti9 iC60N A9F74116 — قاطع حراري مغناطيسي",
+          "description": "Acti9 iC60N: قاطع حراري مغناطيسي 1P، تيار 16 أمبير، منحنى C، قدرة قطع Icn تبلغ 6 كيلو أمبير."
+        }
+      },
+      "product_url": "https://www.se.com/sg/en/product/A9F74116/miniature-circuit-breaker%2C-acti9-ic60n%2C-1p%2C-16-a%2C-c-curve%2C-6000-a-%28iec-60898-1%29%2C-10-ka-%28iec-60947-2%29/",
+      "datasheet_url": null,
+      "datasheet_metadata": null
+    },
+    {
+      "id": "schneider-electric:A9F74232",
+      "manufacturer": "Schneider Electric",
+      "manufacturer_reference": "A9F74232",
+      "family": "Acti9 iC60N",
+      "category": "mcb",
+      "description_provenance": "editorial_translations_and_display_names_based_on_catalog_facts_not_manufacturer_approved_localization",
+      "technical": {
+        "rated_current_A": 32,
+        "current_rating_designation": null,
+        "poles": "2P",
+        "protected_poles": 2,
+        "trip_curve": "C",
+        "rated_voltage_V_AC": null,
+        "frequency_Hz": null,
+        "short_circuit_ratings": [
+          {
+            "quantity": "Icn",
+            "value_A": 6000,
+            "standard": "IEC/EN 60898-1",
+            "voltage_V_AC": 400,
+            "notes": null,
+            "standard_as_published": "EN/IEC 60898-1",
+            "value_kA": 6.0,
+            "voltage_min_V_AC": 400,
+            "voltage_max_V_AC": 400,
+            "voltage_condition_status": "source_supported",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": true,
+            "source_ids": [
+              "se-32"
+            ],
+            "coordination_required": null
+          },
+          {
+            "quantity": "Icu",
+            "value_A": 20000,
+            "standard": "IEC/EN 60947-2",
+            "voltage_V_AC": null,
+            "notes": null,
+            "standard_as_published": "EN/IEC 60947-2",
+            "value_kA": 20.0,
+            "voltage_min_V_AC": 220,
+            "voltage_max_V_AC": 240,
+            "voltage_condition_status": "source_supported",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": true,
+            "source_ids": [
+              "se-32"
+            ],
+            "coordination_required": null
+          }
+        ],
+        "residual_current_type": null,
+        "rated_residual_operating_current_mA": null,
+        "coil_voltage_V_AC": null,
+        "contact_arrangement": null,
+        "utilization_category_ratings": [],
+        "nominal_cross_section_mm2": null,
+        "ip_rating": null,
+        "rated_voltage_min_V_AC": null,
+        "rated_voltage_max_V_AC": null,
+        "coil_voltage_min_V_AC": null,
+        "coil_voltage_max_V_AC": null
+      },
+      "mechanical": {
+        "mounting": "DIN_rail",
+        "width_mm": 36,
+        "height_mm": 85,
+        "depth_mm": 78.5,
+        "din_modules": null,
+        "wiring_device_modules": null,
+        "rail_rows": null,
+        "enclosure_modules_per_row": null,
+        "rotation_permissions": null
+      },
+      "product_standards": [
+        "EN/IEC 60898-1",
+        "EN/IEC 60947-2"
+      ],
+      "catalog_marks": [],
+      "ean13": null,
+      "regional": {
+        "application_library_tags": [
+          "IT",
+          "FR",
+          "MA"
+        ],
+        "tags_are": "editorial_organization_not_certification_or_confirmed_local_stock",
+        "installation_compliance": "not_assessed",
+        "local_availability": "not_verified",
+        "country_approval": "not_assessed"
+      },
+      "pricing": {
+        "unit_price_minor": null,
+        "currency": null,
+        "status": "not_imported_no_current_supplier_quote"
+      },
+      "provenance": {
+        "source_ids": [
+          "se-32"
+        ],
+        "primary_source_url": "https://www.se.com/africa/fr/product/A9F74232/miniature-circuitbreaker-acti9-ic60n-2p-32-a-c-curve-6000-a-iec-608981-10-ka-iec-609472/",
+        "checked_on": "2026-10-29",
+        "method": "manual_transcription_from_official_catalog",
+        "status": "source_supported_not_manufacturer_certified_dataset"
+      },
+      "field_notes": {
+        "mechanical.din_modules": "Not substituted for manufacturer 9 mm pitch count; use physical width for placement.",
+        "technical.rated_voltage_V_AC": "Not transcribed: short-circuit test voltage is separately recorded and is not a substitute for Ue.",
+        "translations": "Names and all four language descriptions are editorial UI text; numerical fields are the calculation source of truth.",
+        "datasheet_url": "Official PDF link only when identified; null means not identified, not that the manufacturer has no datasheet."
+      },
+      "warnings": [],
+      "translations": {
+        "it": {
+          "name": "Acti9 iC60N A9F74232 — Interruttore magnetotermico",
+          "description": "Acti9 iC60N: interruttore magnetotermico 2P, 32 A, curva C, Icn 6 kA."
+        },
+        "fr": {
+          "name": "Acti9 iC60N A9F74232 — Disjoncteur magnétothermique",
+          "description": "Acti9 iC60N : disjoncteur magnétothermique 2P, 32 A, courbe C, Icn 6 kA."
+        },
+        "en": {
+          "name": "Acti9 iC60N A9F74232 — Miniature circuit breaker",
+          "description": "Acti9 iC60N miniature circuit breaker, 2P, 32 A, C curve; Icn 6 kA. See voltage and standard conditions in technical.short_circuit_ratings."
+        },
+        "ar": {
+          "name": "Acti9 iC60N A9F74232 — قاطع حراري مغناطيسي",
+          "description": "Acti9 iC60N: قاطع حراري مغناطيسي 2P، تيار 32 أمبير، منحنى C، قدرة قطع Icn تبلغ 6 كيلو أمبير."
+        }
+      },
+      "product_url": "https://www.se.com/africa/fr/product/A9F74232/miniature-circuitbreaker-acti9-ic60n-2p-32-a-c-curve-6000-a-iec-608981-10-ka-iec-609472/",
+      "datasheet_url": null,
+      "datasheet_metadata": null
+    },
+    {
+      "id": "schneider-electric:A9F74325",
+      "manufacturer": "Schneider Electric",
+      "manufacturer_reference": "A9F74325",
+      "family": "Acti9 iC60N",
+      "category": "mcb",
+      "description_provenance": "editorial_translations_and_display_names_based_on_catalog_facts_not_manufacturer_approved_localization",
+      "technical": {
+        "rated_current_A": 25,
+        "current_rating_designation": null,
+        "poles": "3P",
+        "protected_poles": 3,
+        "trip_curve": "C",
+        "rated_voltage_V_AC": null,
+        "frequency_Hz": null,
+        "short_circuit_ratings": [
+          {
+            "quantity": "Icn",
+            "value_A": 6000,
+            "standard": "IEC/EN 60898-1",
+            "voltage_V_AC": 400,
+            "notes": null,
+            "standard_as_published": "EN/IEC 60898-1",
+            "value_kA": 6.0,
+            "voltage_min_V_AC": 400,
+            "voltage_max_V_AC": 400,
+            "voltage_condition_status": "source_supported",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": true,
+            "source_ids": [
+              "se-25"
+            ],
+            "coordination_required": null
+          },
+          {
+            "quantity": "Icu",
+            "value_A": 20000,
+            "standard": "IEC/EN 60947-2",
+            "voltage_V_AC": null,
+            "notes": null,
+            "standard_as_published": "EN/IEC 60947-2",
+            "value_kA": 20.0,
+            "voltage_min_V_AC": 220,
+            "voltage_max_V_AC": 240,
+            "voltage_condition_status": "source_supported",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": true,
+            "source_ids": [
+              "se-25"
+            ],
+            "coordination_required": null
+          }
+        ],
+        "residual_current_type": null,
+        "rated_residual_operating_current_mA": null,
+        "coil_voltage_V_AC": null,
+        "contact_arrangement": null,
+        "utilization_category_ratings": [],
+        "nominal_cross_section_mm2": null,
+        "ip_rating": null,
+        "rated_voltage_min_V_AC": null,
+        "rated_voltage_max_V_AC": null,
+        "coil_voltage_min_V_AC": null,
+        "coil_voltage_max_V_AC": null
+      },
+      "mechanical": {
+        "mounting": "DIN_rail",
+        "width_mm": 54,
+        "height_mm": 85,
+        "depth_mm": 78.5,
+        "din_modules": null,
+        "wiring_device_modules": null,
+        "rail_rows": null,
+        "enclosure_modules_per_row": null,
+        "rotation_permissions": null
+      },
+      "product_standards": [
+        "EN/IEC 60898-1",
+        "EN/IEC 60947-2"
+      ],
+      "catalog_marks": [],
+      "ean13": null,
+      "regional": {
+        "application_library_tags": [
+          "IT",
+          "FR",
+          "MA"
+        ],
+        "tags_are": "editorial_organization_not_certification_or_confirmed_local_stock",
+        "installation_compliance": "not_assessed",
+        "local_availability": "not_verified",
+        "country_approval": "not_assessed"
+      },
+      "pricing": {
+        "unit_price_minor": null,
+        "currency": null,
+        "status": "not_imported_no_current_supplier_quote"
+      },
+      "provenance": {
+        "source_ids": [
+          "se-25"
+        ],
+        "primary_source_url": "https://www.se.com/hk/en/product/A9F74325/miniature-circuitbreaker-acti9-ic60n-3p-25-a-c-curve-6000-a-iec-608981-10-ka-iec-609472/",
+        "checked_on": "2026-10-29",
+        "method": "manual_transcription_from_official_catalog",
+        "status": "source_supported_not_manufacturer_certified_dataset"
+      },
+      "field_notes": {
+        "mechanical.din_modules": "Not substituted for manufacturer 9 mm pitch count; use physical width for placement.",
+        "technical.rated_voltage_V_AC": "Not transcribed: short-circuit test voltage is separately recorded and is not a substitute for Ue.",
+        "translations": "Names and all four language descriptions are editorial UI text; numerical fields are the calculation source of truth.",
+        "datasheet_url": "Official PDF link only when identified; null means not identified, not that the manufacturer has no datasheet."
+      },
+      "warnings": [],
+      "translations": {
+        "it": {
+          "name": "Acti9 iC60N A9F74325 — Interruttore magnetotermico",
+          "description": "Acti9 iC60N: interruttore magnetotermico 3P, 25 A, curva C, Icn 6 kA."
+        },
+        "fr": {
+          "name": "Acti9 iC60N A9F74325 — Disjoncteur magnétothermique",
+          "description": "Acti9 iC60N : disjoncteur magnétothermique 3P, 25 A, courbe C, Icn 6 kA."
+        },
+        "en": {
+          "name": "Acti9 iC60N A9F74325 — Miniature circuit breaker",
+          "description": "Acti9 iC60N miniature circuit breaker, 3P, 25 A, C curve; Icn 6 kA. See voltage and standard conditions in technical.short_circuit_ratings."
+        },
+        "ar": {
+          "name": "Acti9 iC60N A9F74325 — قاطع حراري مغناطيسي",
+          "description": "Acti9 iC60N: قاطع حراري مغناطيسي 3P، تيار 25 أمبير، منحنى C، قدرة قطع Icn تبلغ 6 كيلو أمبير."
+        }
+      },
+      "product_url": "https://www.se.com/hk/en/product/A9F74325/miniature-circuitbreaker-acti9-ic60n-3p-25-a-c-curve-6000-a-iec-608981-10-ka-iec-609472/",
+      "datasheet_url": null,
+      "datasheet_metadata": null
+    },
+    {
+      "id": "schneider-electric:A9R21240",
+      "manufacturer": "Schneider Electric",
+      "manufacturer_reference": "A9R21240",
+      "family": "Acti9 iID",
+      "category": "rccb",
+      "description_provenance": "editorial_translations_and_display_names_based_on_catalog_facts_not_manufacturer_approved_localization",
+      "technical": {
+        "rated_current_A": 40,
+        "current_rating_designation": null,
+        "poles": "2P",
+        "protected_poles": null,
+        "trip_curve": null,
+        "rated_voltage_V_AC": null,
+        "frequency_Hz": [
+          50,
+          60
+        ],
+        "short_circuit_ratings": [
+          {
+            "quantity": "Im",
+            "value_A": 1500,
+            "standard": "IEC/EN 61008-1",
+            "voltage_V_AC": null,
+            "notes": null,
+            "standard_as_published": "EN/IEC 61008-1",
+            "value_kA": 1.5,
+            "voltage_min_V_AC": null,
+            "voltage_max_V_AC": null,
+            "voltage_condition_status": "not_confirmed",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": false,
+            "source_ids": [
+              "se-rcd"
+            ],
+            "coordination_required": null
+          },
+          {
+            "quantity": "I_delta_m",
+            "value_A": 1500,
+            "standard": "IEC/EN 61008-1",
+            "voltage_V_AC": null,
+            "notes": null,
+            "standard_as_published": "EN/IEC 61008-1",
+            "value_kA": 1.5,
+            "voltage_min_V_AC": null,
+            "voltage_max_V_AC": null,
+            "voltage_condition_status": "not_confirmed",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": false,
+            "source_ids": [
+              "se-rcd"
+            ],
+            "coordination_required": null
+          },
+          {
+            "quantity": "Inc",
+            "value_A": 10000,
+            "standard": "IEC/EN 61008-1",
+            "voltage_V_AC": null,
+            "notes": "Conditional rating; coordinate upstream short-circuit protection per manufacturer tables.",
+            "standard_as_published": "EN/IEC 61008-1",
+            "value_kA": 10.0,
+            "voltage_min_V_AC": null,
+            "voltage_max_V_AC": null,
+            "voltage_condition_status": "not_confirmed",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": false,
+            "source_ids": [
+              "se-rcd"
+            ],
+            "coordination_required": true
+          }
+        ],
+        "residual_current_type": "A",
+        "rated_residual_operating_current_mA": 30,
+        "coil_voltage_V_AC": null,
+        "contact_arrangement": null,
+        "utilization_category_ratings": [],
+        "nominal_cross_section_mm2": null,
+        "ip_rating": "IP20",
+        "rated_voltage_min_V_AC": 220,
+        "rated_voltage_max_V_AC": 240,
+        "coil_voltage_min_V_AC": null,
+        "coil_voltage_max_V_AC": null
+      },
+      "mechanical": {
+        "mounting": "DIN_rail",
+        "width_mm": 36,
+        "height_mm": 91,
+        "depth_mm": 73.5,
+        "din_modules": null,
+        "wiring_device_modules": null,
+        "rail_rows": null,
+        "enclosure_modules_per_row": null,
+        "rotation_permissions": null
+      },
+      "product_standards": [
+        "EN/IEC 61008-1"
+      ],
+      "catalog_marks": [],
+      "ean13": null,
+      "regional": {
+        "application_library_tags": [
+          "IT",
+          "FR",
+          "MA"
+        ],
+        "tags_are": "editorial_organization_not_certification_or_confirmed_local_stock",
+        "installation_compliance": "not_assessed",
+        "local_availability": "not_verified",
+        "country_approval": "not_assessed"
+      },
+      "pricing": {
+        "unit_price_minor": null,
+        "currency": null,
+        "status": "not_imported_no_current_supplier_quote"
+      },
+      "provenance": {
+        "source_ids": [
+          "se-rcd"
+        ],
+        "primary_source_url": "https://www.se.com/sg/en/product/A9R21240/residual-current-circuit-breaker-rccb-acti9-iid-2p-40a-a-type-30ma/",
+        "checked_on": "2026-10-29",
+        "method": "manual_transcription_from_official_catalog",
+        "status": "source_supported_not_manufacturer_certified_dataset"
+      },
+      "field_notes": {
+        "technical.rated_voltage_V_AC": "No single scalar voltage for this source range; use the numeric rated_voltage_min_V_AC and rated_voltage_max_V_AC bounds. Do not substitute the minimum for a nominal voltage.",
+        "translations": "Names and all four language descriptions are editorial UI text; numerical fields are the calculation source of truth.",
+        "datasheet_url": "Official PDF link only when identified; null means not identified, not that the manufacturer has no datasheet."
+      },
+      "warnings": [
+        "RCCB: no integral overload or short-circuit protection. Inc is NOT MCB Icn."
+      ],
+      "translations": {
+        "it": {
+          "name": "Acti9 iID A9R21240 — Interruttore differenziale puro",
+          "description": "Interruttore differenziale puro 2P, 40 A, tipo A, 30 mA."
+        },
+        "fr": {
+          "name": "Acti9 iID A9R21240 — Interrupteur différentiel",
+          "description": "Interrupteur différentiel 2P, 40 A, type A, 30 mA."
+        },
+        "en": {
+          "name": "Acti9 iID A9R21240 — Residual current circuit breaker",
+          "description": "Acti9 iID residual current circuit breaker, 2P, 40 A, type A, 30 mA; no integral overcurrent protection."
+        },
+        "ar": {
+          "name": "Acti9 iID A9R21240 — قاطع تفاضلي دون حماية من زيادة التيار",
+          "description": "قاطع تفاضلي دون حماية من زيادة التيار، ثنائي القطب، 40 أمبير، نوع A، حساسية 30 ملي أمبير."
+        }
+      },
+      "product_url": "https://www.se.com/sg/en/product/A9R21240/residual-current-circuit-breaker-rccb-acti9-iid-2p-40a-a-type-30ma/",
+      "datasheet_url": null,
+      "datasheet_metadata": null
+    },
+    {
+      "id": "schneider-electric:A9C20732",
+      "manufacturer": "Schneider Electric",
+      "manufacturer_reference": "A9C20732",
+      "family": "Acti9 iCT",
+      "category": "contactor",
+      "description_provenance": "editorial_translations_and_display_names_based_on_catalog_facts_not_manufacturer_approved_localization",
+      "technical": {
+        "rated_current_A": 25,
+        "current_rating_designation": null,
+        "poles": "2P",
+        "protected_poles": null,
+        "trip_curve": null,
+        "rated_voltage_V_AC": 250,
+        "frequency_Hz": [
+          50
+        ],
+        "short_circuit_ratings": [],
+        "residual_current_type": null,
+        "rated_residual_operating_current_mA": null,
+        "coil_voltage_V_AC": null,
+        "contact_arrangement": "2NO",
+        "utilization_category_ratings": [
+          {
+            "category": "AC-7a",
+            "rated_current_A": 25
+          },
+          {
+            "category": "AC-7b",
+            "rated_current_A": 8.5
+          }
+        ],
+        "nominal_cross_section_mm2": null,
+        "ip_rating": null,
+        "rated_voltage_min_V_AC": 250,
+        "rated_voltage_max_V_AC": 250,
+        "coil_voltage_min_V_AC": 230,
+        "coil_voltage_max_V_AC": 240
+      },
+      "mechanical": {
+        "mounting": "DIN_rail",
+        "width_mm": null,
+        "height_mm": null,
+        "depth_mm": null,
+        "din_modules": null,
+        "wiring_device_modules": null,
+        "rail_rows": null,
+        "enclosure_modules_per_row": null,
+        "rotation_permissions": null
+      },
+      "product_standards": [
+        "IEC/EN 61095"
+      ],
+      "catalog_marks": [],
+      "ean13": null,
+      "regional": {
+        "application_library_tags": [
+          "IT",
+          "FR",
+          "MA"
+        ],
+        "tags_are": "editorial_organization_not_certification_or_confirmed_local_stock",
+        "installation_compliance": "not_assessed",
+        "local_availability": "not_verified",
+        "country_approval": "not_assessed"
+      },
+      "pricing": {
+        "unit_price_minor": null,
+        "currency": null,
+        "status": "not_imported_no_current_supplier_quote"
+      },
+      "provenance": {
+        "source_ids": [
+          "se-contactor"
+        ],
+        "primary_source_url": "https://www.se.com/nl/nl/product/A9C20732/ict-magneetschakelaar-2-no-in25a-uc230v-ac-50hz/",
+        "checked_on": "2026-10-29",
+        "method": "manual_transcription_from_official_catalog",
+        "status": "source_supported_not_manufacturer_certified_dataset"
+      },
+      "field_notes": {
+        "technical.rated_current_A": "AC-7a operational current; not a motor AC-3 rating.",
+        "technical.coil_voltage_V_AC": "No single scalar voltage for this source range; use the numeric coil_voltage_min_V_AC and coil_voltage_max_V_AC bounds. Do not substitute the minimum for a nominal voltage.",
+        "translations": "Names and all four language descriptions are editorial UI text; numerical fields are the calculation source of truth.",
+        "datasheet_url": "Official PDF link only when identified; null means not identified, not that the manufacturer has no datasheet."
+      },
+      "warnings": [],
+      "translations": {
+        "it": {
+          "name": "Acti9 iCT A9C20732 — Contattore modulare",
+          "description": "Contattore modulare 2P, 2 contatti normalmente aperti; 25 A AC-7a, bobina 230–240 V AC 50 Hz."
+        },
+        "fr": {
+          "name": "Acti9 iCT A9C20732 — Contacteur modulaire",
+          "description": "Contacteur modulaire 2P, 2 contacts normalement ouverts ; 25 A AC-7a, bobine 230–240 V CA 50 Hz."
+        },
+        "en": {
+          "name": "Acti9 iCT A9C20732 — Modular contactor",
+          "description": "Acti9 iCT 2-pole modular contactor, 2 normally open contacts; 25 A AC-7a or 8.5 A AC-7b; 230–240 V AC, 50 Hz coil."
+        },
+        "ar": {
+          "name": "Acti9 iCT A9C20732 — كونتاكتور معياري",
+          "description": "كونتاكتور معياري ثنائي القطب بملامسين مفتوحين عادة، 25 أمبير AC-7a، ملف 230–240 فولت متردد 50 هرتز."
+        }
+      },
+      "product_url": "https://www.se.com/nl/nl/product/A9C20732/ict-magneetschakelaar-2-no-in25a-uc230v-ac-50hz/",
+      "datasheet_url": null,
+      "datasheet_metadata": null
+    },
+    {
+      "id": "schneider-electric:NSYTRV22",
+      "manufacturer": "Schneider Electric",
+      "manufacturer_reference": "NSYTRV22",
+      "family": "Linergy TR",
+      "category": "terminal",
+      "description_provenance": "editorial_translations_and_display_names_based_on_catalog_facts_not_manufacturer_approved_localization",
+      "technical": {
+        "rated_current_A": 24,
+        "current_rating_designation": null,
+        "poles": null,
+        "protected_poles": null,
+        "trip_curve": null,
+        "rated_voltage_V_AC": 1000,
+        "frequency_Hz": null,
+        "short_circuit_ratings": [],
+        "residual_current_type": null,
+        "rated_residual_operating_current_mA": null,
+        "coil_voltage_V_AC": null,
+        "contact_arrangement": null,
+        "utilization_category_ratings": [],
+        "nominal_cross_section_mm2": 2.5,
+        "ip_rating": null,
+        "rated_voltage_min_V_AC": 1000,
+        "rated_voltage_max_V_AC": 1000,
+        "coil_voltage_min_V_AC": null,
+        "coil_voltage_max_V_AC": null
+      },
+      "mechanical": {
+        "mounting": "DIN_rail",
+        "width_mm": null,
+        "height_mm": null,
+        "depth_mm": null,
+        "din_modules": null,
+        "wiring_device_modules": null,
+        "rail_rows": null,
+        "enclosure_modules_per_row": null,
+        "rotation_permissions": null
+      },
+      "product_standards": [
+        "EN/IEC 60947-7-1"
+      ],
+      "catalog_marks": [],
+      "ean13": null,
+      "regional": {
+        "application_library_tags": [
+          "IT",
+          "FR",
+          "MA"
+        ],
+        "tags_are": "editorial_organization_not_certification_or_confirmed_local_stock",
+        "installation_compliance": "not_assessed",
+        "local_availability": "not_verified",
+        "country_approval": "not_assessed"
+      },
+      "pricing": {
+        "unit_price_minor": null,
+        "currency": null,
+        "status": "not_imported_no_current_supplier_quote"
+      },
+      "provenance": {
+        "source_ids": [
+          "se-terminal"
+        ],
+        "primary_source_url": "https://www.se.com/ca/en/product/NSYTRV22/screw-terminal-feed-through-2-points-25mm-grey/",
+        "checked_on": "2026-10-29",
+        "method": "manual_transcription_from_official_catalog",
+        "status": "source_supported_not_manufacturer_certified_dataset"
+      },
+      "field_notes": {
+        "mechanical": "Dimensions omitted: manufacturer localized prose can contain inconsistent geometry; verify dimension drawing before physical placement.",
+        "translations": "Names and all four language descriptions are editorial UI text; numerical fields are the calculation source of truth.",
+        "datasheet_url": "Official PDF link only when identified; null means not identified, not that the manufacturer has no datasheet."
+      },
+      "warnings": [
+        "Other approvals have different ratings: CSA/cURus 20 A / 600 V; do not mix approval systems."
+      ],
+      "translations": {
+        "it": {
+          "name": "Linergy TR NSYTRV22 — Morsetto passante",
+          "description": "Morsetto passante grigio a vite, un livello, 2,5 mm²; 24 A e 1000 V secondo EN/IEC 60947-7-1."
+        },
+        "fr": {
+          "name": "Linergy TR NSYTRV22 — Borne de passage",
+          "description": "Borne de passage grise à vis, un niveau, 2,5 mm² ; 24 A et 1000 V selon EN/IEC 60947-7-1."
+        },
+        "en": {
+          "name": "Linergy TR NSYTRV22 — Feed-through terminal",
+          "description": "Linergy TR grey screw feed-through terminal, one level, 2.5 mm²; 24 A and 1000 V according to EN/IEC 60947-7-1."
+        },
+        "ar": {
+          "name": "Linergy TR NSYTRV22 — طرف توصيل عبوري",
+          "description": "طرف توصيل عبوري رمادي بمسامير، مستوى واحد، 2.5 مم²، 24 أمبير و1000 فولت وفق EN/IEC 60947-7-1."
+        }
+      },
+      "product_url": "https://www.se.com/ca/en/product/NSYTRV22/screw-terminal-feed-through-2-points-25mm-grey/",
+      "datasheet_url": null,
+      "datasheet_metadata": null
+    },
+    {
+      "id": "schneider-electric:MIP12112",
+      "manufacturer": "Schneider Electric",
+      "manufacturer_reference": "MIP12112",
+      "family": "Resi9 MP / mini Pragma",
+      "category": "enclosure",
+      "description_provenance": "editorial_translations_and_display_names_based_on_catalog_facts_not_manufacturer_approved_localization",
+      "technical": {
+        "rated_current_A": 63,
+        "current_rating_designation": null,
+        "poles": null,
+        "protected_poles": null,
+        "trip_curve": null,
+        "rated_voltage_V_AC": null,
+        "frequency_Hz": null,
+        "short_circuit_ratings": [],
+        "residual_current_type": null,
+        "rated_residual_operating_current_mA": null,
+        "coil_voltage_V_AC": null,
+        "contact_arrangement": null,
+        "utilization_category_ratings": [],
+        "nominal_cross_section_mm2": null,
+        "ip_rating": "IP40",
+        "rated_voltage_min_V_AC": null,
+        "rated_voltage_max_V_AC": null,
+        "coil_voltage_min_V_AC": null,
+        "coil_voltage_max_V_AC": null
+      },
+      "mechanical": {
+        "mounting": "surface_enclosure",
+        "width_mm": 268,
+        "height_mm": 228,
+        "depth_mm": 102,
+        "din_modules": null,
+        "wiring_device_modules": null,
+        "rail_rows": 1,
+        "enclosure_modules_per_row": 12,
+        "rotation_permissions": null
+      },
+      "product_standards": [
+        "IEC 60439-1",
+        "IEC 60439-3",
+        "IEC 60670-1",
+        "IEC 60670-24"
+      ],
+      "catalog_marks": [],
+      "ean13": null,
+      "regional": {
+        "application_library_tags": [
+          "IT",
+          "FR",
+          "MA"
+        ],
+        "tags_are": "editorial_organization_not_certification_or_confirmed_local_stock",
+        "installation_compliance": "not_assessed",
+        "local_availability": "not_verified",
+        "country_approval": "not_assessed"
+      },
+      "pricing": {
+        "unit_price_minor": null,
+        "currency": null,
+        "status": "not_imported_no_current_supplier_quote"
+      },
+      "provenance": {
+        "source_ids": [
+          "se-box"
+        ],
+        "primary_source_url": "https://www.se.com/vn/vi/product/MIP12112/mini-pragma-surface-enclosure-1-x-12-modules-plain-door/",
+        "checked_on": "2026-10-29",
+        "method": "manual_transcription_from_official_catalog",
+        "status": "source_supported_not_manufacturer_certified_dataset"
+      },
+      "field_notes": {
+        "translations": "Names and all four language descriptions are editorial UI text; numerical fields are the calculation source of truth.",
+        "datasheet_url": "Official PDF link only when identified; null means not identified, not that the manufacturer has no datasheet."
+      },
+      "warnings": [
+        "Standards transcribed as listed by the manufacturer, including historical IEC 60439 references; not a statement of current project compliance.",
+        "Included earth and neutral terminal blocks must not be double-counted in the BOM."
+      ],
+      "translations": {
+        "it": {
+          "name": "Resi9 MP / mini Pragma MIP12112 — Centralino di distribuzione",
+          "description": "Centralino da parete con porta bianca, 1 fila di 12 moduli da 18 mm, IP40; morsetti terra e neutro inclusi."
+        },
+        "fr": {
+          "name": "Resi9 MP / mini Pragma MIP12112 — Coffret de distribution",
+          "description": "Coffret en saillie à porte blanche, 1 rangée de 12 modules de 18 mm, IP40 ; borniers terre et neutre inclus."
+        },
+        "en": {
+          "name": "Resi9 MP / mini Pragma MIP12112 — Distribution enclosure",
+          "description": "Resi9 MP / mini Pragma surface enclosure with white door, one row of twelve 18 mm modules, IP40, earth and neutral terminal blocks included."
+        },
+        "ar": {
+          "name": "Resi9 MP / mini Pragma MIP12112 — صندوق توزيع",
+          "description": "صندوق توزيع سطحي بباب أبيض، صف واحد من 12 وحدة بعرض 18 مم، IP40، مع أطراف الأرضي والمحايد."
+        }
+      },
+      "product_url": "https://www.se.com/vn/vi/product/MIP12112/mini-pragma-surface-enclosure-1-x-12-modules-plain-door/",
+      "datasheet_url": null,
+      "datasheet_metadata": null
+    },
+    {
+      "id": "abb:2CDS251001R0164",
+      "manufacturer": "ABB",
+      "manufacturer_reference": "2CDS251001R0164",
+      "family": "System pro M compact S200",
+      "category": "mcb",
+      "description_provenance": "editorial_translations_and_display_names_based_on_catalog_facts_not_manufacturer_approved_localization",
+      "technical": {
+        "rated_current_A": 16,
+        "current_rating_designation": null,
+        "poles": "1P",
+        "protected_poles": 1,
+        "trip_curve": "C",
+        "rated_voltage_V_AC": 230,
+        "frequency_Hz": [
+          50,
+          60
+        ],
+        "short_circuit_ratings": [
+          {
+            "quantity": "Icn",
+            "value_A": 6000,
+            "standard": "IEC/EN 60898-1",
+            "voltage_V_AC": 230,
+            "notes": null,
+            "standard_as_published": "IEC/EN 60898-1",
+            "value_kA": 6.0,
+            "voltage_min_V_AC": 230,
+            "voltage_max_V_AC": 230,
+            "voltage_condition_status": "source_supported",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": true,
+            "source_ids": [
+              "abb-s201"
+            ],
+            "coordination_required": null
+          },
+          {
+            "quantity": "Icu",
+            "value_A": 10000,
+            "standard": "IEC/EN 60947-2",
+            "voltage_V_AC": 230,
+            "notes": null,
+            "standard_as_published": "IEC/EN 60947-2",
+            "value_kA": 10.0,
+            "voltage_min_V_AC": 230,
+            "voltage_max_V_AC": 230,
+            "voltage_condition_status": "source_supported",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": true,
+            "source_ids": [
+              "abb-s201"
+            ],
+            "coordination_required": null
+          },
+          {
+            "quantity": "Ics",
+            "value_A": 7500,
+            "standard": "IEC/EN 60947-2",
+            "voltage_V_AC": 230,
+            "notes": null,
+            "standard_as_published": "IEC/EN 60947-2",
+            "value_kA": 7.5,
+            "voltage_min_V_AC": 230,
+            "voltage_max_V_AC": 230,
+            "voltage_condition_status": "source_supported",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": true,
+            "source_ids": [
+              "abb-s201"
+            ],
+            "coordination_required": null
+          }
+        ],
+        "residual_current_type": null,
+        "rated_residual_operating_current_mA": null,
+        "coil_voltage_V_AC": null,
+        "contact_arrangement": null,
+        "utilization_category_ratings": [],
+        "nominal_cross_section_mm2": null,
+        "ip_rating": "IP20",
+        "rated_voltage_min_V_AC": 230,
+        "rated_voltage_max_V_AC": 230,
+        "coil_voltage_min_V_AC": null,
+        "coil_voltage_max_V_AC": null
+      },
+      "mechanical": {
+        "mounting": "DIN_rail",
+        "width_mm": 17.5,
+        "height_mm": 88,
+        "depth_mm": 69,
+        "din_modules": 1,
+        "wiring_device_modules": null,
+        "rail_rows": null,
+        "enclosure_modules_per_row": null,
+        "rotation_permissions": null
+      },
+      "product_standards": [
+        "IEC/EN 60898-1",
+        "IEC/EN 60947-2",
+        "UL 1077"
+      ],
+      "catalog_marks": [],
+      "ean13": "4016779464406",
+      "regional": {
+        "application_library_tags": [
+          "IT",
+          "FR",
+          "MA"
+        ],
+        "tags_are": "editorial_organization_not_certification_or_confirmed_local_stock",
+        "installation_compliance": "not_assessed",
+        "local_availability": "not_verified",
+        "country_approval": "not_assessed"
+      },
+      "pricing": {
+        "unit_price_minor": null,
+        "currency": null,
+        "status": "not_imported_no_current_supplier_quote"
+      },
+      "provenance": {
+        "source_ids": [
+          "abb-s201"
+        ],
+        "primary_source_url": "https://new.abb.com/products/2CDS251001R0164/s201-c16",
+        "checked_on": "2026-10-29",
+        "method": "manual_transcription_from_official_catalog",
+        "status": "source_supported_not_manufacturer_certified_dataset"
+      },
+      "field_notes": {
+        "translations": "Names and all four language descriptions are editorial UI text; numerical fields are the calculation source of truth.",
+        "datasheet_url": "Official PDF link only when identified; null means not identified, not that the manufacturer has no datasheet."
+      },
+      "warnings": [],
+      "commercial_type": "S201-C16",
+      "translations": {
+        "it": {
+          "name": "System pro M compact S200 2CDS251001R0164 — Interruttore magnetotermico",
+          "description": "S201-C16: interruttore magnetotermico 1P, 16 A, curva C, Icn 6 kA."
+        },
+        "fr": {
+          "name": "System pro M compact S200 2CDS251001R0164 — Disjoncteur magnétothermique",
+          "description": "S201-C16 : disjoncteur magnétothermique 1P, 16 A, courbe C, Icn 6 kA."
+        },
+        "en": {
+          "name": "System pro M compact S200 2CDS251001R0164 — Miniature circuit breaker",
+          "description": "System pro M compact S200 miniature circuit breaker, 1P, 16 A, C curve; Icn 6 kA. See voltage and standard conditions in technical.short_circuit_ratings."
+        },
+        "ar": {
+          "name": "System pro M compact S200 2CDS251001R0164 — قاطع حراري مغناطيسي",
+          "description": "S201-C16: قاطع حراري مغناطيسي 1P، تيار 16 أمبير، منحنى C، قدرة قطع Icn تبلغ 6 كيلو أمبير."
+        }
+      },
+      "product_url": "https://new.abb.com/products/2CDS251001R0164/s201-c16",
+      "datasheet_url": null,
+      "datasheet_metadata": null
+    },
+    {
+      "id": "vimar:20000.FX",
+      "manufacturer": "Vimar",
+      "manufacturer_reference": "20000.FX",
+      "family": "Eikon",
+      "category": "wiring_switch",
+      "description_provenance": "editorial_translations_and_display_names_based_on_catalog_facts_not_manufacturer_approved_localization",
+      "technical": {
+        "rated_current_A": 10,
+        "current_rating_designation": "10 AX",
+        "poles": "1P",
+        "protected_poles": null,
+        "trip_curve": null,
+        "rated_voltage_V_AC": 250,
+        "frequency_Hz": null,
+        "short_circuit_ratings": [],
+        "residual_current_type": null,
+        "rated_residual_operating_current_mA": null,
+        "coil_voltage_V_AC": null,
+        "contact_arrangement": null,
+        "utilization_category_ratings": [],
+        "nominal_cross_section_mm2": null,
+        "ip_rating": "IP40",
+        "max_self_ballasted_lamp_load_W": 100,
+        "terminal_connection": "screwless",
+        "rated_voltage_min_V_AC": 250,
+        "rated_voltage_max_V_AC": 250,
+        "coil_voltage_min_V_AC": null,
+        "coil_voltage_max_V_AC": null
+      },
+      "mechanical": {
+        "mounting": "flush_wiring_device",
+        "width_mm": 22.3,
+        "height_mm": 49,
+        "depth_mm": 38.3,
+        "din_modules": null,
+        "wiring_device_modules": 1,
+        "rail_rows": null,
+        "enclosure_modules_per_row": null,
+        "rotation_permissions": null
+      },
+      "product_standards": [
+        "IEC 60669-1:2017"
+      ],
+      "catalog_marks": [
+        {
+          "mark": "Morocco marking (label as published)",
+          "evidence": "mark_displayed_on_product_page",
+          "source_id": "vimar-20000.FX"
+        },
+        {
+          "mark": "NF",
+          "evidence": "certificate_linked_on_product_page",
+          "url": "https://www.vimar.com/irj/go/km/docs/z_catalogo/CERTIFICATE/Licence-CertificatProduits-167816-752628-0000526178-1.90772.pdf"
+        }
+      ],
+      "ean13": "8007352630123",
+      "regional": {
+        "application_library_tags": [
+          "IT",
+          "FR",
+          "MA"
+        ],
+        "tags_are": "editorial_organization_not_certification_or_confirmed_local_stock",
+        "installation_compliance": "not_assessed",
+        "local_availability": "not_verified",
+        "country_approval": "not_assessed"
+      },
+      "pricing": {
+        "unit_price_minor": null,
+        "currency": null,
+        "status": "not_imported_no_current_supplier_quote"
+      },
+      "provenance": {
+        "source_ids": [
+          "vimar-20000.FX"
+        ],
+        "primary_source_url": "https://www.vimar.com/fr/int/catalog/product/index/code/20000.FX",
+        "checked_on": "2026-10-29",
+        "method": "manual_transcription_from_official_catalog",
+        "status": "source_supported_not_manufacturer_certified_dataset"
+      },
+      "field_notes": {
+        "catalog_marks": "Page-displayed mark or certificate link only; certificate validity and scope not independently audited.",
+        "translations": "Names and all four language descriptions are editorial UI text; numerical fields are the calculation source of truth.",
+        "datasheet_url": "Official PDF link only when identified; null means not identified, not that the manufacturer has no datasheet."
+      },
+      "warnings": [
+        "Wiring-device module is not a DIN module.",
+        "IP40 is listed as suitable protection class; installation conditions and assembly must be checked."
+      ],
+      "translations": {
+        "it": {
+          "name": "Eikon 20000.FX — Interruttore da incasso",
+          "description": "Eikon: interruttore 1P 10 AX, 250 V AC, illuminabile, 1 modulo da frutto."
+        },
+        "fr": {
+          "name": "Eikon 20000.FX — Interrupteur encastré",
+          "description": "Eikon : interrupteur 1P 10 AX, 250 V CA, éclairable, 1 module d’appareillage."
+        },
+        "en": {
+          "name": "Eikon 20000.FX — Wiring switch",
+          "description": "Eikon 1-pole wiring switch, 10 AX, 250 V AC, one wiring-device module; not a DIN-rail circuit breaker."
+        },
+        "ar": {
+          "name": "Eikon 20000.FX — مفتاح جداري",
+          "description": "Eikon: مفتاح أحادي القطب 10 AX، جهد 250 فولت متردد، قابل للإضاءة، وحدة واحدة للتركيب الجداري."
+        }
+      },
+      "product_url": "https://www.vimar.com/fr/int/catalog/product/index/code/20000.FX",
+      "datasheet_url": null,
+      "datasheet_metadata": null
+    },
+    {
+      "id": "legrand:406774",
+      "manufacturer": "Legrand",
+      "manufacturer_reference": "406774",
+      "family": "DNX³ 4500 / 6 kA",
+      "category": "mcb",
+      "description_provenance": "editorial_translations_and_display_names_based_on_catalog_facts_not_manufacturer_approved_localization",
+      "technical": {
+        "rated_current_A": 16,
+        "current_rating_designation": null,
+        "poles": "1P+N",
+        "protected_poles": 1,
+        "trip_curve": "C",
+        "rated_voltage_V_AC": 230,
+        "frequency_Hz": [
+          50,
+          60
+        ],
+        "short_circuit_ratings": [
+          {
+            "quantity": "Icn",
+            "value_A": 4500,
+            "standard": "IEC/EN 60898-1",
+            "voltage_V_AC": 230,
+            "notes": null,
+            "standard_as_published": "EN 60898-1",
+            "value_kA": 4.5,
+            "voltage_min_V_AC": 230,
+            "voltage_max_V_AC": 230,
+            "voltage_condition_status": "source_supported",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": true,
+            "source_ids": [
+              "lg-406774"
+            ],
+            "coordination_required": null
+          },
+          {
+            "quantity": "Icu",
+            "value_A": 6000,
+            "standard": "IEC/EN 60947-2",
+            "voltage_V_AC": 230,
+            "notes": null,
+            "standard_as_published": "IEC 60947-2",
+            "value_kA": 6.0,
+            "voltage_min_V_AC": 230,
+            "voltage_max_V_AC": 230,
+            "voltage_condition_status": "source_supported",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": true,
+            "source_ids": [
+              "lg-406774"
+            ],
+            "coordination_required": null
+          }
+        ],
+        "residual_current_type": null,
+        "rated_residual_operating_current_mA": null,
+        "coil_voltage_V_AC": null,
+        "contact_arrangement": null,
+        "utilization_category_ratings": [],
+        "nominal_cross_section_mm2": null,
+        "ip_rating": "IP20",
+        "rated_voltage_min_V_AC": 230,
+        "rated_voltage_max_V_AC": 230,
+        "coil_voltage_min_V_AC": null,
+        "coil_voltage_max_V_AC": null
+      },
+      "mechanical": {
+        "mounting": "DIN_rail",
+        "width_mm": null,
+        "height_mm": null,
+        "depth_mm": null,
+        "din_modules": 1,
+        "wiring_device_modules": null,
+        "rail_rows": null,
+        "enclosure_modules_per_row": null,
+        "rotation_permissions": null
+      },
+      "product_standards": [
+        "EN 60898-1",
+        "IEC 60947-2"
+      ],
+      "catalog_marks": [],
+      "ean13": "3245064067744",
+      "regional": {
+        "application_library_tags": [
+          "FR",
+          "MA"
+        ],
+        "tags_are": "editorial_organization_not_certification_or_confirmed_local_stock",
+        "installation_compliance": "not_assessed",
+        "local_availability": "not_verified",
+        "country_approval": "not_assessed"
+      },
+      "pricing": {
+        "unit_price_minor": null,
+        "currency": null,
+        "status": "not_imported_no_current_supplier_quote"
+      },
+      "provenance": {
+        "source_ids": [
+          "lg-406774"
+        ],
+        "primary_source_url": "https://www.legrand.fr/pro/catalogue/disjoncteur-phaseneutre-dnx34500-6ka-arrivee-et-sortie-borne-a-vis-1pn-230v-16a-courbe-c-1-module",
+        "checked_on": "2026-10-29",
+        "method": "manual_transcription_from_official_catalog",
+        "status": "source_supported_not_manufacturer_certified_dataset"
+      },
+      "field_notes": {
+        "translations": "Names and all four language descriptions are editorial UI text; numerical fields are the calculation source of truth.",
+        "datasheet_url": "Official PDF link only when identified; null means not identified, not that the manufacturer has no datasheet."
+      },
+      "warnings": [],
+      "translations": {
+        "it": {
+          "name": "DNX³ 4500 / 6 kA 406774 — Interruttore magnetotermico",
+          "description": "DNX³: interruttore magnetotermico 1P+N, 16 A, curva C, Icn 4.5 kA."
+        },
+        "fr": {
+          "name": "DNX³ 4500 / 6 kA 406774 — Disjoncteur magnétothermique",
+          "description": "DNX³ : disjoncteur magnétothermique 1P+N, 16 A, courbe C, Icn 4.5 kA."
+        },
+        "en": {
+          "name": "DNX³ 4500 / 6 kA 406774 — Miniature circuit breaker",
+          "description": "DNX³ 4500 / 6 kA miniature circuit breaker, 1P+N, 16 A, C curve; Icn 4.5 kA. See voltage and standard conditions in technical.short_circuit_ratings."
+        },
+        "ar": {
+          "name": "DNX³ 4500 / 6 kA 406774 — قاطع حراري مغناطيسي",
+          "description": "DNX³: قاطع حراري مغناطيسي 1P+N، تيار 16 أمبير، منحنى C، قدرة قطع Icn تبلغ 4.5 كيلو أمبير."
+        }
+      },
+      "product_url": "https://www.legrand.fr/pro/catalogue/disjoncteur-phaseneutre-dnx34500-6ka-arrivee-et-sortie-borne-a-vis-1pn-230v-16a-courbe-c-1-module",
+      "datasheet_url": null,
+      "datasheet_metadata": null
+    },
+    {
+      "id": "legrand:407782",
+      "manufacturer": "Legrand",
+      "manufacturer_reference": "407782",
+      "family": "DX³ 6000 / 10 kA",
+      "category": "mcb",
+      "description_provenance": "editorial_translations_and_display_names_based_on_catalog_facts_not_manufacturer_approved_localization",
+      "technical": {
+        "rated_current_A": 10,
+        "current_rating_designation": null,
+        "poles": "2P",
+        "protected_poles": 2,
+        "trip_curve": "C",
+        "rated_voltage_V_AC": 400,
+        "frequency_Hz": [
+          50,
+          60
+        ],
+        "short_circuit_ratings": [
+          {
+            "quantity": "Icn",
+            "value_A": 6000,
+            "standard": "IEC/EN 60898-1",
+            "voltage_V_AC": 400,
+            "notes": null,
+            "standard_as_published": "EN 60898-1",
+            "value_kA": 6.0,
+            "voltage_min_V_AC": 400,
+            "voltage_max_V_AC": 400,
+            "voltage_condition_status": "source_supported",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": true,
+            "source_ids": [
+              "lg-407782",
+              "lg-dx3-sheet"
+            ],
+            "coordination_required": null
+          },
+          {
+            "quantity": "Icu",
+            "value_A": 10000,
+            "standard": "IEC/EN 60947-2",
+            "voltage_V_AC": 400,
+            "notes": null,
+            "standard_as_published": "IEC 60947-2",
+            "value_kA": 10.0,
+            "voltage_min_V_AC": 400,
+            "voltage_max_V_AC": 400,
+            "voltage_condition_status": "source_supported",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": true,
+            "source_ids": [
+              "lg-407782",
+              "lg-dx3-sheet"
+            ],
+            "coordination_required": null
+          }
+        ],
+        "residual_current_type": null,
+        "rated_residual_operating_current_mA": null,
+        "coil_voltage_V_AC": null,
+        "contact_arrangement": null,
+        "utilization_category_ratings": [],
+        "nominal_cross_section_mm2": null,
+        "ip_rating": "IP20",
+        "rated_voltage_min_V_AC": 400,
+        "rated_voltage_max_V_AC": 400,
+        "coil_voltage_min_V_AC": null,
+        "coil_voltage_max_V_AC": null
+      },
+      "mechanical": {
+        "mounting": "DIN_rail",
+        "width_mm": 35.4,
+        "height_mm": 94.8,
+        "depth_mm": 77.8,
+        "din_modules": 2,
+        "wiring_device_modules": null,
+        "rail_rows": null,
+        "enclosure_modules_per_row": null,
+        "rotation_permissions": null
+      },
+      "product_standards": [
+        "EN/IEC 60898-1",
+        "EN/IEC 60947-2"
+      ],
+      "catalog_marks": [
+        {
+          "mark": "NF",
+          "evidence": "certificate_linked_on_product_page",
+          "url": "https://assets.legrand.com/pim/Certif/LGYGBZZKBY.PDF"
+        }
+      ],
+      "ean13": "3245064077828",
+      "regional": {
+        "application_library_tags": [
+          "FR",
+          "MA"
+        ],
+        "tags_are": "editorial_organization_not_certification_or_confirmed_local_stock",
+        "installation_compliance": "not_assessed",
+        "local_availability": "not_verified",
+        "country_approval": "not_assessed"
+      },
+      "pricing": {
+        "unit_price_minor": null,
+        "currency": null,
+        "status": "not_imported_no_current_supplier_quote"
+      },
+      "provenance": {
+        "source_ids": [
+          "lg-407782",
+          "lg-dx3-sheet"
+        ],
+        "primary_source_url": "https://www.legrand.fr/pro/catalogue/disjoncteur-dx36000-10ka-arrivee-haute-et-depart-bas-a-vis-2p-230v-a-400v-10a-courbe-c-2-modules",
+        "checked_on": "2026-10-29",
+        "method": "manual_transcription_from_official_catalog",
+        "status": "source_supported_not_manufacturer_certified_dataset"
+      },
+      "field_notes": {
+        "source_conflicts": "Current SKU page dimensions used. Older family PDF gives 35.6 mm width and 83 mm body height; current page gives 35.4 mm and 94.8 mm. Icu at 230 V also differs (16 kA page versus 25 kA older PDF), so that voltage-specific rating is intentionally omitted pending manufacturer clarification. Both sources agree on 6 kA Icn / 10 kA Icu at 400 V.",
+        "translations": "Names and all four language descriptions are editorial UI text; numerical fields are the calculation source of truth.",
+        "datasheet_url": "Official PDF link only when identified; null means not identified, not that the manufacturer has no datasheet."
+      },
+      "warnings": [
+        "Source conflict on dimensions / 230 V Icu: obtain current manufacturer drawing and confirmation before fabrication."
+      ],
+      "translations": {
+        "it": {
+          "name": "DX³ 6000 / 10 kA 407782 — Interruttore magnetotermico",
+          "description": "DX³: interruttore magnetotermico 2P, 10 A, curva C, Icn 6 kA."
+        },
+        "fr": {
+          "name": "DX³ 6000 / 10 kA 407782 — Disjoncteur magnétothermique",
+          "description": "DX³ : disjoncteur magnétothermique 2P, 10 A, courbe C, Icn 6 kA."
+        },
+        "en": {
+          "name": "DX³ 6000 / 10 kA 407782 — Miniature circuit breaker",
+          "description": "DX³ 6000 / 10 kA miniature circuit breaker, 2P, 10 A, C curve; Icn 6 kA. See voltage and standard conditions in technical.short_circuit_ratings."
+        },
+        "ar": {
+          "name": "DX³ 6000 / 10 kA 407782 — قاطع حراري مغناطيسي",
+          "description": "DX³: قاطع حراري مغناطيسي 2P، تيار 10 أمبير، منحنى C، قدرة قطع Icn تبلغ 6 كيلو أمبير."
+        }
+      },
+      "product_url": "https://www.legrand.fr/pro/catalogue/disjoncteur-dx36000-10ka-arrivee-haute-et-depart-bas-a-vis-2p-230v-a-400v-10a-courbe-c-2-modules",
+      "datasheet_url": "https://assets.legrand.com/pim/NP-FT-GT/F01298EN-07.pdf",
+      "datasheet_metadata": {
+        "scope": "family_datasheet",
+        "linked_from_source_id": "lg-dx3-sheet",
+        "link_check": {
+          "http_status": 200,
+          "pdf_signature_confirmed": true,
+          "checked_on": "2026-10-29"
+        },
+        "warning": "Document may cover a product family; verify exact SKU scope and current revision."
+      }
+    },
+    {
+      "id": "hager:MFS716",
+      "manufacturer": "Hager",
+      "manufacturer_reference": "MFS716",
+      "family": "SanVis",
+      "category": "mcb",
+      "description_provenance": "editorial_translations_and_display_names_based_on_catalog_facts_not_manufacturer_approved_localization",
+      "technical": {
+        "rated_current_A": 16,
+        "current_rating_designation": null,
+        "poles": "1P+N",
+        "protected_poles": null,
+        "trip_curve": "C",
+        "rated_voltage_V_AC": null,
+        "frequency_Hz": [
+          50,
+          60
+        ],
+        "short_circuit_ratings": [
+          {
+            "quantity": "Icn",
+            "value_A": 3000,
+            "standard": "IEC/EN 60898-1",
+            "voltage_V_AC": 230,
+            "notes": null,
+            "standard_as_published": "IEC 60898-1",
+            "value_kA": 3.0,
+            "voltage_min_V_AC": 230,
+            "voltage_max_V_AC": 230,
+            "voltage_condition_status": "source_supported",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": true,
+            "source_ids": [
+              "hager-mfs",
+              "hager-mfs-pdf"
+            ],
+            "coordination_required": null
+          }
+        ],
+        "residual_current_type": null,
+        "rated_residual_operating_current_mA": null,
+        "coil_voltage_V_AC": null,
+        "contact_arrangement": null,
+        "utilization_category_ratings": [],
+        "nominal_cross_section_mm2": null,
+        "ip_rating": "IP20",
+        "rated_voltage_min_V_AC": 230,
+        "rated_voltage_max_V_AC": 240,
+        "coil_voltage_min_V_AC": null,
+        "coil_voltage_max_V_AC": null
+      },
+      "mechanical": {
+        "mounting": "DIN_rail",
+        "width_mm": 17.5,
+        "height_mm": 86,
+        "depth_mm": 70,
+        "din_modules": 1,
+        "wiring_device_modules": null,
+        "rail_rows": null,
+        "enclosure_modules_per_row": null,
+        "rotation_permissions": null
+      },
+      "product_standards": [
+        "IEC 60898-1"
+      ],
+      "catalog_marks": [],
+      "ean13": "3250614319464",
+      "regional": {
+        "application_library_tags": [
+          "FR"
+        ],
+        "tags_are": "editorial_organization_not_certification_or_confirmed_local_stock",
+        "installation_compliance": "not_assessed",
+        "local_availability": "not_verified",
+        "country_approval": "not_assessed"
+      },
+      "pricing": {
+        "unit_price_minor": null,
+        "currency": null,
+        "status": "not_imported_no_current_supplier_quote"
+      },
+      "provenance": {
+        "source_ids": [
+          "hager-mfs",
+          "hager-mfs-pdf"
+        ],
+        "primary_source_url": "https://hager.com/fr/catalogue/produits/mfs716-disjoncteur-1p-n-3ka-c-16a-sanvis-1m",
+        "checked_on": "2026-10-29",
+        "method": "manual_transcription_from_official_catalog",
+        "status": "source_supported_not_manufacturer_certified_dataset"
+      },
+      "field_notes": {
+        "technical.rated_voltage_V_AC": "No single scalar voltage for this source range; use the numeric rated_voltage_min_V_AC and rated_voltage_max_V_AC bounds. Do not substitute the minimum for a nominal voltage.",
+        "translations": "Names and all four language descriptions are editorial UI text; numerical fields are the calculation source of truth.",
+        "datasheet_url": "Official PDF link only when identified; null means not identified, not that the manufacturer has no datasheet."
+      },
+      "warnings": [],
+      "translations": {
+        "it": {
+          "name": "SanVis MFS716 — Interruttore magnetotermico",
+          "description": "SanVis: interruttore magnetotermico 1P+N, 16 A, curva C, Icn 3 kA."
+        },
+        "fr": {
+          "name": "SanVis MFS716 — Disjoncteur magnétothermique",
+          "description": "SanVis : disjoncteur magnétothermique 1P+N, 16 A, courbe C, Icn 3 kA."
+        },
+        "en": {
+          "name": "SanVis MFS716 — Miniature circuit breaker",
+          "description": "SanVis miniature circuit breaker, 1P+N, 16 A, C curve; Icn 3 kA. See voltage and standard conditions in technical.short_circuit_ratings."
+        },
+        "ar": {
+          "name": "SanVis MFS716 — قاطع حراري مغناطيسي",
+          "description": "SanVis: قاطع حراري مغناطيسي 1P+N، تيار 16 أمبير، منحنى C، قدرة قطع Icn تبلغ 3 كيلو أمبير."
+        }
+      },
+      "product_url": "https://hager.com/fr/catalogue/produits/mfs716-disjoncteur-1p-n-3ka-c-16a-sanvis-1m",
+      "datasheet_url": "https://assets.hager.com/step-content/P/PDS_157733490501FR/Document/std.lang.all/MFS716_0501_fr-FR.pdf",
+      "datasheet_metadata": {
+        "scope": "product_datasheet",
+        "linked_from_source_id": "hager-mfs-pdf",
+        "link_check": {
+          "http_status": 200,
+          "pdf_signature_confirmed": true,
+          "checked_on": "2026-10-29"
+        },
+        "warning": "Document may cover a product family; verify exact SKU scope and current revision."
+      }
+    },
+    {
+      "id": "hager:CDC742F",
+      "manufacturer": "Hager",
+      "manufacturer_reference": "CDC742F",
+      "family": "Differential protection",
+      "category": "rccb",
+      "description_provenance": "editorial_translations_and_display_names_based_on_catalog_facts_not_manufacturer_approved_localization",
+      "technical": {
+        "rated_current_A": 40,
+        "current_rating_designation": null,
+        "poles": "1P+N",
+        "protected_poles": null,
+        "trip_curve": null,
+        "rated_voltage_V_AC": 230,
+        "frequency_Hz": [
+          50
+        ],
+        "short_circuit_ratings": [
+          {
+            "quantity": "Inc",
+            "value_A": 6000,
+            "standard": "IEC/EN 61008-1",
+            "voltage_V_AC": null,
+            "notes": null,
+            "standard_as_published": "EN 61008-1",
+            "value_kA": 6.0,
+            "voltage_min_V_AC": null,
+            "voltage_max_V_AC": null,
+            "voltage_condition_status": "not_confirmed",
+            "standard_mapping_status": "source_supported",
+            "rating_data_complete": false,
+            "source_ids": [
+              "hager-cdc"
+            ],
+            "coordination_required": true
+          },
+          {
+            "quantity": "making_and_breaking_capacity",
+            "value_A": 630,
+            "standard": null,
+            "voltage_V_AC": null,
+            "notes": "Manufacturer labels this Pouvoir de fermeture et de coupure; symbol not assigned here.",
+            "standard_as_published": null,
+            "value_kA": 0.63,
+            "voltage_min_V_AC": null,
+            "voltage_max_V_AC": null,
+            "voltage_condition_status": "not_confirmed",
+            "standard_mapping_status": "not_confirmed",
+            "rating_data_complete": false,
+            "source_ids": [
+              "hager-cdc"
+            ],
+            "coordination_required": null
+          }
+        ],
+        "residual_current_type": "AC",
+        "rated_residual_operating_current_mA": 30,
+        "coil_voltage_V_AC": null,
+        "contact_arrangement": null,
+        "utilization_category_ratings": [],
+        "nominal_cross_section_mm2": null,
+        "ip_rating": "IP20",
+        "rated_voltage_min_V_AC": 230,
+        "rated_voltage_max_V_AC": 230,
+        "coil_voltage_min_V_AC": null,
+        "coil_voltage_max_V_AC": null
+      },
+      "mechanical": {
+        "mounting": "DIN_rail",
+        "width_mm": 35,
+        "height_mm": 83,
+        "depth_mm": 70,
+        "din_modules": 2,
+        "wiring_device_modules": null,
+        "rail_rows": null,
+        "enclosure_modules_per_row": null,
+        "rotation_permissions": null
+      },
+      "product_standards": [
+        "EN 61008-1"
+      ],
+      "catalog_marks": [],
+      "ean13": null,
+      "regional": {
+        "application_library_tags": [
+          "FR"
+        ],
+        "tags_are": "editorial_organization_not_certification_or_confirmed_local_stock",
+        "installation_compliance": "not_assessed",
+        "local_availability": "not_verified",
+        "country_approval": "not_assessed"
+      },
+      "pricing": {
+        "unit_price_minor": null,
+        "currency": null,
+        "status": "not_imported_no_current_supplier_quote"
+      },
+      "provenance": {
+        "source_ids": [
+          "hager-cdc"
+        ],
+        "primary_source_url": "https://assets.hager.com/step-content/P/PDS_156802900501FR/Document/std.lang.all/CDC742F_0501_fr-FR.pdf",
+        "checked_on": "2026-10-29",
+        "method": "manual_transcription_from_official_catalog",
+        "status": "source_supported_not_manufacturer_certified_dataset"
+      },
+      "field_notes": {
+        "translations": "Names and all four language descriptions are editorial UI text; numerical fields are the calculation source of truth.",
+        "datasheet_url": "Official PDF link only when identified; null means not identified, not that the manufacturer has no datasheet."
+      },
+      "warnings": [
+        "No integral overcurrent protection. Conditional short-circuit current is not standalone MCB breaking capacity."
+      ],
+      "translations": {
+        "it": {
+          "name": "Differential protection CDC742F — Interruttore differenziale puro",
+          "description": "Interruttore differenziale 2 poli (1P+N), 40 A, tipo AC, 30 mA."
+        },
+        "fr": {
+          "name": "Differential protection CDC742F — Interrupteur différentiel",
+          "description": "Interrupteur différentiel 2 pôles (1P+N), 40 A, type AC, 30 mA."
+        },
+        "en": {
+          "name": "Differential protection CDC742F — Residual current circuit breaker",
+          "description": "Differential protection residual current circuit breaker, 1P+N, 40 A, type AC, 30 mA; no integral overcurrent protection."
+        },
+        "ar": {
+          "name": "Differential protection CDC742F — قاطع تفاضلي دون حماية من زيادة التيار",
+          "description": "قاطع تفاضلي بقطبين (1P+N)، 40 أمبير، نوع AC، حساسية 30 ملي أمبير."
+        }
+      },
+      "product_url": null,
+      "datasheet_url": "https://assets.hager.com/step-content/P/PDS_156802900501FR/Document/std.lang.all/CDC742F_0501_fr-FR.pdf",
+      "datasheet_metadata": {
+        "scope": "product_datasheet",
+        "linked_from_source_id": "hager-cdc",
+        "link_check": {
+          "http_status": 200,
+          "pdf_signature_confirmed": true,
+          "checked_on": "2026-10-29"
+        },
+        "warning": "Document may cover a product family; verify exact SKU scope and current revision."
+      }
+    }
+  ]
+}
