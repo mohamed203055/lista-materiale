@@ -10,6 +10,6 @@ jobs:
           sleep 40
           b=$(curl -sS "https://mohamed203055.github.io/lista-materiale-web/version.json?t=$RANDOM" | python3 -c "import json,sys;v=json.load(sys.stdin);print(v['versionCode'],v['apk'],v['send'],v['live']['ver'])")
           echo "::notice::DATA $b"
-          for u in "https://mohamed203055.github.io/lista-materiale-web/SiteNeeds-1.0.68.apk" "https://siteneeds.net/SiteNeeds.apk" "https://mohamed203055.github.io/lista-materiale-web/live/80/app.js" "https://mohamed203055.github.io/lista-materiale-web/ic/house.webp" "https://mohamed203055.github.io/lista-materiale-web/brand/logo.webp"; do
+          for u in "https://mohamed203055.github.io/lista-materiale-web/SiteNeeds-1.0.68.apk" "https://siteneeds.net/SiteNeeds.apk" "https://mohamed203055.github.io/lista-materiale-web/live/81/app.js" "https://mohamed203055.github.io/lista-materiale-web/ic/house.webp" "https://mohamed203055.github.io/lista-materiale-web/brand/logo.webp"; do
             a=$(curl -sSI "$u" | tr -d '\r' | grep -iE "^HTTP|^content-length" | tr '\n' ' '); echo "::notice::$u => $a"; done
           c=$(curl -sS "https://siteneeds.net/app.js?t=$RANDOM" | wc -c); m=$(curl -sS "https://siteneeds.net/version.json?t=$RANDOM" | python3 -c "import json,sys;print(json.load(sys.stdin)['live']['ver'])"); echo "::notice::SITE appjs $c live $m"
