@@ -316,7 +316,23 @@ function colName(c,lang){var C=COLBY[c];if(!C)return c||'';return lang==='both'?
 var LMIMG={};String(window.LM_IMG||'').split(' ').forEach(function(x){if(x)LMIMG[x]=1});
 var IMG_BASE='https://mohamed203055.github.io/lista-materiale-web/img/';
 function hasImg(id){return rcFlag('photos')&&!!(IMGS[id]||LMIMG[id])}
-function thumb(id,cls){if(!rcFlag('photos'))return '';if(IMGS[id])return '<img class="thumb'+(cls?' '+cls:'')+'" src="'+IMGS[id]+'">';if(!LMIMG[id])return '';return '<img class="thumb pimg'+(cls?' '+cls:'')+'" loading="lazy" alt="" src="'+IMG_BASE+id+'.jpg?v=1" onerror="this.remove()">'}
+function thumb(id,cls){if(!rcFlag('photos'))return '';if(IMGS[id])return '<img class="thumb'+(cls?' '+cls:'')+'" src="'+IMGS[id]+'">';if(!LMIMG[id])return '';return '<img class="thumb pimg'+(cls?' '+cls:'')+'" data-pid="'+esc(id)+'" alt="" src="'+IMG_BASE+id+'.jpg?v=1" style="visibility:hidden" onload="this.style.visibility=\'\'" onerror="this.remove()">'}
+// foto dei pezzi disponibili anche senza internet: salvate nel telefono (IndexedDB)
+var PDB=null,PDBX=false,PV='@1';
+function pdb(cb){if(PDB||PDBX)return cb(PDB);try{var r=indexedDB.open('lm_photos',1);r.onupgradeneeded=function(){try{r.result.createObjectStore('p')}catch(e){}};r.onsuccess=function(){PDB=r.result;cb(PDB)};r.onerror=function(){PDBX=true;cb(null)}}catch(e){PDBX=true;cb(null)}}
+function pget(id,cb){pdb(function(db){if(!db)return cb(null);try{var q=db.transaction('p').objectStore('p').get(id+PV);q.onsuccess=function(){cb(q.result||null)};q.onerror=function(){cb(null)}}catch(e){cb(null)}})}
+function pput(id,b){pdb(function(db){if(!db||!b||!b.size)return;try{db.transaction('p','readwrite').objectStore('p').put(b,id+PV)}catch(e){}})}
+function pfetch(id){return fetch(IMG_BASE+id+'.jpg?v=1').then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){if(/^image\//.test(b.type)||b.size>500)pput(id,b);return b})}
+function pHydrate(img){if(img.dataset.h)return;img.dataset.h=1;var id=img.dataset.pid;
+  pget(id,function(b){if(b&&img.isConnected){try{img.src=URL.createObjectURL(b)}catch(e){}return}
+    img.addEventListener('load',function(){if(/^https?:/.test(img.src))pfetch(id).catch(function(){})},{once:true})})}
+try{new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType!==1)return;if(n.matches&&n.matches('img[data-pid]'))pHydrate(n);if(n.querySelectorAll)n.querySelectorAll('img[data-pid]').forEach(pHydrate)})})}).observe(document.documentElement,{childList:true,subtree:true})}catch(e){}
+// scarica in silenzio una sola volta le foto mancanti (≈2,6 MB) per averle offline
+function pPrefetch(){if(!rcFlag('photos')||!window.fetch)return;pdb(function(db){if(!db)return;try{var q=db.transaction('p').objectStore('p').getAllKeys();q.onsuccess=function(){var have={};(q.result||[]).forEach(function(k){have[k]=1});
+  var miss=Object.keys(LMIMG).filter(function(id){return !have[id+PV]}),i=0,fails=0;if(!miss.length)return;
+  function next(){if(i>=miss.length||fails>8)return;var id=miss[i++];pfetch(id).then(next,function(){fails++;next()})}
+  next();next();next()}}catch(e){}})}
+setTimeout(pPrefetch,6000);
 function haveQty(it){var s=0;cur().lines.forEach(function(l){if(l.item===it.id)s+=l.qty});return s}
 function catIndex(id){var i=DB.cats.findIndex(function(c){return c.id===id});return i<0?999:i}
 function move(arr,i,d){var j=i+d;if(j<0||j>=arr.length)return;var x=arr[i];arr[i]=arr[j];arr[j]=x}
@@ -537,7 +553,17 @@ var SVGIC={'🌈':'<svg class="svgic" viewBox="1 6 46 33" aria-hidden="true"><re
   '<path d="M3 37h42" stroke="#C4CAD6" stroke-width="2" stroke-dasharray="3 3"/></svg>'};
 var ASSET_BASE='https://mohamed203055.github.io/lista-materiale-web/';
 var IC3={'🧵':'package','〰️':'plug','🔩':'bolt','🗄️':'cabinet','⏱️':'stopwatch','🔘':'radio','💡':'bulb','⏚':'shield','🌐':'globe','🔔':'bell','📹':'camera','🚨':'siren','☀️':'sun','🧰':'toolbox','🛠️':'tools','🔌':'volt','🧱':'brick','📐':'triruler','🎨':'palette','🛡️':'shield','🧴':'lotion','🔲':'square','⚡':'volt','🪵':'wood','🦺':'vest','🏗️':'crane','🚪':'door','🌳':'tree','📏':'ruler','⭐':'star','📋':'clipboard','🤝':'handshake','🧮':'abacus','📁':'folder','⚙️':'gear','💶':'euro','💧':'drop','📦':'package','👷':'worker','🏠':'house','👤':'user','💬':'chat','➕':'memo','🧩':'package','📡':'satellite','🔧':'wrench','🔨':'hammer','📝':'memo','👋':'wave'};
-function ic3(key,em,cls){return '<img class="i3'+(cls?' '+cls:'')+'" alt="'+esc(em||'')+'" src="'+ASSET_BASE+'ic/'+key+'.webp" onerror="this.outerHTML=this.alt">'}
+var ICALL='abacus bell bolt brick bulb cabinet camera camera2 chat check clipboard crane door drop euro folder gear globe hammer handshake house lotion memo package page palette phone plug radio rainbow rocket ruler satellite search shield siren square star stopwatch sun toolbox tools tree triruler user vest volt wave wood worker wrench'.split(' ');
+var IC3C={};try{IC3C=JSON.parse(localStorage.getItem('lm_ic3c')||'{}')||{}}catch(e){IC3C={}}
+function ic3(key,em,cls){var d=IC3C[key];if(d)return '<img class="i3'+(cls?' '+cls:'')+'" alt="'+esc(em||'')+'" src="'+d+'">';icFetch();return esc(em||'')}
+var icState={busy:0,next:0};
+function icFetch(){var now=Date.now();if(icState.busy||now<icState.next||!window.fetch||!window.FileReader)return;var miss=ICALL.filter(function(k){return !IC3C[k]});if(!miss.length)return;
+  icState.busy=1;var got=0,done=0,i=0;
+  function fin(){icState.busy=0;if(got){try{localStorage.setItem('lm_ic3c',JSON.stringify(IC3C))}catch(e){}ic3nav();try{render()}catch(e){}}if(got<miss.length)icState.next=Date.now()+60000}
+  function next(){if(i>=miss.length)return;var k=miss[i++];
+    fetch(ASSET_BASE+'ic/'+k+'.webp').then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(){res(fr.result)};fr.onerror=rej;fr.readAsDataURL(b)})})
+     .then(function(d){if(/^data:image\//.test(d)){IC3C[k]=d;got++}}).catch(function(){}).then(function(){done++;if(done===miss.length)fin();else next()})}
+  for(var c=0;c<5;c++)next()}
 function icH(ic,fb){ic=ic||fb||'';if(SVGIC[ic])return SVGIC[ic];var k=IC3[ic];return k?ic3(k,ic):esc(ic)}
 function ic3nav(){document.querySelectorAll('.nav .ni[data-ic]').forEach(function(n){if(!n.firstElementChild){var em=n.textContent;n.innerHTML=ic3(n.dataset.ic,em)}})}
 function visibleItems(c){return c.items.filter(function(i){return !i.hidden&&!i._rdel})}
