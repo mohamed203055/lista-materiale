@@ -365,7 +365,7 @@ function applyLang(){
   var av=$('#btnMe'); if(av){ if(settings.logo&&/^data:image\//.test(settings.logo)) av.innerHTML='<img src="'+settings.logo+'" alt="">'; else if(nm) av.textContent=nm.charAt(0).toUpperCase(); else av.innerHTML='<img class="lg" src="'+ASSET_BASE+'brand/logo.webp" alt="">'; }
   if($('#splTag'))$('#splTag').textContent=L4(XT.tagline);
   $('#btnLang').textContent='🌐 '+settings.ui.toUpperCase();
-  $('#q').placeholder=T('search');
+  $('#q').placeholder=(settings.trade||'ele')==='ele'?L4(HX.search):T('search');
   $('#tCalc').textContent=L4(XT.calcBtn);$('#btnCalc').title=CT('calc');
   $('#tMat').textContent=L4(XT.home);$('#tPriceT').textContent=T('price'); $('#tCart').textContent=L4(XT.myOrder); $('#tProj').textContent=L4(XT.projs);
   ic3nav();
@@ -400,7 +400,7 @@ function render(){
   else if(inPrice) h=renderPrice();
   else if(view.tab==='mlist') h=renderMList();
   else if(view.q) h=renderSearch();
-  else if(view.tab==='mat') h=(view.cat?'':quickRow()+renderSite())+(view.cat==='__fav'?renderFavs():view.cat==='__tpl'?renderTpls():view.cat==='__tech'?renderTech():view.cat==='__panel'?renderStudio():view.cat&&CBY[view.cat]?renderCat(view.cat):renderCats());
+  else if(view.tab==='mat') h=(view.cat?'':renderSite())+(view.cat==='__fav'?renderFavs():view.cat==='__tpl'?renderTpls():view.cat==='__tech'?renderTech():view.cat==='__panel'?renderStudio():view.cat&&CBY[view.cat]?renderCat(view.cat):renderCats());
   else if(view.tab==='kit'){view.tab='mat';h=quickRow()+renderSite()+renderCats()}
   else h=renderCart();
   main.innerHTML=h; refreshCounts();
@@ -525,6 +525,29 @@ function dupProj(v){
   var src=P.list.find(function(p){return p.id===v});if(!src)return false;
   var cp=JSON.parse(JSON.stringify(src));cp.id=uid('p');cp.name=(projTitle(src))+' (2)';cp.created=cp.updated=Date.now();P.list.unshift(cp);save();toast(T('dupDone'));return true;
 }
+var HX={new:{ar:'قائمة مواد جديدة',it:'Nuova lista materiali',en:'New material list',fr:'Nouvelle liste de matériel',es:'Nueva lista de materiales'},
+ newS:{ar:'أنشئ قائمة جديدة بالمواد الكهربائية',it:'Crea una nuova lista di materiale elettrico',en:'Create a new list of electrical materials',fr:'Créez une nouvelle liste de matériel électrique',es:'Crea una nueva lista de materiales eléctricos'},
+ cont:{ar:'قائمتي الحالية',it:'La mia lista attuale',en:'My current list',fr:'Ma liste actuelle',es:'Mi lista actual'},
+ how:{ar:'كيف تريد إضافة المواد؟',it:'Come vuoi aggiungere i materiali?',en:'How do you want to add materials?',fr:'Comment ajouter le matériel ?',es:'¿Cómo quieres añadir los materiales?'},
+ o1:{ar:'🔎 ابحث عن مادة',it:'🔎 Cerca un materiale',en:'🔎 Search a material',fr:'🔎 Chercher un article',es:'🔎 Buscar un material'},o1s:{ar:'بالاسم أو المرجع أو العلامة',it:'Per nome, codice o marca',en:'By name, code or brand',fr:'Par nom, référence ou marque',es:'Por nombre, código o marca'},
+ o2:{ar:'🗂 تصفّح الأقسام',it:'🗂 Sfoglia le categorie',en:'🗂 Browse categories',fr:'🗂 Parcourir les catégories',es:'🗂 Ver las categorías'},o2s:{ar:'كل المواد الكهربائية مرتبة',it:'Tutto il materiale elettrico in ordine',en:'All electrical materials, organised',fr:'Tout le matériel électrique, classé',es:'Todo el material eléctrico, ordenado'},
+ o3:{ar:'✍️ اكتب يدوياً',it:'✍️ Scrivi a mano',en:'✍️ Write manually',fr:'✍️ Écrire à la main',es:'✍️ Escribir a mano'},o3s:{ar:'مواد غير موجودة في القائمة',it:'Materiali che non sono nel catalogo',en:'Materials not in the catalogue',fr:'Articles absents du catalogue',es:'Materiales que no están en el catálogo'},
+ newNote:{ar:'قائمتك السابقة محفوظة في «مشاريعي».',it:'La lista precedente resta salvata in «Progetti».',en:'Your previous list stays saved in «Projects».',fr:'La liste précédente reste enregistrée dans «Projets».',es:'Tu lista anterior queda guardada en «Proyectos».'},
+ mats:{ar:'المواد الكهربائية',it:'Materiale elettrico',en:'Electrical materials',fr:'Matériel électrique',es:'Materiales eléctricos'},
+ all:{ar:'عرض كل الأقسام',it:'Vedi tutte le categorie',en:'View all categories',fr:'Voir toutes les catégories',es:'Ver todas las categorías'},less:{ar:'عرض أقل',it:'Mostra meno',en:'Show less',fr:'Voir moins',es:'Ver menos'},
+ tools:{ar:'أدوات الكهربائي',it:'Strumenti dell’elettricista',en:'Electrician tools',fr:'Outils de l’électricien',es:'Herramientas del electricista'},
+ calc:{ar:'الحسابات الكهربائية',it:'Calcoli elettrici',en:'Electrical calculations',fr:'Calculs électriques',es:'Cálculos eléctricos'},calcS:{ar:'الجهد، مقطع الكابل، القاطع وغيرها',it:'Tensione, sezione cavi, interruttori e altro',en:'Voltage, cable sections and other values',fr:'Tension, section des câbles et plus',es:'Tensión, sección de cables y más'},
+ site:{ar:'بيانات الموقع (اختياري)',it:'Dati del cantiere (facoltativo)',en:'Site details (optional)',fr:'Infos du chantier (facultatif)',es:'Datos de la obra (opcional)'},
+ search:{ar:'ابحث عن مادة أو مرجع أو علامة…',it:'Cerca materiale, codice o marca…',en:'Search materials, codes or brands…',fr:'Chercher article, référence ou marque…',es:'Buscar materiales, códigos o marcas…'},
+ real:{ar:'قطع حقيقية بالمرجع',it:'Pezzi reali con codice',en:'Real parts with reference',fr:'Pièces réelles avec référence',es:'Piezas reales con referencia'}};
+function newListSheet(){var p=cur(),n=p.lines.length,arr=settings.ui==='ar'?'‹':'›';
+  openSheet('<h2>📋 '+esc(L4(HX.new))+'</h2><div class="mini" style="margin-bottom:10px">'+esc(L4(HX.how))+'</div>'+
+   [['nl1',HX.o1,HX.o1s],['nl2',HX.o2,HX.o2s],['nl3',HX.o3,HX.o3s]].map(function(o){return '<button class="mlcard" id="'+o[0]+'"><span><b>'+esc(L4(o[1]))+'</b><small>'+esc(L4(o[2]))+'</small></span><i>'+arr+'</i></button>'}).join('')+
+   (n?'<div class="mini" style="margin-top:4px">ⓘ '+esc(L4(HX.newNote))+'</div>':''));
+  function fresh(){if(cur().lines.length||(cur().man||[]).some(function(r){return r&&r.n})){save();var np=blankProj();P.list.unshift(np);P.cur=np.id;prune();save()}}
+  $('#nl1').onclick=function(){fresh();closeSheet();view.tab='mat';view.cat=null;render();window.scrollTo(0,0);setTimeout(function(){var q=$('#q');if(q)q.focus()},120)};
+  $('#nl2').onclick=function(){fresh();closeSheet();view.tab='mat';view.cat=null;view.allc=true;render();setTimeout(function(){var g=document.getElementById('hcats');if(g)g.scrollIntoView({behavior:'smooth',block:'start'})},80)};
+  $('#nl3').onclick=function(){fresh();closeSheet();view.tab='mlist';view.cat=null;clearSearch();render();window.scrollTo(0,0)}}
 function quickRow(){
   return '<div class="qrow"><button class="pri" data-act="newproj">'+L4(XT.newP)+'</button><button data-act="clients">'+L4(XT.myCl)+'</button></div>';
 }
@@ -538,7 +561,7 @@ function startNew(){
 function renderSite(){
   var p=cur(), s=p.site, pl=placeOf(s.luogo);
   var sum=[p.name,s.cliente,s.indirizzo,pl?N(pl):''].filter(Boolean).join(' · ')||T('siteHint');
-  if(!s.open) return '<div class="card"><button class="site-head" style="width:100%;text-align:start" data-act="siteopen"><b>'+T('site')+'</b><span class="mini">'+T('edit')+'</span></button><div class="site-sum">'+esc(sum)+'</div></div>';
+  if(!s.open){var has=p.name||s.cliente||s.indirizzo;return '<div class="siter"><button class="sitec" data-act="siteopen"><span class="sp">📍</span><span class="st" dir="auto">'+esc(has?[p.name,s.cliente,s.indirizzo].filter(Boolean).join(' · '):L4(HX.site))+'</span><span class="sv">▾</span></button><button class="sitecl" data-act="clients" aria-label="'+esc(L4(XT.myCl))+'">👥</button></div>'}
   var chips=PLACES.map(function(x){return '<button class="chip'+(s.luogo===x.id?' on':'')+'" data-act="place" data-v="'+x.id+'">'+esc(N(x))+'</button>'}).join('');
   return '<div class="card"><button class="site-head" style="width:100%;text-align:start" data-act="siteclose"><b>'+T('site')+'</b><span class="mini">'+T('hide')+'</span></button>'+
    '<div class="field"><label>'+T('cliente')+'</label><div class="combo"><input data-f="cliente" value="'+esc(s.cliente)+'" placeholder="'+T('clienteP')+'"><button class="combo-btn" data-act="clients" aria-label="'+L4(XT.clients)+'">▾</button></div></div>'+
@@ -583,16 +606,25 @@ function renderFavs(){
    (f.length?'<div class="list">'+f.map(itemRow).join('')+'</div>':'<div class="empty"><div class="big">☆</div>'+L4(XT.favEmpty)+'</div>');
 }
 function renderCats(){
-  var n=cur().lines.length, pl=prosList();
-  return '<div class="banner"><small>'+esc(L4(XT.bnSmall))+'</small><b>'+esc(L4(XT.bnTitle))+'</b><button class="bbtn" data-tab="cart">'+esc(L4(XT.bnBtn))+(n?' ('+n+')':'')+'</button><img class="bimg" alt="" src="'+ASSET_BASE+'ic/worker.webp" onerror="this.remove()"></div>'+
-   '<button class="mlcard" data-act="mlist">'+icH('📝')+'<span><b>'+esc(L4(MLT.home))+'</b><small>'+esc(L4(MLT.homeS))+'</small></span><i>'+(settings.ui==='ar'?'‹':'›')+'</i></button>'+
-   ((settings.trade||'ele')==='ele'&&rcFlag('panel')?'<button class="mlcard pnc" data-act="panel">'+icH('⚡')+'<span><b>'+esc(L4(PN.t))+'</b><small>'+esc(L4(PN.s))+'</small></span><i>'+(settings.ui==='ar'?'‹':'›')+'</i></button>':'')+
-   (techList().length?'<button class="mlcard tgc" data-act="tech">'+icH('📐')+'<span><b>'+esc(L4(TG.t))+'</b><small>'+esc(L4(TG.s))+'</small></span><i>'+(settings.ui==='ar'?'‹':'›')+'</i></button>':'')+
-   '<div class="h2"><b>'+esc(L4(XT.catsT))+'</b></div>'+
-   '<div class="grid">'+(tplList().length?'<button class="cat" data-act="cat" data-v="__tpl"><span class="ic">'+icH('📋')+'</span><b>'+esc(L4(XT.tpls).replace('📋 ',''))+'</b><span>'+tplList().length+'</span></button>':'')+'<button class="cat" data-act="cat" data-v="__fav"><span class="ic">'+icH('⭐')+'</span><b>'+esc(L4(XT.favs).replace('⭐ ',''))+'</b><span>'+liveItems(favBox().fav).length+' '+T('items')+'</span></button>'+DB.cats.filter(function(c){return !c.hidden}).map(function(c){
-    return '<button class="cat" data-act="cat" data-v="'+c.id+'"><span class="ic">'+icH(c.ic,'📦')+'</span><b>'+esc(N(c))+'</b><span>'+visibleItems(c).length+' '+T('items')+'</span></button>'}).join('')+
-   '<button class="cat" data-act="custom"><span class="ic">➕</span><b>'+T('custom')+'</b></button></div>'+
-   (pl.length?'<div class="h2"><b>'+esc(L4(XT.pros).replace('🤝 ',''))+'</b><button class="prosbtn" data-act="pros">'+esc(L4(XT.seeAll))+' '+(settings.ui==='ar'?'‹':'›')+'</button></div><div class="pcar">'+pl.slice(0,12).map(function(p){
+  var n=cur().lines.length, pl=prosList(), arr=settings.ui==='ar'?'‹':'›', LIM=9;
+  var tiles=[];if(tplList().length)tiles.push('<button class="cat" data-act="cat" data-v="__tpl"><span class="ic">'+icH('📋')+'</span><b>'+esc(L4(XT.tpls).replace('📋 ',''))+'</b><span>'+tplList().length+'</span></button>');
+  tiles.push('<button class="cat" data-act="cat" data-v="__fav"><span class="ic">'+icH('⭐')+'</span><b>'+esc(L4(XT.favs).replace('⭐ ',''))+'</b><span>'+liveItems(favBox().fav).length+' '+T('items')+'</span></button>');
+  DB.cats.filter(function(c){return !c.hidden}).forEach(function(c){tiles.push('<button class="cat" data-act="cat" data-v="'+c.id+'"><span class="ic">'+icH(c.ic,'📦')+'</span><b>'+esc(N(c))+'</b><span>'+visibleItems(c).length+' '+T('items')+'</span></button>')});
+  tiles.push('<button class="cat" data-act="custom"><span class="ic">➕</span><b>'+T('custom')+'</b></button>');
+  var more=tiles.length>LIM+1, show=view.allc||!more?tiles:tiles.slice(0,LIM);
+  function card(act,ic,t,sub,cls){return '<button class="mlcard'+(cls?' '+cls:'')+'" data-act="'+act+'">'+icH(ic)+'<span><b>'+esc(L4(t))+'</b><small>'+esc(L4(sub))+'</small></span><i>'+arr+'</i></button>'}
+  var ele=(settings.trade||'ele')==='ele';
+  return '<div class="hnew"><button class="hmain" data-act="newlist"><span class="hic">'+icH('📋')+'</span><span class="htx"><b>'+esc(L4(HX.new))+'</b><small>'+esc(L4(HX.newS))+'</small></span><span class="hplus">+</span></button>'+
+     (n?'<button class="hcur" data-tab="cart">📋 '+esc(L4(HX.cont))+' <b>'+n+'</b> '+arr+'</button>':'')+'</div>'+
+   '<div class="h2" id="hcats"><b>'+esc(ele?L4(HX.mats):L4(XT.catsT))+'</b></div>'+
+   '<div class="grid">'+show.join('')+'</div>'+
+   (more?'<button class="hall" data-act="allc">'+esc(view.allc?L4(HX.less):L4(HX.all))+' '+(view.allc?'▴':'▾')+'</button>':'')+
+   '<div class="h2"><b>'+esc(L4(HX.tools))+'</b></div>'+
+   card('mlist','📝',MLT.home,MLT.homeS)+
+   (ele&&rcFlag('panel')?card('panel','⚡',PN.t,PN.s,'pnc'):'')+
+   (rcFlag('calc')?card('gocalc','🧮',HX.calc,HX.calcS,'calcc'):'')+
+   (techList().length?card('tech','📐',TG.t,TG.s,'tgc'):'')+
+   (pl.length?'<div class="h2"><b>'+esc(L4(XT.pros).replace('🤝 ',''))+'</b><button class="prosbtn" data-act="pros">'+esc(L4(XT.seeAll))+' '+arr+'</button></div><div class="pcar">'+pl.slice(0,12).map(function(p){
      return '<button class="pcard" data-act="pro" data-v="'+esc(p.id)+'">'+proPic(p)+'<b>'+esc(p.name)+'</b><span>'+esc(p.job||'')+'</span>'+(p.city?'<span>📍 '+esc(p.city)+'</span>':'')+'</button>'}).join('')+'</div>':'');
 }
 function itemRow(it){
@@ -613,7 +645,11 @@ function renderSearch(){
   var kits=DB.kits.filter(function(k){var s=norm(k.it+' '+k.ar);return !k.hidden&&words.every(function(w){return s.indexOf(w)>=0})});
   var h='';
   if(res.length) h+='<div class="sec">'+T('materials')+' ('+res.length+')</div><div class="list">'+res.slice(0,80).map(itemRow).join('')+'</div>';
-  if(!res.length) h+='<div class="empty"><div class="big">🔎</div>'+T('notFound')+' «'+esc(view.q)+'»</div>';
+  // pezzi reali della guida: ricerca per marca e codice
+  var tr=techList().filter(function(x){var t=norm([x.b,x.r,x.f,x.p,x.cv?x.cv+x.A:'',x.A!=null?x.A+'a':'',techName(x)].join(' '));return words.every(function(w){return t.indexOf(w)>=0})});
+  if(tr.length)h+='<div class="sec">'+icH('📐')+' '+esc(L4(HX.real))+' ('+tr.length+')</div><div class="list">'+tr.slice(0,30).map(function(x){var gi=TECH_IX[x.i];
+    return '<div class="row"><div class="t"><b dir="ltr" style="text-align:start">'+esc(x.b.split(' ')[0]+' '+x.r)+'</b><span dir="auto" style="text-align:start">'+esc(techName(x).split(' — ').pop())+' · '+esc([x.p,x.cv?x.cv+x.A:(x.A!=null?x.A+'A':'')].filter(Boolean).join(' '))+'</span></div><button class="plus" data-act="tadd" data-v="'+gi+'" aria-label="+">+</button></div>'}).join('')+'</div>';
+  if(!res.length&&!tr.length) h+='<div class="empty"><div class="big">🔎</div>'+T('notFound')+' «'+esc(view.q)+'»</div>';
   h+='<button class="btn main" data-act="custom" data-v="'+esc(view.q)+'">➕ '+esc(T('addNew').replace('%',view.q))+'</button>';
   return h;
 }
@@ -3385,6 +3421,9 @@ document.addEventListener('click',function(e){
    case 'export': exportBackup();break;
    case 'clients': clientsSheet();break;
    case 'newproj': startNew();break;
+   case 'newlist': newListSheet();break;
+   case 'allc': view.allc=!view.allc;render();break;
+   case 'gocalc': view.tab='calc';view.cat=null;view.calc=null;clearSearch();render();window.scrollTo(0,0);break;
    case 'sitesave': var pp=cur(); if(!pp.name&&pp.site.cliente) pp.name=''; save(); toast(T('projSaved')); break;
    case 'calcopen': view.calc=v;render();window.scrollTo(0,0);break;
    case 'calcback': view.calc=null;render();break;
